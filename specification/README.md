@@ -104,7 +104,10 @@ Read the architecture contracts first, then the owning domain chapters and catal
 - [Host identity and academic access](joomla/03-host-identity-and-academic-access.md)
 - [Collaboration and document adapters](joomla/04-collaboration-and-document-adapters.md)
 - [Agent build and release workflow](joomla/05-agent-build-and-release-workflow.md)
-- [Component allocation and Admin View budget](joomla/06-component-allocation.md)
+- [Component allocation and cohesive workspaces](joomla/06-component-allocation.md)
+- [Native runtime and format boundaries](joomla/07-runtime-composition-and-format-boundaries.md)
+- [GUID relationships, selectors and generated ACL](joomla/08-guid-relationships-selectors-and-acl.md)
+- [Component dependencies and lifecycle](joomla/09-component-dependencies-and-lifecycle.md)
 
 ## Migration and curriculum recovery
 

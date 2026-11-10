@@ -16,7 +16,7 @@ The detailed specification is under [specification/](specification/README.md). I
 | Academic records | [Authority and model](specification/records/01-authority-and-model.md), [grade calculation](specification/records/03-grade-calculation.md) | [Records catalog](specification/records/catalog.json) |
 | Exchange and migration | [Format profiles](specification/interoperability/01-format-profiles-and-native-archive.md), [course and library adapters](specification/interoperability/03-olx-library-adapters.md) | [Interoperability catalog](specification/interoperability/catalog.json) |
 | SCORM | [1.2 runtime](specification/interoperability/05-scorm-12-runtime.md), [2004 runtime](specification/interoperability/06-scorm-2004-runtime.md), [sequencing](specification/interoperability/07-scorm-sequencing.md) | Runtime profiles and interoperability catalog |
-| Joomla and JCB | [Package contract](specification/joomla/01-package-and-component-contract.md), [component allocation](specification/joomla/06-component-allocation.md) | [Component map](specification/joomla/component-map.json) |
+| Joomla and JCB | [Package contract](specification/joomla/01-package-and-component-contract.md), [component allocation](specification/joomla/06-component-allocation.md), [GUID selectors and ACL](specification/joomla/08-guid-relationships-selectors-and-acl.md), [dependencies and lifecycle](specification/joomla/09-component-dependencies-and-lifecycle.md) | [Component map](specification/joomla/component-map.json) |
 | Existing curriculum migration | [Graph discovery](specification/migration/01-archive-discovery-and-graph.md), [identity and link resolution](specification/migration/02-identity-allocation-and-link-resolution.md), [assessment extraction](specification/migration/03-assessment-and-prose-extraction.md) | Transfer records, typed edges, scoped crosswalks and owner receipts |
 | Relational persistence and rendering | [Structured storage](specification/persistence/01-relational-content-storage.md), [MySQL/MariaDB](specification/persistence/02-mysql-mariadb-physical-contract.md), [reference indexes](specification/persistence/03-reference-index-contract.md), [Joomla runtime](specification/joomla/07-runtime-composition-and-format-boundaries.md) | Canonical native data, exact versions and typed relationships |
 | PDF and agent authoring | [Source ingestion](specification/authoring/01-source-document-ingestion.md), [agent production](specification/authoring/02-agent-curriculum-production.md), [portable handoff](specification/authoring/04-portable-agent-handoff.md) | Protected evidence, proposed drafts, verification and reviewed owner apply |
@@ -31,7 +31,7 @@ Private curriculum archives are research inputs outside this repository. The spe
 
 Select a workflow and its acceptance cases, resolve its entities and permission contexts, and implement its owner commands through the intended user interface. Include interrupted requests, stale revisions, invalid transitions and unauthorized access in that slice. An assessment implementation must preserve the exact delivered form and accepted submission. An academic-record implementation must reproduce each issued result from its evidence and policy.
 
-For Joomla, use the component map to allocate every persisted entity and its attached Admin View. Each component has at most five attached definitions, including hidden child views. The ownership domains contain multiple small components delivered as a compatible package. Joomla account services and baseline ACL combine with the application's academic scopes. Nextcloud and Filery integration contracts are described in the [provider adapter chapter](specification/joomla/04-collaboration-and-document-adapters.md).
+For Joomla, use the component map to allocate every persisted entity and its attached Admin View. Components group related concepts, workflows and authority; view and component counts are descriptive, with no fixed threshold. One component can contain several workspaces, normalized child editors and internal evidence views. Use JCB's generated forms, GUID relationships, field/view permissions and navigation. Add academic scope and lifecycle guards at the owner boundary. The package records mandatory dependencies, coordinated activation and optional feature requirements separately from its reference graph. Nextcloud and Filery integration contracts are described in the [provider adapter chapter](specification/joomla/04-collaboration-and-document-adapters.md).
 
 ## Verify and regenerate
 
@@ -41,6 +41,7 @@ Use Python 3.11 or newer and Node.js for the JavaScript fixture runner.
 python -m pip install -r tooling/requirements.txt
 python tooling/specification.py validate
 python tooling/specification.py check
+python tooling/test_validate_components.py
 python specification/assessment/verify-golden-vectors.py
 python specification/records/verify-grade-vectors.py
 python specification/interoperability/fixtures/verify-fixtures.py

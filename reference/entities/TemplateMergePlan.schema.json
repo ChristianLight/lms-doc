@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TemplateMergePlan",
+  "description": "Reviewed three-way proposal and exact conflict choices for one destination.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "library_adoption_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Existing managed distribution.",
+      "x-entity-reference": "LibraryAdoption",
+      "x-reference-scope": "Must resolve to an authorized LibraryAdoption in the owning institution."
+    },
+    "target_entry_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "New candidate source.",
+      "x-entity-reference": "LibraryEntryVersion",
+      "x-reference-scope": "Must resolve to an authorized LibraryEntryVersion in the owning institution."
+    },
+    "target_draft_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Destination state at preview."
+    },
+    "plan_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical diff, scope and rights digest."
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "maxProperties": 12
+      },
+      "maxItems": 20000,
+      "minItems": 0,
+      "description": "Typed normalized paths, old and new digests and required conflict choices."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "previewed",
+        "resolved",
+        "applied",
+        "superseded",
+        "abandoned"
+      ],
+      "default": "previewed",
+      "description": "Merge lifecycle."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Preview creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "library_adoption_id",
+    "target_entry_version_id",
+    "target_draft_revision",
+    "plan_digest",
+    "changes",
+    "state",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "library_adoption_id",
+      "plan_digest"
+    ]
+  ],
+  "x-invariants": [
+    "A merge plan applies only to its expected target revision and current rights."
+  ]
+}

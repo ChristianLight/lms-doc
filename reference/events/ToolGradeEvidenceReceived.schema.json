@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ToolGradeEvidenceReceived",
+  "description": "An external grade service update was validated for native evidence review.",
+  "type": "object",
+  "properties": {
+    "binding_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "evidence_receipt_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source_timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "binding_id",
+    "evidence_receipt_id",
+    "source_timestamp"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Binding and learner subject timestamp.",
+  "x-deduplication": "Binding, subject, timestamp and canonical digest.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

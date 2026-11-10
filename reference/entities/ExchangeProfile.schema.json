@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExchangeProfile",
+  "description": "Institution-authorized interoperable exchange direction and capability snapshot.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning these data and their access policy.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "standard": {
+      "type": "string",
+      "enum": [
+        "native",
+        "scorm",
+        "qti",
+        "common_cartridge",
+        "lti",
+        "oneroster",
+        "xapi",
+        "cmi5",
+        "historical"
+      ],
+      "description": "Format or protocol family."
+    },
+    "edition": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Exact version or package edition."
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "ingress",
+        "egress",
+        "bidirectional"
+      ],
+      "description": "Approved direction."
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "maxItems": 128,
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Precisely declared supported features."
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "uniqueItems": false,
+      "description": "Compatibility limits visible to operators."
+    },
+    "endpoint_origin": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Approved exchange destination origin for service profiles."
+    },
+    "privacy_class": {
+      "type": "string",
+      "enum": [
+        "public_curriculum",
+        "restricted_curriculum",
+        "student_records"
+      ],
+      "description": "Maximum permitted data class."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "suspended",
+        "retired"
+      ],
+      "description": "Authoritative lifecycle state advanced only through owner commands."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "standard",
+    "edition",
+    "direction",
+    "capabilities",
+    "limitations",
+    "privacy_class",
+    "state",
+    "revision",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "standard",
+      "edition",
+      "direction",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "One active profile per installed capability and institution direction unless scopes are explicitly disjoint.",
+    "Unknown required capabilities block exchange."
+  ]
+}

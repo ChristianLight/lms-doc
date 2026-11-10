@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttemptSubmitted",
+  "description": "Final response manifest became immutable.",
+  "type": "object",
+  "properties": {
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "submission_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "effective_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "delivery_id",
+    "attempt_id",
+    "submission_id",
+    "effective_at"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Exactly one logical event for each AttemptSubmission.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "No answers, assets, or scores."
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeReleaseActivated",
+  "description": "Approved grade release manifest granted authorized visibility.",
+  "type": "object",
+  "properties": {
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "release_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "learner_feedback",
+        "interim",
+        "final",
+        "correction"
+      ]
+    },
+    "manifest_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "offering_id",
+    "release_id",
+    "purpose",
+    "manifest_digest"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per offering release guard.",
+  "x-deduplication": "release_id.",
+  "x-privacy": "Consumers fetch scoped recipient entries. No grades in message."
+}

@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExternalToolResourceLink",
+  "description": "Versioned LTI resource placement and deployment binding.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "deployment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Registered tool binding.",
+      "x-entity-reference": "ExternalToolDeployment",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "activity_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact native external-tool activity version.",
+      "x-entity-reference": "ActivityVersion",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "course_offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering context for audience and membership.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "placement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Specific occurrence in active course release.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "resource_link_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Opaque stable LTI resource-link ID."
+    },
+    "target_link_uri": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Vetted link target within this deployment."
+    },
+    "custom_values": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]{0,63}$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 0,
+        "maxLength": 1024
+      },
+      "maxProperties": 32,
+      "description": "Approved platform-owned custom values. Every used key is declared by the active profile. Secrets and markup are rejected."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    }
+  },
+  "required": [
+    "id",
+    "deployment_id",
+    "activity_version_id",
+    "course_offering_id",
+    "placement_id",
+    "resource_link_key",
+    "target_link_uri",
+    "custom_values",
+    "revision",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "deployment_id",
+      "resource_link_key"
+    ]
+  ],
+  "x-invariants": [
+    "Activity, deployment and offering belong to the same Institution.",
+    "Repeated resource links in distinct placements cannot share learner context implicitly."
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ParticipationInterventionChanged",
+  "description": "Scoped learner support action changed.",
+  "type": "object",
+  "properties": {
+    "intervention_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "intervention_id",
+    "offering_id",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By exact support action revision.",
+  "x-deduplication": "Support action ID and revision.",
+  "x-privacy": "No notes or learner demographic data."
+}

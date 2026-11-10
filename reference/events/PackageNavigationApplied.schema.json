@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageNavigationApplied",
+  "description": "The edition engine processed a request against authoritative state.",
+  "type": "object",
+  "properties": {
+    "registration_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "receipt_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sequence_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "deliver",
+        "no_delivery",
+        "suspend",
+        "end",
+        "rejected"
+      ]
+    }
+  },
+  "required": [
+    "registration_id",
+    "receipt_id",
+    "sequence_revision",
+    "result"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Registration sequencing revision.",
+  "x-deduplication": "Receipt and request key.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

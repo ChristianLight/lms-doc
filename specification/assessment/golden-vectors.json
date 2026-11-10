@@ -1,0 +1,289 @@
+{
+  "fixture_version": "1.0.0",
+  "test_seed_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "canonical_manifest": {
+    "logical_input": {
+      "points": "0.5",
+      "revision": 2,
+      "attempt": "095776b4-053a-4fda-804b-801b1d79df31",
+      "choices": [
+        "b",
+        "a"
+      ]
+    },
+    "expected_utf8_hex": "7b22617474656d7074223a2230393537373662342d303533612d346664612d383034622d383031623164373964663331222c2263686f69636573223a5b2262222c2261225d2c22706f696e7473223a22302e35222c227265766973696f6e223a327d",
+    "expected_sha256_hex": "353f4b4381d3ab9948060407c27efc783c096d72a80d728566fe0f5140042f1e"
+  },
+  "pool": {
+    "candidate_ids": {
+      "A": "b6f00bc8-1f11-4ed5-a405-19717e5703ab",
+      "B": "095776b4-053a-4fda-804b-801b1d79df31",
+      "C": "1a586135-0f38-452d-bb26-884bf30d6179"
+    },
+    "occurrence": 1,
+    "rank_inputs": {
+      "core-1/A": {
+        "message_hex": "0000000c6974656d2d706f6f6c2d763100000006636f72652d3100000001b6f00bc81f114ed5a40519717e5703ab",
+        "hmac_sha256_hex": "c2c694b6936c63f43b5dd300e433b06076a0e252f6084870082428c7aaf85eb0"
+      },
+      "core-1/B": {
+        "message_hex": "0000000c6974656d2d706f6f6c2d763100000006636f72652d3100000001095776b4053a4fda804b801b1d79df31",
+        "hmac_sha256_hex": "263525edc3d62a99f33e51fd3bd8ba9d824e59f8e12876cbb87a1e808be9184a"
+      },
+      "core-1/C": {
+        "message_hex": "0000000c6974656d2d706f6f6c2d763100000006636f72652d31000000011a5861350f38452dbb26884bf30d6179",
+        "hmac_sha256_hex": "b356d6501eb369207a07c0816abe3faeb9479ea853da1a2c7e69d28a54a31d86"
+      },
+      "core-2/A": {
+        "message_hex": "0000000c6974656d2d706f6f6c2d763100000006636f72652d3200000001b6f00bc81f114ed5a40519717e5703ab",
+        "hmac_sha256_hex": "fce1cabe74f864c4a324b299fccc76f6c4356f4c0d4259d0ee2c5407e998f1c4"
+      },
+      "core-2/B": {
+        "message_hex": "0000000c6974656d2d706f6f6c2d763100000006636f72652d3200000001095776b4053a4fda804b801b1d79df31",
+        "hmac_sha256_hex": "fff72cd830e50aacb5f069f4e4a3f66367c768ea4804e0e1cb0774005bfc8dd2"
+      },
+      "core-2/C": {
+        "message_hex": "0000000c6974656d2d706f6f6c2d763100000006636f72652d32000000011a5861350f38452dbb26884bf30d6179",
+        "hmac_sha256_hex": "e9584b610c4537af2a3b827a4a5860d47bfbb150337b9aff9b4d38ebe654bf90"
+      }
+    },
+    "ordered_candidates": {
+      "core-1": [
+        "B",
+        "C",
+        "A"
+      ],
+      "core-2": [
+        "C",
+        "A",
+        "B"
+      ]
+    }
+  },
+  "choice_order": {
+    "attempt_item_id": "c5224931-cfee-4bee-8a7d-60872f2a6e6b",
+    "interaction_key": "answer",
+    "rank_inputs": {
+      "a": {
+        "message_hex": "0000000f63686f6963652d6f726465722d7631c5224931cfee4bee8a7d60872f2a6e6b00000006616e737765720000000161",
+        "hmac_sha256_hex": "20e7afa4befb185ade04f2ba6c29b377836c7078f6191c3a736926000ba0f655"
+      },
+      "b": {
+        "message_hex": "0000000f63686f6963652d6f726465722d7631c5224931cfee4bee8a7d60872f2a6e6b00000006616e737765720000000162",
+        "hmac_sha256_hex": "c3f06b3917d0ada8d9e396fafb97ab9b9dfd4c1d523a99827b5eb2f300977e42"
+      },
+      "c": {
+        "message_hex": "0000000f63686f6963652d6f726465722d7631c5224931cfee4bee8a7d60872f2a6e6b00000006616e737765720000000163",
+        "hmac_sha256_hex": "41a4d469698b2f8ae7f0f06407492e0fb56ebf7ba979770d274a78c7981cf5bc"
+      },
+      "d": {
+        "message_hex": "0000000f63686f6963652d6f726465722d7631c5224931cfee4bee8a7d60872f2a6e6b00000006616e737765720000000164",
+        "hmac_sha256_hex": "0c5b60ef643064db5f2315faaca9abf8b0676300878f5e5fbca916bbc83f508c"
+      }
+    },
+    "expected_order": [
+      "d",
+      "a",
+      "c",
+      "b"
+    ]
+  },
+  "math_parser": [
+    {
+      "input": "-2^2",
+      "profile": "math-real-v1",
+      "expected_ast": [
+        "neg",
+        [
+          "pow",
+          [
+            "integer",
+            "2"
+          ],
+          [
+            "integer",
+            "2"
+          ]
+        ]
+      ],
+      "value_rational": [
+        "-4",
+        "1"
+      ]
+    },
+    {
+      "input": "(-2)^2",
+      "profile": "math-real-v1",
+      "expected_ast": [
+        "pow",
+        [
+          "neg",
+          [
+            "integer",
+            "2"
+          ]
+        ],
+        [
+          "integer",
+          "2"
+        ]
+      ],
+      "value_rational": [
+        "4",
+        "1"
+      ]
+    },
+    {
+      "input": "2^3^2",
+      "profile": "math-real-v1",
+      "expected_ast": [
+        "pow",
+        [
+          "integer",
+          "2"
+        ],
+        [
+          "pow",
+          [
+            "integer",
+            "3"
+          ],
+          [
+            "integer",
+            "2"
+          ]
+        ]
+      ],
+      "value_rational": [
+        "512",
+        "1"
+      ]
+    },
+    {
+      "input": "−0,50",
+      "profile": "math-decimal-comma-v1",
+      "expected_ast": [
+        "neg",
+        [
+          "decimal",
+          "0.50"
+        ]
+      ],
+      "value_rational": [
+        "-1",
+        "2"
+      ],
+      "original_decimal_places": 2
+    },
+    {
+      "input": "log(x, 2)",
+      "profile": "math-real-v1",
+      "expected_error": "FUNCTION_ARITY_UNSUPPORTED",
+      "expected_error_start_scalar": 0
+    },
+    {
+      "input": "x.y",
+      "profile": "math-real-v1",
+      "expected_error": "UNSUPPORTED_TOKEN",
+      "expected_error_start_scalar": 1
+    },
+    {
+      "input": "1,234",
+      "profile": "math-real-v1",
+      "expected_error": "UNEXPECTED_SEPARATOR",
+      "expected_error_start_scalar": 1
+    }
+  ],
+  "exact_score_vectors": [
+    {
+      "kind": "numerical_tolerance",
+      "expected": "12",
+      "candidate": "12.12",
+      "abs_tol": "0.05",
+      "rel_tol": "0.01",
+      "inclusive": true,
+      "expected_acceptance": true
+    },
+    {
+      "kind": "numerical_tolerance",
+      "expected": "12",
+      "candidate": "12.121",
+      "abs_tol": "0.05",
+      "rel_tol": "0.01",
+      "inclusive": true,
+      "expected_acceptance": false
+    },
+    {
+      "kind": "unit_conversion",
+      "candidate": "36",
+      "from_unit": "km/h",
+      "to_unit": "m/s",
+      "exact_rational": [
+        "10",
+        "1"
+      ]
+    },
+    {
+      "kind": "affine_conversion",
+      "candidate": "25",
+      "from_unit": "Cel",
+      "to_unit": "K",
+      "temperature_mode": "quantity",
+      "exact_rational": [
+        "5963",
+        "20"
+      ]
+    },
+    {
+      "kind": "affine_conversion",
+      "candidate": "25",
+      "from_unit": "Cel",
+      "to_unit": "K",
+      "temperature_mode": "difference",
+      "exact_rational": [
+        "25",
+        "1"
+      ]
+    },
+    {
+      "kind": "partial_select",
+      "choice_weights": {
+        "A": "2",
+        "B": "-1",
+        "C": "2",
+        "D": "-1"
+      },
+      "floor": "0",
+      "cap": "4",
+      "selected": [
+        "A",
+        "C",
+        "D"
+      ],
+      "expected_points": "3"
+    },
+    {
+      "kind": "partial_select",
+      "choice_weights": {
+        "A": "2",
+        "B": "-1",
+        "C": "2",
+        "D": "-1"
+      },
+      "floor": "0",
+      "cap": "4",
+      "selected": [
+        "B",
+        "D"
+      ],
+      "expected_points": "0"
+    },
+    {
+      "kind": "normalized_slot",
+      "item_earned": "3",
+      "item_maximum": "4",
+      "slot_maximum": "5",
+      "expected_points": "3.75"
+    }
+  ]
+}

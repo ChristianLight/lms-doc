@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MarkingRuleVersion",
+  "description": "Protected typed grading rule and evaluator release identity.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique MarkingRuleVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution that may use the rule.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Institution that may use the rule."
+    },
+    "rule_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Stable key for rule revision series."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic rule revision."
+    },
+    "evaluator_release_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved registered compatible evaluator.",
+      "x-entity-reference": "EvaluatorRelease",
+      "x-reference-scope": "Approved registered compatible evaluator."
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "number",
+              "rational",
+              "text",
+              "identifier",
+              "boolean",
+              "structured"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16000
+          }
+        },
+        "required": [
+          "name",
+          "kind",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "description": "Validated expected values and private scorer settings."
+    },
+    "minimum": {
+      "type": "string",
+      "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])",
+      "description": "Lowest possible criterion score."
+    },
+    "maximum": {
+      "type": "string",
+      "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])",
+      "description": "Highest possible criterion score."
+    },
+    "fixture_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Verified frozen tests and outcomes."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Protected rule content digest."
+    },
+    "approved_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized rule approver.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized rule approver."
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Effective approval time."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "rule_key",
+    "revision",
+    "evaluator_release_id",
+    "parameters",
+    "minimum",
+    "maximum",
+    "fixture_digest",
+    "digest",
+    "approved_by",
+    "approved_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "rule_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Minimum does not exceed maximum.",
+    "Inputs are bounded typed values and never raw executable code."
+  ]
+}

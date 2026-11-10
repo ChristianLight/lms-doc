@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EnrollmentRelease",
+  "description": "Effective exact curriculum assignment for one enrollment.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable participation.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Must resolve to an authorized Enrollment in the owning institution."
+    },
+    "course_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact immutable course version.",
+      "x-entity-reference": "CourseVersion",
+      "x-reference-scope": "Must belong to this enrollment offering course."
+    },
+    "predecessor_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Previous assignment in same enrollment.",
+      "x-entity-reference": "EnrollmentRelease",
+      "x-reference-scope": "Must resolve to an authorized EnrollmentRelease in the owning institution."
+    },
+    "rollout_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved rollout where applicable.",
+      "x-entity-reference": "ReleaseRollout",
+      "x-reference-scope": "Must resolve to an authorized ReleaseRollout in the owning institution."
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "initial",
+        "rollout",
+        "rollback",
+        "reactivation"
+      ],
+      "description": "Assignment reason."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive start."
+    },
+    "effective_to": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive end."
+    }
+  },
+  "required": [
+    "id",
+    "enrollment_id",
+    "course_version_id",
+    "reason",
+    "effective_from"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "enrollment_id",
+      "effective_from"
+    ]
+  ],
+  "x-invariants": [
+    "Intervals cannot overlap.",
+    "At most one current assignment.",
+    "Historical academic records retain exact release ID."
+  ]
+}

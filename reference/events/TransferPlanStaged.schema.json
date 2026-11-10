@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TransferPlanStaged",
+  "description": "A private transfer plan and reconciliation counts became reviewable.",
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "plan_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "record_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "blocking_issue_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "job_id",
+    "revision",
+    "plan_digest",
+    "record_count",
+    "blocking_issue_count"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Job revision.",
+  "x-deduplication": "Job, revision and plan digest.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

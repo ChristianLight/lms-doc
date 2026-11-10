@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Item",
+  "description": "Stable identity for a reusable prompt and its publication series.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique Item identifier."
+    },
+    "bank_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning bank, immutable after publication.",
+      "x-entity-reference": "ItemBank",
+      "x-reference-scope": "Owning bank, immutable after publication."
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Bank-local stable lookup key."
+    },
+    "created_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Creator authorized in the bank.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Creator authorized in the bank."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative creation time."
+    },
+    "published_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Current published version belonging to this item.",
+      "x-entity-reference": "ItemVersion",
+      "x-reference-scope": "Current published version belonging to this item."
+    },
+    "archived_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Item retirement time."
+    }
+  },
+  "required": [
+    "id",
+    "bank_id",
+    "key",
+    "created_by",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "bank_id",
+      "key"
+    ]
+  ],
+  "x-invariants": [
+    "Published version must refer to this item.",
+    "Retirement prevents new selection without losing pinned history."
+  ]
+}

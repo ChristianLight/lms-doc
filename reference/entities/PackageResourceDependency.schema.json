@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageResourceDependency",
+  "description": "A validated manifest dependency edge between two resources.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "resource_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Dependent resource.",
+      "x-entity-reference": "PackageResource",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "depends_on_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Required resource in the same PackageVersion.",
+      "x-entity-reference": "PackageResource",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "description": "Position of original dependency declaration."
+    }
+  },
+  "required": [
+    "id",
+    "resource_id",
+    "depends_on_id",
+    "ordinal"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "resource_id",
+      "depends_on_id"
+    ]
+  ],
+  "x-invariants": [
+    "Approved default import prohibits dependency cycles.",
+    "No dependencies cross package versions."
+  ]
+}

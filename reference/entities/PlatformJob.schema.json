@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PlatformJob",
+  "description": "Durable operation with classification, a per-job lease and a stable logical effect identity.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "job_kind": {
+      "type": "string",
+      "enum": [
+        "exam_marking",
+        "release_dispatch",
+        "asset_scan",
+        "privacy_disposition",
+        "sync",
+        "notification",
+        "bulk_report",
+        "regrade",
+        "course_import",
+        "recovery_verification"
+      ],
+      "description": "Declared processing family and permitted worker profile."
+    },
+    "effect_key": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical logical deduplication key for this kind and scope."
+    },
+    "target_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Canonical target kind."
+    },
+    "target_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Canonical target UUID."
+    },
+    "expected_target_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Resource version to revalidate before effect."
+    },
+    "payload_ref": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected schema-validated job parameters."
+    },
+    "requested_by_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Initiating Principal, when human or on behalf of a human."
+    },
+    "authority_mode": {
+      "type": "string",
+      "enum": [
+        "user_delegated",
+        "durable_system"
+      ],
+      "description": "User rights rechecked for delegated work. Durable system work uses an explicitly registered policy."
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 50,
+      "description": "Within-family priority, larger first."
+    },
+    "available_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Earliest next claim instant."
+    },
+    "attempt_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16,
+      "description": "Number of leases started. Begins at zero."
+    },
+    "max_attempts": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16,
+      "default": 6,
+      "description": "Maximum automatically retriable attempts for this job."
+    },
+    "active_fence": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Current lease fence. Absent outside running state."
+    },
+    "checkpoint_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Last durable progress boundary."
+    },
+    "last_error_code": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Normalized outcome category without content."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "retry_wait",
+        "succeeded",
+        "blocked",
+        "dead",
+        "canceled"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "job_kind",
+    "effect_key",
+    "target_type",
+    "target_id",
+    "expected_target_version",
+    "payload_ref",
+    "authority_mode",
+    "priority",
+    "available_at",
+    "attempt_count",
+    "max_attempts",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "job_kind",
+      "effect_key"
+    ]
+  ],
+  "x-invariants": [
+    "Each claim uses a monotonically increasing fence. Compare current fence before changing outcomes.",
+    "Leases are coordination only. Remote effect keys, local version checks and effect records provide correctness."
+  ]
+}

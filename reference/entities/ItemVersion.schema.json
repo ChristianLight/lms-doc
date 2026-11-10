@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ItemVersion",
+  "description": "Immutable published prompt, response and evaluation graph.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ItemVersion identifier."
+    },
+    "item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable item whose bank controls access.",
+      "x-entity-reference": "Item",
+      "x-reference-scope": "Stable item whose bank controls access."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic revision within the item."
+    },
+    "base_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Earlier revision of the same item.",
+      "x-entity-reference": "ItemVersion",
+      "x-reference-scope": "Earlier revision of the same item."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "in_review",
+        "approved",
+        "published",
+        "withdrawn"
+      ],
+      "description": "Workflow lifecycle and new selection eligibility."
+    },
+    "draft_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Strong authoring compare-and-swap sequence."
+    },
+    "locale": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8}){0,6}$",
+      "description": "Canonical authored language."
+    },
+    "prompt": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "sanitized_html",
+              "text",
+              "asset",
+              "math"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50000
+          }
+        },
+        "required": [
+          "key",
+          "format",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 256,
+      "description": "Ordered rich content blocks with sanitized renderer format."
+    },
+    "asset_version_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Approved immutable assets belonging to the institution and permitted bank.",
+      "x-entity-reference": "AssetVersion",
+      "x-reference-scope": "Approved immutable assets belonging to the institution and permitted bank."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "description": "Non-sensitive taxonomy and search tags."
+    },
+    "content_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Digest over the complete versioned graph."
+    },
+    "created_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Author or drafting service with bank grant.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Author or drafting service with bank grant."
+    },
+    "published_by": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Independent authorized releasing principal.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Independent authorized releasing principal."
+    },
+    "published_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Effective published time."
+    },
+    "outcome_reference_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Scoped institution-owned outcome references approved through curriculum."
+    },
+    "license_reference": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Applicable content rights and reuse license identifier."
+    }
+  },
+  "required": [
+    "id",
+    "item_id",
+    "revision",
+    "state",
+    "draft_version",
+    "locale",
+    "prompt",
+    "asset_version_ids",
+    "tags",
+    "content_digest",
+    "created_by"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "item_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "One editable draft per item by default.",
+    "Approval binds exact content digest.",
+    "Published content graph cannot change."
+  ]
+}

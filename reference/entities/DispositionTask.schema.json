@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DispositionTask",
+  "description": "One independently retryable disposition step against a specific record version and store.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "privacy_request_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Source request or null for routine schedule.",
+      "x-entity-reference": "PrivacyRequest",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "policy_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved rule applied to this class.",
+      "x-entity-reference": "RetentionPolicy",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "record_class": {
+      "type": "string",
+      "enum": [
+        "identity_contact",
+        "enrollment_history",
+        "academic_official",
+        "submissions",
+        "drafts",
+        "exam_telemetry",
+        "audit",
+        "connector_message",
+        "communication",
+        "backup",
+        "private_export",
+        "asset_bytes"
+      ],
+      "description": "Data class at approval."
+    },
+    "target_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Authoritative domain object kind."
+    },
+    "target_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact target identity."
+    },
+    "target_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Observed source version. Re-evaluate before mutating."
+    },
+    "store_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Registered data store or processor boundary."
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "delete",
+        "pseudonymize",
+        "archive",
+        "exclude"
+      ],
+      "description": "Approved step outcome type."
+    },
+    "eligibility_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Earliest execution time calculated under the pinned rule."
+    },
+    "action_key": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Idempotent opaque key for this store, subject, operation and approved case."
+    },
+    "outcome_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Restricted deletion receipt, redaction evidence or blocked reason."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "applied",
+        "blocked",
+        "excluded"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "policy_id",
+    "record_class",
+    "target_type",
+    "target_id",
+    "target_version",
+    "store_key",
+    "action",
+    "eligibility_at",
+    "action_key",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "action_key"
+    ]
+  ],
+  "x-invariants": [
+    "Recheck active holds, target version and current minimum retention immediately before execution.",
+    "Retain a minimal restore-safe ledger of completed disposition outside the mutable primary backup generation."
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttendanceChanged",
+  "description": "One authorized attendance revision was published or corrected.",
+  "type": "object",
+  "properties": {
+    "attendance_entry_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "attendance_revision_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "meeting_occurrence_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "attendance_entry_id",
+    "attendance_revision_id",
+    "meeting_occurrence_id",
+    "version"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "Causal by attendance entry.",
+  "x-deduplication": "Attendance revision ID.",
+  "x-privacy": "No attendance decision details in broad event."
+}

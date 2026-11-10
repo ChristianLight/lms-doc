@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GroupMembership",
+  "description": "Effective-dated learner membership in an offering group.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Learner participation.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Enrollment must belong to the same offering and institution."
+    },
+    "learning_group_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning group.",
+      "x-entity-reference": "LearningGroup",
+      "x-reference-scope": "Must resolve to an authorized LearningGroup in the owning institution."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive start."
+    },
+    "effective_to": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive end."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "self",
+        "invitation",
+        "cohort",
+        "roster",
+        "rule",
+        "transfer"
+      ],
+      "description": "Membership route."
+    },
+    "assigned_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Actor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    }
+  },
+  "required": [
+    "id",
+    "enrollment_id",
+    "learning_group_id",
+    "effective_from",
+    "source",
+    "assigned_by"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "enrollment_id",
+      "learning_group_id",
+      "effective_from"
+    ]
+  ],
+  "x-invariants": [
+    "No overlapping pair intervals.",
+    "Section restriction must hold throughout active membership."
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TransferIssue",
+  "description": "A classified transformation, validation or parity outcome requiring scoped review.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "job_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Job producing the finding.",
+      "x-entity-reference": "TransferJob",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "record_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Affected staged object when applicable.",
+      "x-entity-reference": "TransferRecord",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "issue_key": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Stable evidence digest used to deduplicate retries."
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Machine-readable issue reason."
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "blocking",
+        "warning",
+        "information"
+      ],
+      "description": "Effect on stage and promotion."
+    },
+    "safe_summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "Redacted summary for authorized review."
+    },
+    "evidence_locator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Restricted evidence record locator."
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "answer_protected",
+        "personal",
+        "security"
+      ],
+      "description": "Handling policy for underlying evidence."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "open",
+        "investigating",
+        "accepted_difference",
+        "resolved",
+        "superseded"
+      ],
+      "description": "Authoritative lifecycle state advanced only through owner commands."
+    },
+    "resolution_reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "Explicit acceptance or correction justification."
+    },
+    "reviewer_principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Actor responsible for this resolution.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    }
+  },
+  "required": [
+    "id",
+    "job_id",
+    "issue_key",
+    "code",
+    "severity",
+    "safe_summary",
+    "classification",
+    "state",
+    "revision",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "job_id",
+      "issue_key"
+    ]
+  ],
+  "x-invariants": [
+    "Blocking scoring loss cannot become an accepted difference without a verified replacement that changes the issue classification.",
+    "Safe summaries exclude responses, tokens and unredacted scripts."
+  ]
+}

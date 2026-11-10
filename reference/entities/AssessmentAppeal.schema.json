@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentAppeal",
+  "description": "Challenge to a disclosed assessment mark and its evidence.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AssessmentAppeal identifier."
+    },
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Disclosed candidate attempt.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Disclosed candidate attempt."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Candidate beneficiary within scope.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Candidate beneficiary within scope."
+    },
+    "mark_revision_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact disclosed mark challenged.",
+      "x-entity-reference": "ItemMarkRevision",
+      "x-reference-scope": "Exact disclosed mark challenged."
+    },
+    "category": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Reason classification."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "description": "Protected learner explanation."
+    },
+    "filed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative intake time."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "filed",
+        "screening",
+        "assigned",
+        "decided",
+        "closed",
+        "withdrawn"
+      ],
+      "description": "Case review lifecycle."
+    },
+    "reviewer_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Scope-authorized independent adjudicator.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Scope-authorized independent adjudicator."
+    },
+    "decision": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "uphold",
+            "correct",
+            "dismiss",
+            "escalate"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Resolution when decided."
+    },
+    "decision_reason": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Protected adjudication rationale."
+    },
+    "resolved_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Decision time."
+    },
+    "protected_evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Protected appeal evidence stored under this case and institutional retention.",
+      "x-entity-reference": "AssetVersion",
+      "x-reference-scope": "Protected appeal evidence stored under this case and institutional retention."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_id",
+    "enrollment_id",
+    "mark_revision_id",
+    "category",
+    "reason",
+    "filed_at",
+    "state",
+    "protected_evidence_ids"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "One active appeal per learner and challenged revision.",
+    "Appeal cannot overwrite a submitted response or official academic result."
+  ]
+}

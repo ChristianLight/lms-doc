@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttendanceRevision",
+  "description": "Immutable proposed, published or corrected attendance decision.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "attendance_entry_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable learner-occurrence record.",
+      "x-entity-reference": "AttendanceEntry",
+      "x-reference-scope": "Must resolve to an authorized AttendanceEntry in the owning institution."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic decision version."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "present",
+        "late",
+        "absent",
+        "excused",
+        "unrecorded"
+      ],
+      "description": "Learning attendance classification."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "teacher",
+        "check_in",
+        "provider",
+        "correction"
+      ],
+      "description": "Authorized decision route."
+    },
+    "source_evidence_key": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional proposal or provider reference."
+    },
+    "publication": {
+      "type": "string",
+      "enum": [
+        "proposed",
+        "published"
+      ],
+      "description": "Whether decision is authoritative."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Accountable actor or verified integration.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "prior_revision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Superseded prior decision.",
+      "x-entity-reference": "AttendanceRevision",
+      "x-reference-scope": "Must resolve to an authorized AttendanceRevision in the owning institution."
+    },
+    "reason": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Reason required for correction."
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Append instant."
+    }
+  },
+  "required": [
+    "id",
+    "attendance_entry_id",
+    "version",
+    "status",
+    "source",
+    "publication",
+    "actor_id",
+    "recorded_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "attendance_entry_id",
+      "version"
+    ]
+  ],
+  "x-invariants": [
+    "Corrections append and may require academic impact review."
+  ]
+}

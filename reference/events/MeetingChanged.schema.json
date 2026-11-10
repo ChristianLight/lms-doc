@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MeetingChanged",
+  "description": "Live occurrence or schedule materialization changed.",
+  "type": "object",
+  "properties": {
+    "meeting_series_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "meeting_occurrence_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "meeting_series_id",
+    "meeting_occurrence_id",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By meeting series or occurrence revision.",
+  "x-deduplication": "Changed record ID and revision.",
+  "x-privacy": "No join token or private audience names."
+}

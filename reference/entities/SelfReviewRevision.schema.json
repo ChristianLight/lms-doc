@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SelfReviewRevision",
+  "description": "Candidate self-reflection against own sealed coursework and pinned rubric.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique SelfReviewRevision identifier."
+    },
+    "submission_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Sealed candidate submission under configured self review policy.",
+      "x-entity-reference": "AttemptSubmission",
+      "x-reference-scope": "Sealed candidate submission under configured self review policy."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "The same candidate or eligible captured team member.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "The same candidate or eligible captured team member."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic self review revision."
+    },
+    "rubric_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable approved guide.",
+      "x-entity-reference": "RubricVersion",
+      "x-reference-scope": "Immutable approved guide."
+    },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "points": {
+            "type": "string",
+            "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+          },
+          "maximum": {
+            "type": "string",
+            "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+          },
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "scored",
+              "blank",
+              "invalid",
+              "manual_review",
+              "excused"
+            ]
+          },
+          "feedback_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          }
+        },
+        "required": [
+          "criterion_key",
+          "maximum",
+          "disposition"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "description": "Candidate self-evaluation stored independently of staff marking."
+    },
+    "comments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "candidate",
+              "marker_only"
+            ]
+          }
+        },
+        "required": [
+          "criterion_key",
+          "text",
+          "visibility"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "description": "Optional candidate notes and reflections."
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative self review acceptance time."
+    }
+  },
+  "required": [
+    "id",
+    "submission_id",
+    "enrollment_id",
+    "revision",
+    "rubric_version_id",
+    "criteria",
+    "comments",
+    "submitted_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "submission_id",
+      "enrollment_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "No self evaluation updates ItemMarkRevision or GradeEvidence.",
+    "Separate from anonymous peer allocations."
+  ]
+}

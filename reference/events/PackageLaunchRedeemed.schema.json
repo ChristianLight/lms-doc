@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageLaunchRedeemed",
+  "description": "A single-use package credential produced an active launch.",
+  "type": "object",
+  "properties": {
+    "registration_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "launch_session_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "epoch": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "registration_id",
+    "launch_session_id",
+    "epoch"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Registration epoch.",
+  "x-deduplication": "Launch session and activation.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

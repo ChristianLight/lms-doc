@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentAssemblyReview",
+  "description": "Independent approval of exact assembly and feasible scorer dependencies.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AssessmentAssemblyReview identifier."
+    },
+    "assessment_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Version owned by reviewed course scope.",
+      "x-entity-reference": "AssessmentVersion",
+      "x-reference-scope": "Version owned by reviewed course scope."
+    },
+    "content_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Exact reviewed draft and pinned dependency graph."
+    },
+    "fixtures_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Checked form selection, scoring, renderer and locale evidence."
+    },
+    "reviewer_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized reviewer, independent from authors where policy requires.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized reviewer, independent from authors where policy requires."
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "reject",
+        "needs_work"
+      ],
+      "description": "Approve, reject or request review changes."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "description": "Protected explanation and unmet requirements."
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative decision time."
+    }
+  },
+  "required": [
+    "id",
+    "assessment_version_id",
+    "content_digest",
+    "fixtures_digest",
+    "reviewer_id",
+    "decision",
+    "reason",
+    "decided_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "assessment_version_id",
+      "content_digest",
+      "reviewer_id",
+      "decided_at"
+    ]
+  ],
+  "x-invariants": [
+    "Any content or validation dependency digest change invalidates prior publication approval.",
+    "Approval does not publish."
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CourseVersion",
+  "description": "Immutable published outline manifest.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "course_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Logical owner.",
+      "x-entity-reference": "Course",
+      "x-reference-scope": "Must resolve to an authorized Course in the owning institution."
+    },
+    "source_draft_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Published draft audit pointer.",
+      "x-entity-reference": "CourseDraft",
+      "x-reference-scope": "Must resolve to an authorized CourseDraft in the owning institution."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic publication ordinal within course."
+    },
+    "draft_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Approved canonical inputs."
+    },
+    "manifest_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Final canonical published manifest SHA-256."
+    },
+    "manifest_locator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "Private verified object locator."
+    },
+    "published_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Accountable publisher.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Atomic visibility time."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "published",
+        "archived",
+        "withdrawn"
+      ],
+      "default": "published",
+      "description": "Availability status separate from manifest."
+    }
+  },
+  "required": [
+    "id",
+    "course_id",
+    "source_draft_id",
+    "version",
+    "draft_digest",
+    "manifest_digest",
+    "manifest_locator",
+    "published_by",
+    "published_at",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "course_id",
+      "version"
+    ],
+    [
+      "course_id",
+      "draft_digest"
+    ]
+  ],
+  "x-invariants": [
+    "Manifest must be durably present before transaction commits.",
+    "Archived publication cannot become a new offering default without reviewed reactivation."
+  ]
+}

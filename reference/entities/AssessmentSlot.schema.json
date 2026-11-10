@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentSlot",
+  "description": "Fixed item or approved pool placement in the exact assembly.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AssessmentSlot identifier."
+    },
+    "assessment_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Assembly containing the slot.",
+      "x-entity-reference": "AssessmentVersion",
+      "x-reference-scope": "Assembly containing the slot."
+    },
+    "section_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Section of the same AssessmentVersion.",
+      "x-entity-reference": "AssessmentSectionVersion",
+      "x-reference-scope": "Section of the same AssessmentVersion."
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Unique local slot identity."
+    },
+    "display_order": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Distinct slot order within its section."
+    },
+    "fixed_item_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Published fixed item approved for reuse.",
+      "x-entity-reference": "ItemVersion",
+      "x-reference-scope": "Published fixed item approved for reuse."
+    },
+    "pool_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Published pool permitted in this scope.",
+      "x-entity-reference": "ItemPoolVersion",
+      "x-reference-scope": "Published pool permitted in this scope."
+    },
+    "variant_profile_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved generator when the fixed slot selects one.",
+      "x-entity-reference": "VariantProfileVersion",
+      "x-reference-scope": "Approved generator when the fixed slot selects one."
+    },
+    "occurrences": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Number of selected item occurrences."
+    },
+    "maximum": {
+      "type": "string",
+      "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])",
+      "description": "Maximum per occurrence in assessment scale."
+    },
+    "required": {
+      "type": "boolean",
+      "description": "Whether all resolved criteria require disposition."
+    },
+    "shuffle_choices": {
+      "type": "boolean",
+      "description": "Allow per-attempt option permutation."
+    }
+  },
+  "required": [
+    "id",
+    "assessment_version_id",
+    "section_version_id",
+    "key",
+    "display_order",
+    "occurrences",
+    "maximum",
+    "required",
+    "shuffle_choices"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "assessment_version_id",
+      "key"
+    ],
+    [
+      "section_version_id",
+      "display_order"
+    ]
+  ],
+  "x-invariants": [
+    "Exactly one of fixed item and pool selected.",
+    "Occurrences is 1 to 500, with fixed item default 1.",
+    "Zero maximum is permitted only for ungraded slots."
+  ]
+}

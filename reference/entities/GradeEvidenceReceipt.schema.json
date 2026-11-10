@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeEvidenceReceipt",
+  "description": "Records-side pointer to verified immutable evidence and source sequence.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique GradeEvidenceReceipt identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering within the same institution.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering within the same institution."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Enrollment in the named offering and institution.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Enrollment in the named offering and institution."
+    },
+    "grade_item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Mapped line in same offering.",
+      "x-entity-reference": "GradeItem",
+      "x-reference-scope": "Mapped line in same offering."
+    },
+    "evidence_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Original accepted evidence with matching offering, item and enrollment.",
+      "x-entity-reference": "GradeEvidence",
+      "x-reference-scope": "Original accepted evidence with matching offering, item and enrollment."
+    },
+    "producer": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Authorized producer identifier."
+    },
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable original message ID."
+    },
+    "source_kind": {
+      "type": "string",
+      "enum": [
+        "native",
+        "manual",
+        "package",
+        "external"
+      ],
+      "description": "Immutable originating source type."
+    },
+    "source_object_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Opaque source stream identity."
+    },
+    "source_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Authoritative stream sequence."
+    },
+    "evidence_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Verified source lineage digest."
+    },
+    "received_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Records intake UTC timestamp."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "accepted",
+        "quarantined",
+        "reconciled"
+      ],
+      "default": "accepted",
+      "description": "Intake disposition."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "offering_id",
+    "enrollment_id",
+    "grade_item_id",
+    "evidence_id",
+    "producer",
+    "event_id",
+    "source_kind",
+    "source_object_id",
+    "source_revision",
+    "evidence_digest",
+    "received_at",
+    "status"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "producer",
+      "event_id"
+    ],
+    [
+      "evidence_id"
+    ],
+    [
+      "grade_item_id",
+      "enrollment_id",
+      "source_kind",
+      "source_object_id",
+      "source_revision"
+    ]
+  ],
+  "x-invariants": [
+    "Conflicting duplicate source digest quarantines event in the platform inbox before accepted academic receipt.",
+    "Later arrival does not replace a higher source sequence."
+  ]
+}

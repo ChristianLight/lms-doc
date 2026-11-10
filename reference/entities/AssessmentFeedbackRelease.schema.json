@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentFeedbackRelease",
+  "description": "Per-submission visible feedback fields pinned to mark revisions.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AssessmentFeedbackRelease identifier."
+    },
+    "submission_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Candidate scope for disclosure.",
+      "x-entity-reference": "AttemptSubmission",
+      "x-reference-scope": "Candidate scope for disclosure."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic feedback release version."
+    },
+    "mark_revision_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Exact accepted marks within submission.",
+      "x-entity-reference": "ItemMarkRevision",
+      "x-reference-scope": "Exact accepted marks within submission."
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "response",
+          "points",
+          "rubric",
+          "comments",
+          "answer_key",
+          "model_solution"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 6,
+      "description": "Authorized candidate-visible content categories."
+    },
+    "released_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Actor with feedback disclosure authority.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Actor with feedback disclosure authority."
+    },
+    "released_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Effective disclosure instant."
+    },
+    "previous_release_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Historical feedback release of same candidate submission.",
+      "x-entity-reference": "AssessmentFeedbackRelease",
+      "x-reference-scope": "Historical feedback release of same candidate submission."
+    }
+  },
+  "required": [
+    "id",
+    "submission_id",
+    "revision",
+    "mark_revision_ids",
+    "fields",
+    "released_by",
+    "released_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "submission_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Feedback release cannot advance official academic results.",
+    "Released fields and provenance immutable."
+  ]
+}

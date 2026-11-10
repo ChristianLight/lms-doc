@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TranscriptTemplateVersion",
+  "description": "Versioned transcript presentation and approved field choices.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique TranscriptTemplateVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "template_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable transcript template family."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic immutable revision number within its stable identity."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "description": "Internal template display name."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "superseded",
+        "retired"
+      ],
+      "default": "draft",
+      "description": "Template publication state."
+    },
+    "layout": {
+      "type": "object",
+      "properties": {
+        "include_grade_legend": {
+          "type": "boolean"
+        },
+        "include_attendance": {
+          "type": "boolean"
+        },
+        "include_comments": {
+          "type": "boolean"
+        },
+        "include_competencies": {
+          "type": "boolean"
+        },
+        "include_gpa": {
+          "type": "boolean"
+        },
+        "include_program_awards": {
+          "type": "boolean"
+        },
+        "heading": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "document_language": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 35,
+          "pattern": "^[A-Za-z0-9-]+$"
+        }
+      },
+      "required": [
+        "include_grade_legend",
+        "include_attendance",
+        "include_comments",
+        "include_competencies",
+        "include_gpa",
+        "include_program_awards",
+        "heading",
+        "document_language"
+      ],
+      "additionalProperties": false,
+      "description": "Versioned structural fields and output language."
+    },
+    "publication_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved template and renderer contract digest."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    },
+    "published_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Publication time."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "template_key",
+    "revision",
+    "created_at",
+    "name",
+    "state",
+    "layout",
+    "publication_digest",
+    "actor_id",
+    "published_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "template_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Cannot enable a field disallowed for this audience or template class.",
+    "Publishing freezes approved template fields and layout."
+  ]
+}

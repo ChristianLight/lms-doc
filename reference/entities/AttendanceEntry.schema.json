@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttendanceEntry",
+  "description": "One attendance subject in one occurrence and current published pointer.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "meeting_occurrence_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Occurrence owner.",
+      "x-entity-reference": "MeetingOccurrence",
+      "x-reference-scope": "Must resolve to an authorized MeetingOccurrence in the owning institution."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Learner in frozen audience or approved exception.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Enrollment must belong to the same offering and institution."
+    },
+    "current_revision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Effective published decision.",
+      "x-entity-reference": "AttendanceRevision",
+      "x-reference-scope": "Must resolve to an authorized AttendanceRevision in the owning institution."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Compare-and-swap token."
+    }
+  },
+  "required": [
+    "id",
+    "meeting_occurrence_id",
+    "enrollment_id",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "meeting_occurrence_id",
+      "enrollment_id"
+    ]
+  ],
+  "x-invariants": [
+    "Proposals never replace published pointer."
+  ]
+}

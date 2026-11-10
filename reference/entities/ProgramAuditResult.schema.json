@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProgramAuditResult",
+  "description": "Immutable evaluation of a programme and exact input cutoffs.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ProgramAuditResult identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Educational identity within the same institution.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Educational identity within the same institution."
+    },
+    "program_enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Learner admission and requirements.",
+      "x-entity-reference": "ProgramEnrollment",
+      "x-reference-scope": "Learner admission and requirements."
+    },
+    "requirement_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact pinned version evaluated.",
+      "x-entity-reference": "ProgramRequirementVersion",
+      "x-reference-scope": "Exact pinned version evaluated."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "incomplete",
+        "satisfied",
+        "needs_review",
+        "blocked"
+      ],
+      "description": "Outcome of typed requirements evaluation."
+    },
+    "cutoff_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Academic evaluation time."
+    },
+    "algorithm_version": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Deterministic allocation implementation."
+    },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Digest of policy, input cutoffs and evaluation."
+    },
+    "is_hypothetical": {
+      "type": "boolean",
+      "default": false,
+      "description": "Planning only if true, never an issuance basis."
+    },
+    "total_credit": {
+      "type": "string",
+      "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$",
+      "description": "Distinct approved credits counted in result."
+    },
+    "resident_credit": {
+      "type": "string",
+      "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$",
+      "description": "Distinct institutional residency credits."
+    },
+    "transfer_credit": {
+      "type": "string",
+      "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$",
+      "description": "Distinct accepted transfer and recognized credit."
+    },
+    "search_states": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000,
+      "description": "Number of explored candidate allocation states."
+    },
+    "gpa": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "numerator": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19727})$"
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19727}$"
+            }
+          },
+          "required": [
+            "numerator",
+            "denominator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Programme-scope exact GPA, when computable."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "person_id",
+    "program_enrollment_id",
+    "requirement_version_id",
+    "status",
+    "cutoff_at",
+    "algorithm_version",
+    "fingerprint",
+    "is_hypothetical",
+    "total_credit",
+    "resident_credit",
+    "transfer_credit",
+    "search_states",
+    "gpa",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "program_enrollment_id",
+      "fingerprint"
+    ]
+  ],
+  "x-invariants": [
+    "Hypothetical audit cannot authorize qualification.",
+    "Bound exhaustion cannot report satisfied.",
+    "Total credits count distinct credit sources."
+  ]
+}

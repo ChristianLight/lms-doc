@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExternalToolDeployment",
+  "description": "LTI 1.3 trust registration and context-limited service authorization.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning these data and their access policy.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "issuer": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Exact configured OIDC issuer."
+    },
+    "client_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Registered issuer client ID."
+    },
+    "deployment_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Case-sensitive deployment claim."
+    },
+    "target_uris": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri",
+        "maxLength": 2048
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Explicit registered target link URIs."
+    },
+    "redirect_uris": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri",
+        "maxLength": 2048
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Exact registered OIDC callback allowlist."
+    },
+    "jwks_uri": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Pinned origin or vetted location for public verification keys."
+    },
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri",
+        "maxLength": 2048
+      },
+      "maxItems": 50,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Approved least-privilege service scopes."
+    },
+    "role_profile": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Versioned role translation policy."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "suspended",
+        "retired"
+      ],
+      "description": "Authoritative lifecycle state advanced only through owner commands."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    },
+    "login_initiation_uri": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Exact approved tool endpoint for third-party login initiation."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "issuer",
+    "client_id",
+    "deployment_key",
+    "target_uris",
+    "redirect_uris",
+    "jwks_uri",
+    "scopes",
+    "role_profile",
+    "state",
+    "revision",
+    "created_at",
+    "login_initiation_uri"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "issuer",
+      "client_id",
+      "deployment_key"
+    ]
+  ],
+  "x-invariants": [
+    "Exact issuer, audience, nonce, deployment and target checks apply.",
+    "Service scopes cannot exceed those approved by institution."
+  ]
+}

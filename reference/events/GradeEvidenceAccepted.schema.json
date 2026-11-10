@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeEvidenceAccepted",
+  "description": "Academic records may fetch a new immutable evidence revision.",
+  "type": "object",
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "grade_item_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source_kind": {
+      "type": "string",
+      "enum": [
+        "native",
+        "manual",
+        "package",
+        "external"
+      ]
+    },
+    "source_object_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "evidence_id",
+    "offering_id",
+    "enrollment_id",
+    "grade_item_id",
+    "source_kind",
+    "source_object_id",
+    "source_revision"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Per grade item, enrollment, source kind and source object revision.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "Restricted service channel. No score, submitted values, support details or answer keys."
+}

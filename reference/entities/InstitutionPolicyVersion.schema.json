@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InstitutionPolicyVersion",
+  "description": "Immutable reviewed safety defaults used by new policy decisions.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic institution profile revision."
+    },
+    "effective_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive activation time. New decisions select the latest approved effective revision."
+    },
+    "idle_session_minutes": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 180,
+      "default": 30,
+      "description": "Idle timeout for an ordinary interactive session."
+    },
+    "absolute_session_minutes": {
+      "type": "integer",
+      "minimum": 30,
+      "maximum": 1440,
+      "default": 720,
+      "description": "Absolute timeout. Cannot be less than idle timeout."
+    },
+    "recent_auth_minutes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30,
+      "default": 10,
+      "description": "Age limit for sensitive self-service and elevated approvals."
+    },
+    "privileged_authentication": {
+      "type": "string",
+      "enum": [
+        "mfa",
+        "phishing_resistant"
+      ],
+      "default": "mfa",
+      "description": "Default required privilege authentication strength."
+    },
+    "standing_role_review_days": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 365,
+      "default": 90,
+      "description": "Periodic review deadline for indefinite grants."
+    },
+    "guardian_review_days": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 365,
+      "default": 365,
+      "description": "Maximum approved guardian term before review."
+    },
+    "privacy_due_days": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 365,
+      "default": 30,
+      "description": "Operational case target subject to approved institutional law and records policy."
+    },
+    "examination_zero_acknowledged_loss": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether high-stakes exam release requires tested zero loss of acknowledged submissions in the declared failure domain."
+    },
+    "approved_by_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Independent policy reviewer.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "approval_ref": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected evidence of applicable law, scope and review."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "revision",
+    "effective_at",
+    "idle_session_minutes",
+    "absolute_session_minutes",
+    "recent_auth_minutes",
+    "privileged_authentication",
+    "standing_role_review_days",
+    "guardian_review_days",
+    "privacy_due_days",
+    "examination_zero_acknowledged_loss",
+    "approved_by_id",
+    "approval_ref"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Publication does not reinterpret deadlines or rewrite approved custody evidence. Revocation or tighter authentication policy can invalidate access immediately.",
+    "A deployment cannot claim high-assurance exam readiness without passing the corresponding recovery profile."
+  ]
+}

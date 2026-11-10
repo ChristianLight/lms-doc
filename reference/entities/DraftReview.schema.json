@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DraftReview",
+  "description": "Append-only reviewer decision bound to one exact draft input.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "course_draft_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Reviewed draft.",
+      "x-entity-reference": "CourseDraft",
+      "x-reference-scope": "Must resolve to an authorized CourseDraft in the owning institution."
+    },
+    "draft_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Reviewed draft revision."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Reviewed canonical digest."
+    },
+    "reviewer_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Accountable review actor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "changes_requested"
+      ],
+      "description": "Review disposition."
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1200
+          },
+          "blocking": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "path",
+          "message",
+          "blocking"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 250,
+      "minItems": 0,
+      "description": "Structured review findings."
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative decision time."
+    }
+  },
+  "required": [
+    "id",
+    "course_draft_id",
+    "draft_revision",
+    "digest",
+    "reviewer_id",
+    "decision",
+    "issues",
+    "decided_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Publish approval uses this exact digest.",
+    "Reviewed findings contain no answer key values."
+  ]
+}

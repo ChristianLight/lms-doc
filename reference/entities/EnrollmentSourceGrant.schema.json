@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EnrollmentSourceGrant",
+  "description": "Independent source-specific authority supporting participation.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Affected participation.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Must resolve to an authorized Enrollment in the owning institution."
+    },
+    "source_namespace": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Configured authoritative source."
+    },
+    "external_grant_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Stable upstream or internal grant key."
+    },
+    "seen_sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "default": 0,
+      "description": "Last accepted source sequence."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive grant start."
+    },
+    "effective_to": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive end."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "ended"
+      ],
+      "default": "active",
+      "description": "Grant lifecycle."
+    }
+  },
+  "required": [
+    "id",
+    "enrollment_id",
+    "source_namespace",
+    "external_grant_key",
+    "seen_sequence",
+    "effective_from",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "source_namespace",
+      "external_grant_key",
+      "enrollment_id",
+      "effective_from"
+    ]
+  ],
+  "x-invariants": [
+    "A feed writes only its own grants.",
+    "Prior grant intervals survive removal."
+  ]
+}

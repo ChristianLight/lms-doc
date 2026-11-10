@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TransferPlanApproved",
+  "description": "A specific reviewer gate for one immutable plan was recorded.",
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "approval_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "plan_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "job_id",
+    "approval_id",
+    "revision",
+    "plan_digest"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Job revision then approval time.",
+  "x-deduplication": "Approval identity.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

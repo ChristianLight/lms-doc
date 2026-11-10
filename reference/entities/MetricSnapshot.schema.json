@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MetricSnapshot",
+  "description": "Immutable aggregate or restricted report projection with reproducible lineage.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique MetricSnapshot identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "definition_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact report algorithm and privacy defaults.",
+      "x-entity-reference": "MetricDefinitionVersion",
+      "x-reference-scope": "Exact report algorithm and privacy defaults."
+    },
+    "offering_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Scoped offering if selected.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Scoped offering if selected."
+    },
+    "academic_period_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Scoped academic period if selected.",
+      "x-entity-reference": "AcademicPeriod",
+      "x-reference-scope": "Scoped academic period if selected."
+    },
+    "cutoff_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Academic snapshot cutoff."
+    },
+    "source_vector": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "producer": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+          },
+          "partition": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "producer",
+          "partition",
+          "sequence",
+          "digest"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 4096,
+      "minItems": 0,
+      "description": "Ordered producer checkpoint vector."
+    },
+    "scope_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Canonical caller-authorized filter and reporting purpose digest."
+    },
+    "output_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Canonical redacted report output digest."
+    },
+    "data_storage_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected report cells or references.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Protected report cells or references."
+    },
+    "coverage": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "partial",
+        "unavailable"
+      ],
+      "description": "Source coverage quality."
+    },
+    "population_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000000,
+      "description": "Authorized unique person population before suppression."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "definition_version_id",
+    "offering_id",
+    "academic_period_id",
+    "cutoff_at",
+    "source_vector",
+    "scope_digest",
+    "output_digest",
+    "data_storage_id",
+    "coverage",
+    "population_count",
+    "actor_id",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "definition_version_id",
+      "scope_digest",
+      "cutoff_at",
+      "output_digest"
+    ]
+  ],
+  "x-invariants": [
+    "No snapshot downloadable after caller scope revoked.",
+    "Suppression applies equally to visible and exported data."
+  ]
+}

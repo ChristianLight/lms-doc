@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OfferingChanged",
+  "description": "Offering or roster-container lifecycle changed.",
+  "type": "object",
+  "properties": {
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "active",
+        "closed",
+        "archived",
+        "cancelled"
+      ]
+    }
+  },
+  "required": [
+    "offering_id",
+    "revision",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By offering revision.",
+  "x-deduplication": "Offering and revision.",
+  "x-privacy": "No learner or staff identities."
+}

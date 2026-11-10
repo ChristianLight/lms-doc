@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JobLease",
+  "description": "A fenced claim by one worker over one platform job.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "job_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Claimed logical job.",
+      "x-entity-reference": "PlatformJob",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "worker_principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized service worker.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "fence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic per-job claim generation."
+    },
+    "lease_started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server database time when the job was claimed."
+    },
+    "lease_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive expiry. Default start plus 120 seconds."
+    },
+    "last_heartbeat_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Most recent valid renewal time."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "expired",
+        "revoked"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "job_id",
+    "worker_principal_id",
+    "fence",
+    "lease_started_at",
+    "lease_until",
+    "last_heartbeat_at",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "job_id",
+      "fence"
+    ]
+  ],
+  "x-invariants": [
+    "Only current worker with matching fence may heartbeat or write job outcome.",
+    "Heartbeat changes lease deadline within configured ceiling but cannot resurrect an expired lease."
+  ]
+}

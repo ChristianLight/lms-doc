@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RosterSnapshotStaged",
+  "description": "A complete or delta feed generation was reconciled into private proposals.",
+  "type": "object",
+  "properties": {
+    "snapshot_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "feed_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "scope_complete": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "snapshot_id",
+    "feed_id",
+    "sequence",
+    "scope_complete"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Feed sequence.",
+  "x-deduplication": "Feed sequence and projection digest.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

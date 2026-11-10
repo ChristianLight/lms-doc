@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SectionMembership",
+  "description": "Effective-dated learner assignment to a section.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Learner participation.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Enrollment must belong to the same offering and institution."
+    },
+    "section_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Section in enrollment offering.",
+      "x-entity-reference": "Section",
+      "x-reference-scope": "Must resolve to an authorized Section in the owning institution."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive assignment start."
+    },
+    "effective_to": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive assignment end."
+    },
+    "primary": {
+      "type": "boolean",
+      "default": true,
+      "description": "Primary section for default schedule."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "self",
+        "invitation",
+        "cohort",
+        "roster",
+        "rule",
+        "transfer"
+      ],
+      "description": "Assignment route."
+    },
+    "assigned_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Assignment actor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    }
+  },
+  "required": [
+    "id",
+    "enrollment_id",
+    "section_id",
+    "effective_from",
+    "primary",
+    "source",
+    "assigned_by"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "enrollment_id",
+      "section_id",
+      "effective_from"
+    ]
+  ],
+  "x-invariants": [
+    "Pair intervals must not overlap.",
+    "At most one primary assignment covers any instant."
+  ]
+}

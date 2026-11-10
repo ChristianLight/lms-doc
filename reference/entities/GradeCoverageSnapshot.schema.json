@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeCoverageSnapshot",
+  "description": "Authoritative source coverage and missing decisions frozen for a calculation or final close.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique GradeCoverageSnapshot identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering within the same institution.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering within the same institution."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Enrollment in the named offering and institution.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Enrollment in the named offering and institution."
+    },
+    "grade_item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Expected same-offering gradebook line.",
+      "x-entity-reference": "GradeItem",
+      "x-reference-scope": "Expected same-offering gradebook line."
+    },
+    "enrollment_release_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact participation release for applicability.",
+      "x-entity-reference": "EnrollmentRelease",
+      "x-reference-scope": "Exact participation release for applicability."
+    },
+    "schedule_override_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved effective deadline override if applicable.",
+      "x-entity-reference": "ScheduleOverride",
+      "x-reference-scope": "Approved effective deadline override if applicable."
+    },
+    "cutoff_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "As-of cutoff used to reconcile applicability and evidence."
+    },
+    "due_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Effective UTC deadline when assigned."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "not_applicable",
+        "not_due",
+        "confirmed_missing",
+        "pending_mark",
+        "scored",
+        "excused",
+        "unknown"
+      ],
+      "description": "Distinct scoped finality status."
+    },
+    "source_vector": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "producer": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+          },
+          "partition": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "producer",
+          "partition",
+          "sequence",
+          "digest"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "description": "Reviewed producer checkpoint set."
+    },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Exact frozen source, due and applicability snapshot digest."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "offering_id",
+    "enrollment_id",
+    "grade_item_id",
+    "enrollment_release_id",
+    "schedule_override_id",
+    "cutoff_at",
+    "due_at",
+    "state",
+    "source_vector",
+    "fingerprint",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "enrollment_id",
+      "grade_item_id",
+      "fingerprint"
+    ]
+  ],
+  "x-invariants": [
+    "Confirmed missing requires approved applicability, elapsed due and complete authoritative submission source.",
+    "Unknown coverage cannot be scored as zero."
+  ]
+}

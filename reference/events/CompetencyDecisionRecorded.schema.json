@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CompetencyDecisionRecorded",
+  "description": "Reviewed or calculated competency decision saved.",
+  "type": "object",
+  "properties": {
+    "competency_decision_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "competency_version_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "competency_decision_id",
+    "competency_version_id",
+    "fingerprint"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per learner and competency source evaluation cutoff.",
+  "x-deduplication": "competency_decision_id.",
+  "x-privacy": "No subject, score or evidence text."
+}

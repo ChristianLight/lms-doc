@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExternalObjectMap",
+  "description": "Stable crosswalk between one source namespace and one canonical owner object.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning these data and their access policy.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "source_namespace": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Registered and verified authoritative source."
+    },
+    "source_scope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Stable source parent scope or root sentinel."
+    },
+    "object_kind": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Registered mapped canonical type."
+    },
+    "external_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Exact source identifier retained as an opaque value."
+    },
+    "target_kind": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Canonical owner entity type."
+    },
+    "target_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Canonical owner entity UUID, validated via owner adapter."
+    },
+    "last_source_revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Most recent approved source version."
+    },
+    "last_source_fingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical fingerprint of the most recent approved source input."
+    },
+    "last_target_fingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Fingerprint of the target at last successful promotion."
+    },
+    "last_job_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Successful transfer receipt that established this baseline.",
+      "x-entity-reference": "TransferJob",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "retired",
+        "merge_pending"
+      ],
+      "description": "Authoritative lifecycle state advanced only through owner commands."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last authoritative mapping update."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "source_namespace",
+    "source_scope",
+    "object_kind",
+    "external_key",
+    "target_kind",
+    "target_id",
+    "last_source_revision",
+    "last_source_fingerprint",
+    "last_target_fingerprint",
+    "last_job_id",
+    "state",
+    "revision",
+    "updated_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "source_namespace",
+      "source_scope",
+      "object_kind",
+      "external_key"
+    ]
+  ],
+  "x-invariants": [
+    "Crosswalk updates require source authority and matching target baseline.",
+    "Multiple aliases may identify one native object, but one source tuple cannot identify multiple current targets."
+  ]
+}

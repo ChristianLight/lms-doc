@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SyncPageReceipt",
+  "description": "Commit proof for an exact cursor and page in one reconciliation run.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "sync_run_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning run.",
+      "x-entity-reference": "SyncRun",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "cursor_key": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Hash of connection-bound opaque current cursor or designated first-page sentinel."
+    },
+    "page_digest": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Hash of validated normalized provider page."
+    },
+    "next_cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Provider next cursor as delivered, if any."
+    },
+    "record_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "description": "Bounded validated record count."
+    },
+    "committed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC time page outcomes and checkpoint committed."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "sync_run_id",
+    "cursor_key",
+    "page_digest",
+    "record_count",
+    "committed_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "sync_run_id",
+      "cursor_key"
+    ]
+  ],
+  "x-invariants": [
+    "Same run and cursor with a different page digest triggers review. Do not advance the checkpoint after a partial local page mutation."
+  ]
+}

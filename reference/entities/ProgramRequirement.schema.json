@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProgramRequirement",
+  "description": "Typed requirement node in a published programme version.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ProgramRequirement identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "requirement_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning programme requirement version.",
+      "x-entity-reference": "ProgramRequirementVersion",
+      "x-reference-scope": "Owning programme requirement version."
+    },
+    "parent_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Parent in same version or null root.",
+      "x-entity-reference": "ProgramRequirement",
+      "x-reference-scope": "Parent in same version or null root."
+    },
+    "rule_key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Stable rule code in version."
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 255,
+      "description": "Order for deterministic group satisfaction."
+    },
+    "rule_kind": {
+      "type": "string",
+      "enum": [
+        "all",
+        "any_count",
+        "course",
+        "credit_pool",
+        "residency",
+        "gpa",
+        "competency"
+      ],
+      "description": "Typed logic expression kind."
+    },
+    "eligible_course_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 1000,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Approved institutional courses for selected leaf or pool.",
+      "x-entity-reference": "Course",
+      "x-reference-scope": "Approved institutional courses for selected leaf or pool."
+    },
+    "competency_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact required competency definition if applicable.",
+      "x-entity-reference": "CompetencyVersion",
+      "x-reference-scope": "Exact required competency definition if applicable."
+    },
+    "minimum_credit": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Minimum credit for credit pool or residency."
+    },
+    "minimum_count": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 256
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Required child outcome count for any-count group."
+    },
+    "minimum_ratio": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "numerator": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19727})$"
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19727}$"
+            }
+          },
+          "required": [
+            "numerator",
+            "denominator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Required exact grade ratio when applicable."
+    },
+    "currency_days": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 36500
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Maximum age at audit when configured."
+    },
+    "allow_double_use": {
+      "type": "boolean",
+      "default": false,
+      "description": "Allow explicitly reviewed credit reuse across local requirements."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "requirement_version_id",
+    "parent_id",
+    "rule_key",
+    "priority",
+    "rule_kind",
+    "eligible_course_ids",
+    "competency_version_id",
+    "minimum_credit",
+    "minimum_count",
+    "minimum_ratio",
+    "currency_days",
+    "allow_double_use"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "requirement_version_id",
+      "rule_key"
+    ]
+  ],
+  "x-invariants": [
+    "Parameters match rule kind.",
+    "All references within same institution.",
+    "Double use does not increase overall distinct credit total."
+  ]
+}

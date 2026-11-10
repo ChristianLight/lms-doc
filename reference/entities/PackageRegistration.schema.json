@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageRegistration",
+  "description": "One learner package attempt pinned to a course release and package version.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning these data and their access policy.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Enrollment whose effective release authorizes this registration.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "enrollment_release_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact release at assignment and launch.",
+      "x-entity-reference": "EnrollmentRelease",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "activity_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Native assigned packaged activity version.",
+      "x-entity-reference": "ActivityVersion",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "package_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable package selected at registration.",
+      "x-entity-reference": "PackageVersion",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "placement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Course occurrence scoped to effective release.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "organization_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Selected organization inside package version.",
+      "x-entity-reference": "PackageOrganization",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "attempt_number": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "description": "Ordinal among learner registrations for this placement and assigned version."
+    },
+    "epoch": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Single-writer grant generation."
+    },
+    "runtime_policy_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Immutable mapping from package state to native evidence."
+    },
+    "total_time_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Exact fixed-unit millisecond projection only when duration has no unresolved calendar components."
+    },
+    "active_launch_session_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Current authoritative launch session if any.",
+      "x-entity-reference": "PackageLaunchSession",
+      "x-reference-scope": "Session belongs to this exact registration and epoch."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "completed",
+        "withdrawn"
+      ],
+      "description": "Authoritative lifecycle state advanced only through owner commands."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    },
+    "duration_total": {
+      "type": "object",
+      "properties": {
+        "years": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "months": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "fixed_milliseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "years",
+        "months",
+        "fixed_milliseconds"
+      ],
+      "additionalProperties": false,
+      "description": "Lossless duration sum. Preserve calendar components separately from fixed elapsed units."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "enrollment_id",
+    "enrollment_release_id",
+    "activity_version_id",
+    "package_version_id",
+    "placement_id",
+    "organization_id",
+    "attempt_number",
+    "epoch",
+    "runtime_policy_revision",
+    "revision",
+    "state",
+    "created_at",
+    "duration_total"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "enrollment_id",
+      "placement_id",
+      "activity_version_id",
+      "attempt_number"
+    ]
+  ],
+  "x-invariants": [
+    "Single writer epoch. No evidence accepts a stale grant.",
+    "Package, organization and source placement remain pinned.",
+    "Runtime state and learner grade evidence remain separate."
+  ]
+}

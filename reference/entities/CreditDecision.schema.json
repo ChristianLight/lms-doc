@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CreditDecision",
+  "description": "Versioned credit ledger line derived from final grade or recognition.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique CreditDecision identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Educational identity within the same institution.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Educational identity within the same institution."
+    },
+    "course_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Institutional course identity when equivalent or native.",
+      "x-entity-reference": "Course",
+      "x-reference-scope": "Institutional course identity when equivalent or native."
+    },
+    "enrollment_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Native enrollment for grade-based credit, if applicable.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Native enrollment for grade-based credit, if applicable."
+    },
+    "release_entry_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Official final grade source if native.",
+      "x-entity-reference": "GradeReleaseEntry",
+      "x-reference-scope": "Official final grade source if native."
+    },
+    "recognition_decision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved prior learning or transfer source if external.",
+      "x-entity-reference": "RecognitionDecision",
+      "x-reference-scope": "Approved prior learning or transfer source if external."
+    },
+    "credit_scheme_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact normalization unit version.",
+      "x-entity-reference": "CreditUnitSchemeVersion",
+      "x-reference-scope": "Exact normalization unit version."
+    },
+    "supersedes_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Previous credit decision for same award source.",
+      "x-entity-reference": "CreditDecision",
+      "x-reference-scope": "Previous credit decision for same award source."
+    },
+    "credit_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable logical award stream."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic immutable revision number within its stable identity."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    },
+    "equivalence_key": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Institution-approved repeat grouping if applicable."
+    },
+    "credit_kind": {
+      "type": "string",
+      "enum": [
+        "institutional",
+        "transfer",
+        "recognition"
+      ],
+      "description": "Ledger source family."
+    },
+    "attempted_units": {
+      "type": "string",
+      "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$",
+      "description": "Normalized credits attempted."
+    },
+    "earned_units": {
+      "type": "string",
+      "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$",
+      "description": "Normalized credits earned."
+    },
+    "gpa_eligible": {
+      "type": "boolean",
+      "description": "Allow inclusion in institutional GPA calculation."
+    },
+    "gpa_points": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact points per credit when GPA eligible."
+    },
+    "academic_completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Effective completion or recognition timestamp."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "awarded",
+        "not_awarded",
+        "revoked"
+      ],
+      "description": "Effective credit disposition."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "person_id",
+    "course_id",
+    "enrollment_id",
+    "release_entry_id",
+    "recognition_decision_id",
+    "credit_scheme_id",
+    "supersedes_id",
+    "credit_key",
+    "revision",
+    "created_at",
+    "equivalence_key",
+    "credit_kind",
+    "attempted_units",
+    "earned_units",
+    "gpa_eligible",
+    "gpa_points",
+    "academic_completed_at",
+    "state",
+    "actor_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "credit_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Exactly one approved source basis.",
+    "GPA eligibility independent from earning credits.",
+    "No duplicate award for same recognized source."
+  ]
+}

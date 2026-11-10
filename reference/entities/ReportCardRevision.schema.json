@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReportCardRevision",
+  "description": "Immutable report card snapshot staged for rendering and issuance.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ReportCardRevision identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Educational identity within the same institution.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Educational identity within the same institution."
+    },
+    "report_card_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable series for same learner and academic period.",
+      "x-entity-reference": "ReportCard",
+      "x-reference-scope": "Stable series for same learner and academic period."
+    },
+    "template_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Pinned approved report-card template.",
+      "x-entity-reference": "ReportTemplateVersion",
+      "x-reference-scope": "Pinned approved report-card template."
+    },
+    "supersedes_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Previous same-series report card, if any.",
+      "x-entity-reference": "ReportCardRevision",
+      "x-reference-scope": "Previous same-series report card, if any."
+    },
+    "grade_release_entry_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 2048,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Authorized released grades in report period.",
+      "x-entity-reference": "GradeReleaseEntry",
+      "x-reference-scope": "Authorized released grades in report period."
+    },
+    "comment_revision_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 500,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Approved exact comment revisions.",
+      "x-entity-reference": "AcademicCommentRevision",
+      "x-reference-scope": "Approved exact comment revisions."
+    },
+    "attendance_revision_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 5000,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Approved attendance source pointers.",
+      "x-entity-reference": "AttendanceRevision",
+      "x-reference-scope": "Approved attendance source pointers."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic immutable revision number within its stable identity."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "staged",
+        "render_failed",
+        "ready",
+        "issued",
+        "superseded",
+        "void"
+      ],
+      "default": "staged",
+      "description": "Rendering and issuance state."
+    },
+    "cutoff_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exact academic cutoff."
+    },
+    "input_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Pinned approved source references and scope digest."
+    },
+    "snapshot_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Canonical structured document content digest."
+    },
+    "snapshot_storage_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected immutable canonical snapshot bytes inside institution.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Protected immutable canonical snapshot bytes inside institution."
+    },
+    "locale": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 35,
+      "pattern": "^[A-Za-z0-9-]+$",
+      "description": "Approved document locale."
+    },
+    "render_version": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Renderer contract and layout algorithm version."
+    },
+    "issued_by": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approver with authority to issue this document.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Approver with authority to issue this document."
+    },
+    "issued_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Recorded official issuance timestamp."
+    },
+    "verification_key_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Digest of opaque verification code if enabled."
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "internal",
+        "private",
+        "recipient_restricted"
+      ],
+      "default": "private",
+      "description": "Maximum allowed disclosure."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "person_id",
+    "report_card_id",
+    "template_version_id",
+    "supersedes_id",
+    "grade_release_entry_ids",
+    "comment_revision_ids",
+    "attendance_revision_ids",
+    "revision",
+    "created_at",
+    "state",
+    "cutoff_at",
+    "input_digest",
+    "snapshot_digest",
+    "snapshot_storage_id",
+    "locale",
+    "render_version",
+    "issued_by",
+    "issued_at",
+    "verification_key_digest",
+    "classification"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "report_card_id",
+      "revision"
+    ],
+    [
+      "report_card_id",
+      "snapshot_digest",
+      "input_digest"
+    ]
+  ],
+  "x-invariants": [
+    "Issued snapshot bytes cannot change.",
+    "Only permitted released grade pointers qualify."
+  ]
+}

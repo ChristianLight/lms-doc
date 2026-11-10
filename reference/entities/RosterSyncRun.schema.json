@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RosterSyncRun",
+  "description": "Staged full or incremental feed with provenance and checksum.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Source institution.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Must resolve to an authorized Institution in the owning institution."
+    },
+    "source_namespace": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Registered feed source."
+    },
+    "scope_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Verified feed partition and coverage."
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Monotonic source sequence."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Verified feed bytes."
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "full",
+        "incremental"
+      ],
+      "description": "Reconciliation semantics."
+    },
+    "complete": {
+      "type": "boolean",
+      "default": false,
+      "description": "Provider verifies full partition coverage."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "staged",
+        "validated",
+        "applied",
+        "partial",
+        "failed"
+      ],
+      "default": "staged",
+      "description": "Feed lifecycle."
+    },
+    "staged_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Accepted preflight instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "source_namespace",
+    "scope_key",
+    "sequence",
+    "digest",
+    "mode",
+    "complete",
+    "state",
+    "staged_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "source_namespace",
+      "scope_key",
+      "sequence"
+    ]
+  ],
+  "x-invariants": [
+    "Incomplete or failed full feed cannot revoke unseen grants."
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EnrollmentApplicationChanged",
+  "description": "A personal application changed status.",
+  "type": "object",
+  "properties": {
+    "application_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "waitlisted",
+        "admitted",
+        "declined",
+        "cancelled",
+        "expired"
+      ]
+    }
+  },
+  "required": [
+    "application_id",
+    "offering_id",
+    "revision",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By application revision.",
+  "x-deduplication": "Application and revision.",
+  "x-privacy": "Restricted stream, no tokens or reasons."
+}

@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MetricDefinitionVersion",
+  "description": "Published report metric population, grouping, algorithm and suppression.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique MetricDefinitionVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "metric_key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Stable reporting metric code."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic immutable revision number within its stable identity."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "description": "Approved report display label."
+    },
+    "aggregation": {
+      "type": "string",
+      "enum": [
+        "ratio",
+        "sum",
+        "median",
+        "count"
+      ],
+      "description": "Exact aggregate function."
+    },
+    "source_profile": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Versioned canonical source and eligible population rules."
+    },
+    "group_dimensions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "offering",
+          "section",
+          "academic_period",
+          "organization_unit",
+          "program"
+        ]
+      },
+      "maxItems": 5,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Approved grouping dimensions."
+    },
+    "minimum_group_size": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "default": 10,
+      "description": "Primary privacy suppression population threshold."
+    },
+    "complementary_suppression": {
+      "type": "boolean",
+      "default": true,
+      "description": "Prevent reconstruction from totals and related cells."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "superseded",
+        "retired"
+      ],
+      "default": "draft",
+      "description": "Published metric lifecycle."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "metric_key",
+    "revision",
+    "created_at",
+    "title",
+    "aggregation",
+    "source_profile",
+    "group_dimensions",
+    "minimum_group_size",
+    "complementary_suppression",
+    "state",
+    "actor_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "metric_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Denominator and source coverage required for ratios.",
+    "Metric version never changes released academic records."
+  ]
+}

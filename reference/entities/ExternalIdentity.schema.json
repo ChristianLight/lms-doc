@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExternalIdentity",
+  "description": "Verified subject binding between an external identity registration and a Principal.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Linked human or service actor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "connection_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Registered identity connection for this issuer and client context.",
+      "x-entity-reference": "IntegrationConnection",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "issuer": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Exact issuer identifier from the trusted authentication configuration."
+    },
+    "subject_fingerprint": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Institution-scoped HMAC of exact issuer and subject in this connection."
+    },
+    "protected_subject_ref": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Restricted encrypted provider subject for reconciliation and key rotation."
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Binding verification instant."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "linked",
+        "unlinked"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "principal_id",
+    "connection_id",
+    "issuer",
+    "subject_fingerprint",
+    "protected_subject_ref",
+    "verified_at",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "connection_id",
+      "issuer",
+      "subject_fingerprint"
+    ]
+  ],
+  "x-invariants": [
+    "A linked provider subject points to one Principal. This system refuses silent reassignment, email correlation, and accidental relinking of a tombstone.",
+    "Exact issuer and provider registration must match the token or trusted host assertion."
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentAttemptTerminated",
+  "description": "An attempt became expired, abandoned or voided.",
+  "type": "object",
+  "properties": {
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "paused",
+        "submitted",
+        "expired",
+        "abandoned",
+        "voided"
+      ]
+    }
+  },
+  "required": [
+    "attempt_id",
+    "delivery_id",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Per Attempt terminal action sequence.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "No protected reason or candidate response."
+}

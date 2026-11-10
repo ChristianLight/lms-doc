@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GateOverrideChanged",
+  "description": "Scope-limited prerequisite decision changed.",
+  "type": "object",
+  "properties": {
+    "override_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "enrollment_release_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "override_id",
+    "enrollment_release_id",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By exact override revision.",
+  "x-deduplication": "Override ID and revision.",
+  "x-privacy": "No private justification."
+}

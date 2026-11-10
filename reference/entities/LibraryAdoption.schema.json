@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LibraryAdoption",
+  "description": "Provenance and update baseline for a target draft placement.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "source_entry_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Pinned adopted source baseline.",
+      "x-entity-reference": "LibraryEntryVersion",
+      "x-reference-scope": "Must resolve to an authorized LibraryEntryVersion in the owning institution."
+    },
+    "target_draft_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Current editable destination.",
+      "x-entity-reference": "CourseDraft",
+      "x-reference-scope": "Must resolve to an authorized CourseDraft in the owning institution."
+    },
+    "target_placement_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning destination occurrence."
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "linked",
+        "independent",
+        "managed_template"
+      ],
+      "description": "Adoption policy."
+    },
+    "source_map": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_key": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "target_key": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "source_key",
+          "target_key"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 20000,
+      "minItems": 1,
+      "description": "Reviewed occurrence identity mapping."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Baseline compare-and-swap token."
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Eligible for future update proposals."
+    }
+  },
+  "required": [
+    "id",
+    "source_entry_version_id",
+    "target_draft_id",
+    "target_placement_key",
+    "mode",
+    "source_map",
+    "revision",
+    "active"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "target_draft_id",
+      "target_placement_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "One active managed parent for each destination placement.",
+    "Independent copy cannot auto-sync."
+  ]
+}

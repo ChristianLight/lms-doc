@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ModerationDecision",
+  "description": "Adjudication of independent marking and correction disposition.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ModerationDecision identifier."
+    },
+    "attempt_item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Same offering-scoped item being moderated.",
+      "x-entity-reference": "AttemptItem",
+      "x-reference-scope": "Same offering-scoped item being moderated."
+    },
+    "input_mark_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Frozen independent provisional or accepted inputs.",
+      "x-entity-reference": "ItemMarkRevision",
+      "x-reference-scope": "Frozen independent provisional or accepted inputs."
+    },
+    "reviewer_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized independent moderator.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized independent moderator."
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "choose_mark",
+        "adjust_criteria",
+        "assign_third",
+        "void",
+        "excuse"
+      ],
+      "description": "Choose, adjust, request third, void or excuse."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "description": "Protected factual justification."
+    },
+    "output_mark_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Result revision in same item scope when created.",
+      "x-entity-reference": "ItemMarkRevision",
+      "x-reference-scope": "Result revision in same item scope when created."
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Effective approval instant."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_item_id",
+    "input_mark_ids",
+    "reviewer_id",
+    "action",
+    "reason",
+    "decided_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Independent review capabilities and score bounds enforced.",
+    "Reason and inputs remain immutable."
+  ]
+}

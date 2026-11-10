@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Principal",
+  "description": "Institution-local actor that authenticates through a host or a service credential.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "person_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Human's educational identity. Null for service actors.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "human",
+        "service"
+      ],
+      "description": "Human or non-interactive actor class."
+    },
+    "authorization_epoch": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Principal-local permission and session version."
+    },
+    "last_authenticated_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Last successfully bound authentication time. Administrative visibility only."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "retired"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "kind",
+    "authorization_epoch",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Human requires a Person. A service has no Person or learner enrollment.",
+    "More than one authorized Principal may map to a Person. Academic records attach to Person.",
+    "Suspension does not automatically unsuspend or reactivate linked Person or credential."
+  ]
+}

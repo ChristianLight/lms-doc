@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InterventionAction",
+  "description": "Restricted human case action or reviewed support communication.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique InterventionAction identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering within the same institution.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering within the same institution."
+    },
+    "case_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Scoped support case in same offering.",
+      "x-entity-reference": "InterventionCase",
+      "x-reference-scope": "Scoped support case in same offering."
+    },
+    "action_kind": {
+      "type": "string",
+      "enum": [
+        "assign",
+        "request_information",
+        "contact",
+        "dismiss",
+        "resolve",
+        "reopen"
+      ],
+      "description": "Recorded authorized support action."
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "internal",
+        "learner_portal",
+        "approved_message"
+      ],
+      "description": "Approved minimal disclosure channel."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 3000,
+      "description": "Purpose-restricted note or action reason."
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Action timestamp."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "offering_id",
+    "case_id",
+    "action_kind",
+    "channel",
+    "reason",
+    "occurred_at",
+    "actor_id",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "No staff note is added to the transcript or grade feedback."
+  ]
+}

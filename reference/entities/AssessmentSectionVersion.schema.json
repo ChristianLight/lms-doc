@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentSectionVersion",
+  "description": "Ordered section in one published assessment assembly.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AssessmentSectionVersion identifier."
+    },
+    "assessment_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Parent assessment assembly.",
+      "x-entity-reference": "AssessmentVersion",
+      "x-reference-scope": "Parent assessment assembly."
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Stable section key."
+    },
+    "display_order": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Unique section ordinal."
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Candidate section title."
+    },
+    "navigation": {
+      "type": "string",
+      "enum": [
+        "free",
+        "section_linear",
+        "item_linear"
+      ],
+      "description": "Free or locked sequencing policy."
+    },
+    "duration_seconds": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 604800
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional independent section timer."
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tag": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "minimum": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "maximum": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          }
+        },
+        "required": [
+          "tag",
+          "minimum",
+          "maximum"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "description": "Constrained item coverage by tags."
+    }
+  },
+  "required": [
+    "id",
+    "assessment_version_id",
+    "key",
+    "display_order",
+    "label",
+    "navigation",
+    "coverage"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "assessment_version_id",
+      "key"
+    ],
+    [
+      "assessment_version_id",
+      "display_order"
+    ]
+  ],
+  "x-invariants": [
+    "Coverage minimum cannot exceed maximum.",
+    "Section clock cannot extend the attempt deadline."
+  ]
+}

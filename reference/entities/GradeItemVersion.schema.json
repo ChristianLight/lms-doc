@@ -1,0 +1,312 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeItemVersion",
+  "description": "Exact gradebook line rule and source mapping in one policy.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique GradeItemVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering within the same institution.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering within the same institution."
+    },
+    "grade_item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable grade line within same offering.",
+      "x-entity-reference": "GradeItem",
+      "x-reference-scope": "Stable grade line within same offering."
+    },
+    "policy_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning policy version within offering.",
+      "x-entity-reference": "GradePolicyVersion",
+      "x-reference-scope": "Owning policy version within offering."
+    },
+    "category_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Parent category in the same policy.",
+      "x-entity-reference": "GradeCategoryVersion",
+      "x-reference-scope": "Parent category in the same policy."
+    },
+    "assessment_delivery_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Native delivery in same offering, when used.",
+      "x-entity-reference": "AssessmentDelivery",
+      "x-reference-scope": "Native delivery in same offering, when used."
+    },
+    "placement_key": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Pinned placement identity if required for curriculum linkage."
+    },
+    "source_kind": {
+      "type": "string",
+      "enum": [
+        "native",
+        "manual",
+        "package",
+        "external",
+        "completion"
+      ],
+      "description": "Authorized authoritative evidence family."
+    },
+    "source_dimension": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved named score dimension where a source has split outputs."
+    },
+    "position": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2047,
+      "description": "Stable order among grade items within the category."
+    },
+    "academic_period_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Grading and reporting period within same institution.",
+      "x-entity-reference": "AcademicPeriod",
+      "x-reference-scope": "Grading and reporting period within same institution."
+    },
+    "maximum": {
+      "type": "string",
+      "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$",
+      "description": "Points capacity for numeric item, positive when counted."
+    },
+    "weight_bps": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Weight in weighted parent."
+    },
+    "counting_kind": {
+      "type": "string",
+      "enum": [
+        "ordinary",
+        "bonus",
+        "formative"
+      ],
+      "default": "ordinary",
+      "description": "Ordinary, optional credit or noncounting line."
+    },
+    "required_for_final": {
+      "type": "boolean",
+      "default": true,
+      "description": "Unresolved applicable evidence blocks final result."
+    },
+    "protected": {
+      "type": "boolean",
+      "default": false,
+      "description": "Item cannot be dropped."
+    },
+    "allow_low_stakes_release": {
+      "type": "boolean",
+      "default": false,
+      "description": "Eligible for separately enabled automatic release."
+    },
+    "late_policy": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "fixed_max_fraction",
+            "interval_max_fraction",
+            "interval_points"
+          ]
+        },
+        "grace_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2592000000
+        },
+        "interval_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2592000000
+        },
+        "deduction": {
+          "type": "string",
+          "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$"
+        },
+        "deduction_cap": {
+          "type": "string",
+          "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$"
+        },
+        "floor_points": {
+          "type": "string",
+          "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$"
+        }
+      },
+      "required": [
+        "mode",
+        "grace_ms",
+        "interval_ms",
+        "deduction",
+        "deduction_cap",
+        "floor_points"
+      ],
+      "additionalProperties": false,
+      "description": "Exact grace, deduction and cap parameters."
+    },
+    "gate_policy": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "none",
+            "minimum_ratio",
+            "required_completion"
+          ]
+        },
+        "threshold": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "numerator": {
+                  "type": "string",
+                  "pattern": "^(0|[1-9][0-9]{0,19727})$"
+                },
+                "denominator": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,19727}$"
+                }
+              },
+              "required": [
+                "numerator",
+                "denominator"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "threshold"
+      ],
+      "additionalProperties": false,
+      "description": "Required independent passing condition where configured."
+    },
+    "attempt_selection": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "latest",
+            "first",
+            "highest",
+            "average",
+            "manual_selection"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional item-specific attempt policy."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "offering_id",
+    "grade_item_id",
+    "policy_version_id",
+    "category_id",
+    "assessment_delivery_id",
+    "placement_key",
+    "source_kind",
+    "source_dimension",
+    "position",
+    "academic_period_id",
+    "maximum",
+    "weight_bps",
+    "counting_kind",
+    "required_for_final",
+    "protected",
+    "allow_low_stakes_release",
+    "late_policy",
+    "gate_policy",
+    "attempt_selection"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "grade_item_id",
+      "policy_version_id"
+    ],
+    [
+      "category_id",
+      "position"
+    ]
+  ],
+  "x-invariants": [
+    "Native requires scoped AssessmentDelivery and exact placement match.",
+    "One counting binding per native delivery and version unless distinct source dimension has explicit approval.",
+    "Bonus or formative work never blocks final.",
+    "Grade maximum and source maximum match or use approved deterministic normalization."
+  ]
+}

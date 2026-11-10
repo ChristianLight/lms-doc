@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EventDeliveryCheckpoint",
+  "description": "Progress of an ordered subscriber stream whose offsets are transport-local.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "consumer_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Registered consumer."
+    },
+    "stream_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Provider or application partition identity."
+    },
+    "last_committed_offset": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Opaque transport cursor observed after durably applied effects."
+    },
+    "last_event_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Most recent committed event when checkpoint is from the local outbox.",
+      "x-entity-reference": "OutboxEvent",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "checkpoint_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server instant at which the cursor became durable."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "consumer_key",
+    "stream_key",
+    "last_committed_offset",
+    "checkpoint_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "consumer_key",
+      "stream_key"
+    ]
+  ],
+  "x-invariants": [
+    "Advance by transport order and apply or recognize corresponding receipt first. Sparse events use the explicitly subscribed sequence.",
+    "A consumer reset requires reviewed replay plan and cannot erase deduplication state."
+  ]
+}

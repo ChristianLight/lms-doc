@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageActivity",
+  "description": "One manifest occurrence with distinct tracking and sequencing identity.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "organization_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Containing organization.",
+      "x-entity-reference": "PackageOrganization",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "parent_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Containing cluster within the same organization.",
+      "x-entity-reference": "PackageActivity",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "resource_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Launchable leaf resource within the same PackageVersion.",
+      "x-entity-reference": "PackageResource",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "external_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Exact original item identifier."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "Sanitized accessible display title."
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "description": "Zero-based source sibling position."
+    },
+    "is_visible": {
+      "type": "boolean",
+      "default": true,
+      "description": "Navigation visibility, independent of authorization."
+    },
+    "parameters": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 2048,
+      "description": "Validated original item query parameter string."
+    },
+    "launch_data": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 65536,
+      "description": "Edition-constrained initial run-time launch data."
+    },
+    "mastery_value": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]{0,11})(?:\\.[0-9]{1,6})?$",
+      "description": "Edition-compatible original mastery or normalized threshold, interpreted under manifest profile."
+    },
+    "time_limit_action": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Validated edition-specific behavior."
+    }
+  },
+  "required": [
+    "id",
+    "organization_id",
+    "external_key",
+    "title",
+    "ordinal",
+    "is_visible"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "organization_id",
+      "external_key"
+    ]
+  ],
+  "x-invariants": [
+    "Sibling ordinal is unique under the same parent, including the root set.",
+    "Cluster and leaf combinations obey verified edition constraints.",
+    "A visible resource requires an assigned launch grant."
+  ]
+}

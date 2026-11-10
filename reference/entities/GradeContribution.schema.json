@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeContribution",
+  "description": "Traceable result contribution or exclusion decision.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique GradeContribution identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering within the same institution.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering within the same institution."
+    },
+    "result_revision_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Computed revision in same offering.",
+      "x-entity-reference": "GradeResultRevision",
+      "x-reference-scope": "Computed revision in same offering."
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "description": "Deterministic order within explanation."
+    },
+    "grade_item_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Line supplying a direct leaf if applicable.",
+      "x-entity-reference": "GradeItem",
+      "x-reference-scope": "Line supplying a direct leaf if applicable."
+    },
+    "evidence_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Original accepted evidence for leaf when applicable.",
+      "x-entity-reference": "GradeEvidence",
+      "x-reference-scope": "Original accepted evidence for leaf when applicable."
+    },
+    "child_revision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact aggregate or item child revision, if applicable.",
+      "x-entity-reference": "GradeResultRevision",
+      "x-reference-scope": "Exact aggregate or item child revision, if applicable."
+    },
+    "completion_record_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact immutable accepted completion revision for same enrollment, offering and placement when completion is the source.",
+      "x-entity-reference": "CompletionRecord",
+      "x-reference-scope": "Exact immutable accepted completion revision for same enrollment, offering and placement when completion is the source."
+    },
+    "coverage_snapshot_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Pinned applicability and source-coverage snapshot, mandatory for missing_zero.",
+      "x-entity-reference": "GradeCoverageSnapshot",
+      "x-reference-scope": "Pinned applicability and source-coverage snapshot, mandatory for missing_zero."
+    },
+    "disposition": {
+      "type": "string",
+      "enum": [
+        "counted",
+        "dropped",
+        "bonus",
+        "excused",
+        "inapplicable",
+        "unreleased",
+        "pending",
+        "missing_zero",
+        "superseded",
+        "technical_exception",
+        "excluded_formative"
+      ],
+      "description": "Precise use or exclusion reason."
+    },
+    "ratio": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "numerator": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19727})$"
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19727}$"
+            }
+          },
+          "required": [
+            "numerator",
+            "denominator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Adjusted exact contributor ratio when applicable."
+    },
+    "configured_weight": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "numerator": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19727})$"
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19727}$"
+            }
+          },
+          "required": [
+            "numerator",
+            "denominator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Configured denominator contribution before exclusions."
+    },
+    "used_weight": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "numerator": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19727})$"
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19727}$"
+            }
+          },
+          "required": [
+            "numerator",
+            "denominator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact applied contribution or null when excluded."
+    },
+    "effective_due_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Pinned approved deadline used for calculation."
+    },
+    "late_deduction": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Deduction in points before selection."
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Safe localized explanation key."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "offering_id",
+    "result_revision_id",
+    "ordinal",
+    "grade_item_id",
+    "evidence_id",
+    "child_revision_id",
+    "completion_record_id",
+    "coverage_snapshot_id",
+    "disposition",
+    "ratio",
+    "configured_weight",
+    "used_weight",
+    "effective_due_at",
+    "late_deduction",
+    "reason_code"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "result_revision_id",
+      "ordinal"
+    ]
+  ],
+  "x-invariants": [
+    "Cannot disclose hidden evidence through learner explanation.",
+    "Child link cannot create a calculation cycle.",
+    "At most one of evidence, child revision and completion record is set per contribution. A counted, dropped or bonus decision needs exactly one, except a confirmed missing zero needs a coverage snapshot.",
+    "Validate immutable completion source owner, enrollment release, activity scope and exact revision at cutoff. An incomplete or revoked completion is never an authorized passing grade.",
+    "A completion source cannot depend directly or transitively on the grade it supplies."
+  ]
+}

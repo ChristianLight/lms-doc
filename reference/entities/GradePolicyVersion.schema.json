@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradePolicyVersion",
+  "description": "Offering-scoped immutable grade calculation and release policy.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique GradePolicyVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering within the same institution.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering within the same institution."
+    },
+    "policy_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable policy family within the offering."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic immutable revision number within its stable identity."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "superseded",
+        "retired"
+      ],
+      "default": "draft",
+      "description": "Policy lifecycle."
+    },
+    "supersedes_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Prior policy version within same offering.",
+      "x-entity-reference": "GradePolicyVersion",
+      "x-reference-scope": "Prior policy version within same offering."
+    },
+    "scale_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Published scale in the institution.",
+      "x-entity-reference": "GradeScaleVersion",
+      "x-reference-scope": "Published scale in the institution."
+    },
+    "root_category_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exactly one root of this policy tree.",
+      "x-entity-reference": "GradeCategoryVersion",
+      "x-reference-scope": "Exactly one root of this policy tree."
+    },
+    "algorithm_version": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "default": "grade-calc-v1",
+      "description": "Deployed reference calculation contract identifier."
+    },
+    "attempt_selection": {
+      "type": "string",
+      "enum": [
+        "latest",
+        "first",
+        "highest",
+        "average",
+        "manual_selection"
+      ],
+      "default": "latest",
+      "description": "Default candidate selection across eligible attempts."
+    },
+    "missing_final": {
+      "type": "string",
+      "enum": [
+        "zero_confirmed",
+        "incomplete_review"
+      ],
+      "default": "zero_confirmed",
+      "description": "Policy for confirmed missing at final cutoff."
+    },
+    "max_ratio": {
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,19727})$"
+        },
+        "denominator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,19727}$"
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator"
+      ],
+      "additionalProperties": false,
+      "description": "Offering result ceiling including authorized bonus."
+    },
+    "auto_item_release": {
+      "type": "boolean",
+      "default": false,
+      "description": "Permit low-stakes item release under explicit policy."
+    },
+    "require_second_final_reviewer": {
+      "type": "boolean",
+      "default": false,
+      "description": "Require separate final release approver."
+    },
+    "allow_selective_final": {
+      "type": "boolean",
+      "default": false,
+      "description": "Allow approved partial final release while retaining period closure blockers."
+    },
+    "structure_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Canonical versioned graph and policy digest."
+    },
+    "published_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Publication instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "offering_id",
+    "policy_key",
+    "revision",
+    "created_at",
+    "state",
+    "supersedes_id",
+    "scale_version_id",
+    "root_category_id",
+    "algorithm_version",
+    "attempt_selection",
+    "missing_final",
+    "max_ratio",
+    "auto_item_release",
+    "require_second_final_reviewer",
+    "allow_selective_final",
+    "structure_digest",
+    "published_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "offering_id",
+      "policy_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Exactly one root category at publication.",
+    "Every included item validates maximum, source mapping, and weight.",
+    "Never mutate published calculation fields."
+  ]
+}

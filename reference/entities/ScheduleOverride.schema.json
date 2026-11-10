@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ScheduleOverride",
+  "description": "Effective scoped field changes for an offering and optional placement.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Schedule owner.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "placement_key": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional target placement key."
+    },
+    "audience": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "offering",
+            "section",
+            "learning_group",
+            "enrollment"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "additionalProperties": false,
+      "description": "Exactly one authorized target scope."
+    },
+    "rank": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "default": 0,
+      "description": "Ordering among co-applicable group overrides."
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": [
+              "release",
+              "recommended",
+              "due",
+              "grace_until",
+              "close"
+            ]
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "inherit",
+              "set",
+              "clear"
+            ]
+          },
+          "rule": {
+            "anyOf": [
+              {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "absolute"
+                        ]
+                      },
+                      "instant": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "instant"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "relative"
+                        ]
+                      },
+                      "anchor": {
+                        "type": "string",
+                        "enum": [
+                          "offering_open",
+                          "enrollment_start"
+                        ]
+                      },
+                      "unit": {
+                        "type": "string",
+                        "enum": [
+                          "local_days",
+                          "elapsed_minutes"
+                        ]
+                      },
+                      "offset": {
+                        "type": "integer",
+                        "minimum": -525600,
+                        "maximum": 525600
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "anchor",
+                      "unit",
+                      "offset"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "field",
+          "action"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 5,
+      "minItems": 1,
+      "description": "Unique field-level inherit, set or clear actions."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic same-scope revision."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive start."
+    },
+    "effective_to": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive end."
+    },
+    "approved_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Accountable authorized actor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Approved decision type."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "audience",
+    "rank",
+    "fields",
+    "revision",
+    "effective_from",
+    "approved_by",
+    "reason_code"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Overlap cannot yield incompatible equal-rank group values.",
+    "Clear cannot remove hard policy bounds."
+  ]
+}

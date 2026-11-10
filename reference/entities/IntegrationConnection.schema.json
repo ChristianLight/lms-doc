@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IntegrationConnection",
+  "description": "Institution-scoped versioned connector configuration and authority boundary.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "connection_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Stable institution-unique name."
+    },
+    "provider_kind": {
+      "type": "string",
+      "enum": [
+        "identity",
+        "roster",
+        "collaboration",
+        "document",
+        "media",
+        "learning_tool",
+        "notification",
+        "authoring"
+      ],
+      "description": "Supported functional profile."
+    },
+    "api_profile": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Declared versioned adapter capability profile."
+    },
+    "endpoint_origin": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Approved canonical HTTPS origin. No embedded user information, query or fragment."
+    },
+    "credential_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+      "description": "Secret custody reference. Never return credential material."
+    },
+    "allowed_actions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+      },
+      "minItems": 1,
+      "maxItems": 40,
+      "uniqueItems": true,
+      "description": "Allowlisted capabilities for this installation."
+    },
+    "authority": {
+      "type": "string",
+      "enum": [
+        "local",
+        "provider",
+        "split"
+      ],
+      "description": "Which side owns desired changes. Split requires field-level rules."
+    },
+    "retirement_days": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 365,
+      "default": 30,
+      "description": "Grace interval for controlled revocation of unused connector state."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "disabled",
+        "enabled",
+        "suspended",
+        "retired"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "connection_key",
+    "provider_kind",
+    "api_profile",
+    "endpoint_origin",
+    "credential_ref",
+    "allowed_actions",
+    "authority",
+    "retirement_days",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "connection_key"
+    ]
+  ],
+  "x-invariants": [
+    "Endpoint or credential changes create a new observed configuration version. In-flight writes recheck the version and recipient before external effects.",
+    "Provider absence or suspension never implicitly withdraws a learner or deletes an academic record."
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ActivityVersion",
+  "description": "Immutable type contract and exact runtime dependency bindings.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "activity_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable activity.",
+      "x-entity-reference": "Activity",
+      "x-reference-scope": "Must resolve to an authorized Activity in the owning institution."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic revision."
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "type_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+        },
+        "schema_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "default_locale": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 35,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "locale": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 35,
+                "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "body": {
+                "type": "object",
+                "maxProperties": 64
+              },
+              "review_state": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "approved",
+                  "stale"
+                ]
+              },
+              "source_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "required": [
+              "locale",
+              "title",
+              "body",
+              "review_state"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 60,
+          "minItems": 1
+        }
+      },
+      "required": [
+        "type_key",
+        "schema_version",
+        "default_locale",
+        "variants"
+      ],
+      "additionalProperties": false,
+      "description": "Type-specific locale instructions and configuration."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical payload and dependencies digest."
+    },
+    "assessment_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Required for native assessment types.",
+      "x-entity-reference": "AssessmentVersion",
+      "x-reference-scope": "Must resolve to an authorized AssessmentVersion in the owning institution."
+    },
+    "package_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Required for packaged activity.",
+      "x-entity-reference": "PackageVersion",
+      "x-reference-scope": "Must resolve to an authorized PackageVersion in the owning institution."
+    },
+    "signals": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+      },
+      "maxItems": 32,
+      "minItems": 0,
+      "description": "Declared evidence signal keys."
+    },
+    "created_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Sealing actor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Sealed instant."
+    }
+  },
+  "required": [
+    "id",
+    "activity_id",
+    "revision",
+    "payload",
+    "digest",
+    "signals",
+    "created_by",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "activity_id",
+      "revision"
+    ],
+    [
+      "activity_id",
+      "digest"
+    ]
+  ],
+  "x-invariants": [
+    "Kind selects exactly one registered runtime.",
+    "Attempts and scores never reside in this payload."
+  ]
+}

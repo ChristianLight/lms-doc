@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CreditUnitSchemeVersion",
+  "description": "Published credit precision and normalization scheme.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique CreditUnitSchemeVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "scheme_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable unit scheme family."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic immutable revision number within its stable identity."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Credit unit system name."
+    },
+    "unit_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+      "description": "Exact institutional credit unit."
+    },
+    "precision_places": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6,
+      "default": 2,
+      "description": "Maximum allowed fractional credit precision."
+    },
+    "base_multiplier": {
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,19727})$"
+        },
+        "denominator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,19727}$"
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator"
+      ],
+      "additionalProperties": false,
+      "description": "Exact published scale conversion to institutional base unit."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "superseded",
+        "retired"
+      ],
+      "default": "draft",
+      "description": "Version lifecycle."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "scheme_key",
+    "revision",
+    "created_at",
+    "name",
+    "unit_code",
+    "precision_places",
+    "base_multiplier",
+    "state",
+    "actor_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "scheme_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Never infer conversion from a percentage or title.",
+    "Published multiplier positive and immutable."
+  ]
+}

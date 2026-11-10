@@ -1,0 +1,280 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeEvidence",
+  "description": "Immutable observed scoring revision accepted from an authorized producer.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique GradeEvidence identifier."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution and offering boundary checked against enrollment and grade item.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Institution and offering boundary checked against enrollment and grade item."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Beneficiary who owns relevant academic enrollment.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Beneficiary who owns relevant academic enrollment."
+    },
+    "grade_item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved gradebook line in same offering.",
+      "x-entity-reference": "GradeItem",
+      "x-reference-scope": "Approved gradebook line in same offering."
+    },
+    "source_kind": {
+      "type": "string",
+      "enum": [
+        "native",
+        "manual",
+        "package",
+        "external"
+      ],
+      "description": "Native, manual, package or external source class."
+    },
+    "source_object_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Opaque stable source identity verified against trusted registration."
+    },
+    "source_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic source revision within evidence tuple."
+    },
+    "delivery_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Required native activity scope only.",
+      "x-entity-reference": "AssessmentDelivery",
+      "x-reference-scope": "Required native activity scope only."
+    },
+    "attempt_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Required native source evidence only.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Required native source evidence only."
+    },
+    "attempt_ordinal": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Native candidate attempt number, absent for non-native evidence."
+    },
+    "submitted_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Effective native submission time used by the academic lateness policy."
+    },
+    "assessment_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Native assessment revision pinned at start.",
+      "x-entity-reference": "AssessmentVersion",
+      "x-reference-scope": "Native assessment revision pinned at start."
+    },
+    "policy_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Native delivery policy revision pinned at start.",
+      "x-entity-reference": "DeliveryPolicyVersion",
+      "x-reference-scope": "Native delivery policy revision pinned at start."
+    },
+    "late": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Whether the native submission met the captured published due classification."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "earned",
+        "excused",
+        "voided",
+        "technical_exception"
+      ],
+      "description": "Earned, excused, voided or technical exception."
+    },
+    "points": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Canonical earned points, null for non-earned status."
+    },
+    "maximum": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Canonical positive maximum, null for non-earned status."
+    },
+    "mark_revision_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Exact source mark lineage for native evidence, empty for other sources.",
+      "x-entity-reference": "ItemMarkRevision",
+      "x-reference-scope": "Exact source mark lineage for native evidence, empty for other sources."
+    },
+    "lineage_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Source authorization, scoring revision and input lineage fingerprint."
+    },
+    "accepted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative evidence acceptance time."
+    },
+    "supersedes_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Previous revision for same tuple, null for first.",
+      "x-entity-reference": "GradeEvidence",
+      "x-reference-scope": "Previous revision for same tuple, null for first."
+    },
+    "approval_reference": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Verified authorized producer approval for non-native evidence."
+    },
+    "enrollment_release_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Native beneficiary release pinned at sitting start, including an individual member of team work.",
+      "x-entity-reference": "EnrollmentRelease",
+      "x-reference-scope": "Native beneficiary release pinned at sitting start, including an individual member of team work."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "enrollment_id",
+    "grade_item_id",
+    "source_kind",
+    "source_object_id",
+    "source_revision",
+    "status",
+    "points",
+    "maximum",
+    "mark_revision_ids",
+    "lineage_digest",
+    "accepted_at",
+    "supersedes_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "grade_item_id",
+      "enrollment_id",
+      "source_kind",
+      "source_object_id",
+      "source_revision"
+    ]
+  ],
+  "x-invariants": [
+    "Authorized producers cannot bind unrelated enrollment or grade item.",
+    "Native source object ID equals attempt ID.",
+    "Earned values must lie in grade item approved range.",
+    "Missing is derived by academic policy, not emitted.",
+    "Native enrollment_release_id must belong to the beneficiary Enrollment and point to the exact captured individual or team member release."
+  ]
+}

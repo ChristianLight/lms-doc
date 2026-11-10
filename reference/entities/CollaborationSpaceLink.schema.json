@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CollaborationSpaceLink",
+  "description": "Scoped provider resource mapping and synchronization state.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning delivery.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "audience": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "offering",
+            "section",
+            "learning_group",
+            "enrollment"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "additionalProperties": false,
+      "description": "Effective local launch scope."
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "discussion",
+        "meeting",
+        "folder",
+        "staff_room"
+      ],
+      "description": "Provider function."
+    },
+    "connection_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Registered connection that owns provider credential and permission scope.",
+      "x-entity-reference": "IntegrationConnection",
+      "x-reference-scope": "Same institution as offering, state and allowed actions must permit purpose."
+    },
+    "external_resource_map_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Platform-owned desired and observed external identity for this space.",
+      "x-entity-reference": "ExternalResourceMap",
+      "x-reference-scope": "Map local type CollaborationSpaceLink and local ID this link, with same connection and institution."
+    },
+    "desired_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Latest effective roster change."
+    },
+    "observed_revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "default": 0,
+      "description": "Last reconciled provider state."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "synced",
+        "degraded",
+        "retrying",
+        "retired"
+      ],
+      "default": "pending",
+      "description": "Integration state."
+    },
+    "next_retry_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Bounded retry schedule."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "audience",
+    "purpose",
+    "connection_id",
+    "desired_revision",
+    "observed_revision",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Unique connection and audience and purpose across active links.",
+    "Local launch rechecks current participation even if remote removal is delayed.",
+    "Remote identifiers and actual observed provider effect state are derived through the typed external map. Local revisions govern academic launch."
+  ]
+}

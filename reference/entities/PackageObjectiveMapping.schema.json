@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageObjectiveMapping",
+  "description": "Immutable declared read or write edge between an activity objective and a target objective.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "activity_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Declaring manifest activity.",
+      "x-entity-reference": "PackageActivity",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "local_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Exact local objective identifier."
+    },
+    "target_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Exact declared mapped objective identifier."
+    },
+    "read_dimensions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "satisfaction",
+          "measure",
+          "completion",
+          "progress",
+          "raw",
+          "min",
+          "max"
+        ]
+      },
+      "maxItems": 7,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Approved dimensions read from target."
+    },
+    "write_dimensions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "satisfaction",
+          "measure",
+          "completion",
+          "progress",
+          "raw",
+          "min",
+          "max"
+        ]
+      },
+      "maxItems": 7,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Approved dimensions written to target."
+    },
+    "source_locator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Exact edition manifest rule location."
+    }
+  },
+  "required": [
+    "id",
+    "activity_id",
+    "local_key",
+    "target_key",
+    "read_dimensions",
+    "write_dimensions",
+    "source_locator"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "activity_id",
+      "local_key",
+      "target_key"
+    ]
+  ],
+  "x-invariants": [
+    "Edition profile determines available dimensions and default flags.",
+    "Conflicting mappings must fail compilation or have exact normative resolution."
+  ]
+}

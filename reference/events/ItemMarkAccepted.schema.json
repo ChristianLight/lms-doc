@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ItemMarkAccepted",
+  "description": "An approved item mark revision became effective.",
+  "type": "object",
+  "properties": {
+    "attempt_item_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "mark_revision_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "attempt_item_id",
+    "mark_revision_id",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Per AttemptItem mark revision.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "No points, criteria or rubric text."
+}

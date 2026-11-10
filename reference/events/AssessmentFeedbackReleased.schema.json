@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentFeedbackReleased",
+  "description": "Specific feedback became authorized for a candidate.",
+  "type": "object",
+  "properties": {
+    "submission_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "feedback_release_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "submission_id",
+    "feedback_release_id",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Per submission release revision.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "No feedback bodies or marks in event."
+}

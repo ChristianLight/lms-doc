@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DraftPlacement",
+  "description": "Editable placement instance and pointer within an outline workspace.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "course_draft_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning draft.",
+      "x-entity-reference": "CourseDraft",
+      "x-reference-scope": "Must resolve to an authorized CourseDraft in the owning institution."
+    },
+    "placement_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable course-scoped occurrence identity."
+    },
+    "parent_key": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Parent occurrence in same draft or null root."
+    },
+    "sibling_scope_key": {
+      "type": "string",
+      "pattern": "^(root|parent/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$",
+      "description": "Server-derived root token or parent/ followed by the lowercase UUID from parent_key. Used to enforce unique root and child positions without nullable key semantics."
+    },
+    "position": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 511,
+      "description": "Zero-based contiguous sibling order."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "module",
+        "topic",
+        "lesson",
+        "rich_text",
+        "image",
+        "document",
+        "video",
+        "audio",
+        "external_link",
+        "internal_link",
+        "activity",
+        "imported_unresolved"
+      ],
+      "description": "Validated display node type."
+    },
+    "content_node_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Structural or resource payload.",
+      "x-entity-reference": "ContentNodeVersion",
+      "x-reference-scope": "Must resolve to an authorized ContentNodeVersion in the owning institution."
+    },
+    "activity_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Action payload.",
+      "x-entity-reference": "ActivityVersion",
+      "x-reference-scope": "Must resolve to an authorized ActivityVersion in the owning institution."
+    },
+    "rule_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Pinned availability and completion definition.",
+      "x-entity-reference": "LearningRuleVersion",
+      "x-reference-scope": "Must resolve to an authorized LearningRuleVersion in the owning institution."
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "visible",
+        "locked",
+        "hidden"
+      ],
+      "default": "visible",
+      "description": "Default author intent."
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Required occurrence in eligible branch."
+    },
+    "alias": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional local display title."
+    }
+  },
+  "required": [
+    "id",
+    "course_draft_id",
+    "placement_key",
+    "sibling_scope_key",
+    "position",
+    "kind",
+    "visibility",
+    "required"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "course_draft_id",
+      "placement_key"
+    ],
+    [
+      "course_draft_id",
+      "sibling_scope_key",
+      "position"
+    ]
+  ],
+  "x-invariants": [
+    "Exactly one payload kind selected.",
+    "Positions contiguous and tree acyclic.",
+    "Compute sibling_scope_key on every insertion and reparent. A null parent_key requires root. A present parent requires parent/ plus that exact parent UUID. Reject inconsistencies before commit."
+  ]
+}

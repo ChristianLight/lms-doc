@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PeerReviewAssignment",
+  "description": "Scoped reviewer access to one frozen candidate submission.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique PeerReviewAssignment identifier."
+    },
+    "allocation_run_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Frozen round assignment graph.",
+      "x-entity-reference": "PeerReviewAllocationRun",
+      "x-reference-scope": "Frozen round assignment graph."
+    },
+    "reviewer_enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized reviewer in the offering and selected audience.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Authorized reviewer in the offering and selected audience."
+    },
+    "submission_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Sealed work eligible under the same round.",
+      "x-entity-reference": "AttemptSubmission",
+      "x-reference-scope": "Sealed work eligible under the same round."
+    },
+    "pseudonym": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Opaque audience-specific label."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "invited",
+        "opened",
+        "submitted",
+        "revoked",
+        "expired"
+      ],
+      "description": "Stored assignment workflow state or derived expiry at due_at while still invited or opened."
+    },
+    "due_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive review cutoff."
+    },
+    "write_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Optimistic review draft version."
+    },
+    "replaces_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional revoked assignment whose coverage is replaced.",
+      "x-entity-reference": "PeerReviewAssignment",
+      "x-reference-scope": "Optional revoked assignment whose coverage is replaced."
+    }
+  },
+  "required": [
+    "id",
+    "allocation_run_id",
+    "reviewer_enrollment_id",
+    "submission_id",
+    "pseudonym",
+    "state",
+    "due_at",
+    "write_version"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "allocation_run_id",
+      "reviewer_enrollment_id",
+      "submission_id"
+    ]
+  ],
+  "x-invariants": [
+    "No self, same-team or unauthorized edge.",
+    "Anonymity projection omits source identity."
+  ]
+}

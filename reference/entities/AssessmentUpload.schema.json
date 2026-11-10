@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentUpload",
+  "description": "Private attempt-scoped staged file and scan state.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AssessmentUpload identifier."
+    },
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Candidate attempt requiring artifact.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Candidate attempt requiring artifact."
+    },
+    "attempt_item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Item occurrence in same attempt.",
+      "x-entity-reference": "AttemptItem",
+      "x-reference-scope": "Item occurrence in same attempt."
+    },
+    "interaction_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "File interaction local key."
+    },
+    "uploader_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized candidate or team editor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized candidate or team editor."
+    },
+    "filename": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[^/\\\\]+$",
+      "description": "Untrusted display filename without path separators."
+    },
+    "declared_mime": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120,
+      "pattern": "^[a-z0-9.+-]+/[a-z0-9.+-]+$",
+      "description": "Declared upload media type."
+    },
+    "bytes_expected": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 209715200,
+      "description": "Maximum allowed content size for reserved upload."
+    },
+    "content_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Verified immutable file digest."
+    },
+    "asset_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved private file version in exact attempt scope.",
+      "x-entity-reference": "AssetVersion",
+      "x-reference-scope": "Approved private file version in exact attempt scope."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "initiated",
+        "quarantined",
+        "approved",
+        "rejected",
+        "detached"
+      ],
+      "description": "Upload and scan lifecycle. Detached is a derived candidate selection view from the current response revision."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Staging lease deadline."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_id",
+    "attempt_item_id",
+    "interaction_key",
+    "uploader_id",
+    "filename",
+    "declared_mime",
+    "bytes_expected",
+    "state",
+    "expires_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Only approved scanned assets can enter sealed evidence.",
+    "Attachments remain scope-restricted."
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AdmissionPolicyVersion",
+  "description": "Versioned eligibility, capacity and seat offer policy.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering owner.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic policy revision."
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "manual",
+          "self",
+          "invitation",
+          "cohort",
+          "roster",
+          "rule",
+          "transfer"
+        ]
+      },
+      "maxItems": 7,
+      "minItems": 1,
+      "description": "Allowed distinct admission routes."
+    },
+    "course_prerequisite_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 100,
+      "minItems": 0,
+      "description": "Course requirements evaluated against verified completions."
+    },
+    "requires_approval": {
+      "type": "boolean",
+      "default": false,
+      "description": "Registrar must decide."
+    },
+    "waitlist_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Queue eligible applicants when full."
+    },
+    "seat_offer_hours": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 168,
+      "default": 48,
+      "description": "Hold a promoted seat for this duration."
+    },
+    "suspension_holds_seat": {
+      "type": "boolean",
+      "default": true,
+      "description": "Suspended participation consumes capacity."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "First valid instant."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Frozen policy and prerequisite digest."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "revision",
+    "routes",
+    "course_prerequisite_ids",
+    "requires_approval",
+    "waitlist_enabled",
+    "seat_offer_hours",
+    "suspension_holds_seat",
+    "effective_from",
+    "digest"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "offering_id",
+      "revision"
+    ],
+    [
+      "offering_id",
+      "effective_from"
+    ]
+  ],
+  "x-invariants": [
+    "Approval and enrollment state must be evaluated separately."
+  ]
+}

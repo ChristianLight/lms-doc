@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="Fraction12" version="1.0"
+  xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2">
+  <metadata><schema>ADL SCORM</schema><schemaversion>1.2</schemaversion></metadata>
+  <organizations default="org">
+    <organization identifier="org" structure="hierarchical">
+      <title>Fractions SCORM 1.2</title>
+      <item identifier="half" identifierref="resource">
+        <title>One half</title>
+        <adlcp:masteryscore>75</adlcp:masteryscore>
+      </item>
+    </organization>
+  </organizations>
+  <resources xml:base="content/">
+    <resource identifier="resource" type="webcontent" adlcp:scormtype="sco" href="half.html">
+      <file href="half.html"/>
+      <file href="runtime.js"/>
+    </resource>
+  </resources>
+</manifest>

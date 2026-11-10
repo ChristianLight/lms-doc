@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvaluatorRelease",
+  "description": "Approved typed worker implementation and request/response contract.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique EvaluatorRelease identifier."
+    },
+    "type_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Registered evaluator or capability identifier."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Release ordinal for evaluator family."
+    },
+    "worker_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Immutable execution build digest."
+    },
+    "contract_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Request and response schema digest."
+    },
+    "approved_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Service registry approver.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Service registry approver."
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Evaluator activation time."
+    },
+    "deprecated_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Cutoff for new publications."
+    },
+    "revoked_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Security cutoff blocking execution."
+    },
+    "max_cpu_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Maximum CPU milliseconds for one run."
+    },
+    "max_wall_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Maximum wall-clock milliseconds for one run."
+    },
+    "max_memory_bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "description": "Maximum resident memory."
+    }
+  },
+  "required": [
+    "id",
+    "type_key",
+    "version",
+    "worker_digest",
+    "contract_digest",
+    "approved_by",
+    "approved_at",
+    "max_cpu_ms",
+    "max_wall_ms",
+    "max_memory_bytes"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "type_key",
+      "version"
+    ]
+  ],
+  "x-invariants": [
+    "Deprecation does not revoke historical execution.",
+    "Revocation blocks any new run and preserves sealed evidence."
+  ]
+}

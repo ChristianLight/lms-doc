@@ -1,0 +1,444 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Version 1 accepted participation evidence payload",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "acknowledgment"
+          ]
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "intent_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "acknowledged": {
+              "const": true
+            }
+          },
+          "required": [
+            "intent_id",
+            "acknowledged"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "view"
+          ]
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "player_session_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "visible_milliseconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 86400000
+            },
+            "receipt_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+            }
+          },
+          "required": [
+            "player_session_id",
+            "visible_milliseconds",
+            "receipt_key"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "video_coverage"
+          ]
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "asset_version_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "player_session_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "start_ms": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 86400000
+            },
+            "end_ms": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 86400000
+            },
+            "session_sequence": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "asset_version_id",
+            "player_session_id",
+            "start_ms",
+            "end_ms",
+            "session_sequence"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "assessment_submission"
+          ]
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "attempt_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "attempt_submission_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "accepted_at": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "attempt_id",
+            "attempt_submission_id",
+            "accepted_at"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "assessment_result"
+          ]
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "grade_result_revision_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "grade_item_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "released",
+                "certified"
+              ]
+            }
+          },
+          "required": [
+            "grade_result_revision_id",
+            "grade_item_id",
+            "status"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "attendance"
+          ]
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "attendance_revision_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "meeting_occurrence_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "present",
+                "late",
+                "absent",
+                "excused"
+              ]
+            }
+          },
+          "required": [
+            "attendance_revision_id",
+            "meeting_occurrence_id",
+            "status"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "package"
+          ]
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "package_registration_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "package_version_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "commit_revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "adapter_policy_version_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "incomplete",
+                "completed",
+                "passed",
+                "failed",
+                "unknown"
+              ]
+            }
+          },
+          "required": [
+            "package_registration_id",
+            "package_version_id",
+            "commit_revision",
+            "adapter_policy_version_id",
+            "status"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "accessible_equivalent"
+          ]
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "equivalent_placement_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "approval_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "basis_evidence_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "equivalent_placement_id",
+            "approval_id",
+            "basis_evidence_id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "waiver"
+          ]
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "approval_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "scope_reason_code": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+            }
+          },
+          "required": [
+            "approval_id",
+            "scope_reason_code"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "carry"
+          ]
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "source_evidence_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "source_enrollment_release_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "rollout_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "source_evidence_id",
+            "source_enrollment_release_id",
+            "rollout_id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "$defs": {},
+  "examples": [
+    {
+      "kind": "video_coverage",
+      "payload": {
+        "asset_version_id": "00000000-0000-4000-8000-000000000001",
+        "player_session_id": "00000000-0000-4000-8000-000000000002",
+        "start_ms": 30000,
+        "end_ms": 70000,
+        "session_sequence": 2
+      }
+    },
+    {
+      "kind": "acknowledgment",
+      "payload": {
+        "intent_id": "00000000-0000-4000-8000-000000000003",
+        "acknowledged": true
+      }
+    }
+  ]
+}

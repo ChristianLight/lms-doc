@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ParticipationIntervention",
+  "description": "Purpose-limited instructor support action or follow-up with exact learner scope.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Teaching workspace scope.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Learner subject.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Enrollment belongs to offering and teacher current authority."
+    },
+    "recorded_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Accountable support actor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "reminder",
+        "support_request",
+        "meeting_request",
+        "review_referral"
+      ],
+      "description": "Support action class."
+    },
+    "basis_codes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+      },
+      "maxItems": 12,
+      "minItems": 1,
+      "description": "Safe coded basis such as required work overdue or unavailable result."
+    },
+    "restricted_note_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Access-controlled note resource reference."
+    },
+    "follow_up_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional assigned follow-up."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "open",
+        "completed",
+        "cancelled"
+      ],
+      "default": "open",
+      "description": "Support lifecycle."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Compare-and-swap token."
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "enrollment_id",
+    "recorded_by",
+    "kind",
+    "basis_codes",
+    "state",
+    "revision",
+    "recorded_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "No grade, enrollment, deadline or completion is altered by a support record.",
+    "Sensitive notes follow separate capability and retention policy."
+  ]
+}

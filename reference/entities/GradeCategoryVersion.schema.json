@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeCategoryVersion",
+  "description": "Calculation group node pinned to one policy version.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique GradeCategoryVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering within the same institution.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering within the same institution."
+    },
+    "policy_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Parent grade policy in the same offering.",
+      "x-entity-reference": "GradePolicyVersion",
+      "x-reference-scope": "Parent grade policy in the same offering."
+    },
+    "category_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable group identity reused across compatible policy versions."
+    },
+    "parent_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Parent in same policy or null for sole root.",
+      "x-entity-reference": "GradeCategoryVersion",
+      "x-reference-scope": "Parent in same policy or null for sole root."
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "description": "Localized category label."
+    },
+    "position": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2047,
+      "description": "Deterministic sibling order."
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "points",
+        "equal",
+        "weighted",
+        "weighted_periods",
+        "completion"
+      ],
+      "default": "points",
+      "description": "Aggregation method."
+    },
+    "parent_points": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Declared points capacity when parent uses points."
+    },
+    "parent_weight_bps": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Contribution weight when parent uses explicit weights."
+    },
+    "drop_mode": {
+      "type": "string",
+      "enum": [
+        "none",
+        "drop_lowest_ratio",
+        "drop_highest_ratio",
+        "keep_highest",
+        "drop_lowest_impact",
+        "drop_highest_impact"
+      ],
+      "default": "none",
+      "description": "Candidate limit rule."
+    },
+    "drop_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 128,
+      "default": 0,
+      "description": "Count required by selected drop or keep mode."
+    },
+    "bonus_mode": {
+      "type": "string",
+      "enum": [
+        "none",
+        "points",
+        "ratio_bonus"
+      ],
+      "default": "none",
+      "description": "Exclusive optional credit rule."
+    },
+    "bonus_cap_ratio": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "numerator": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19727})$"
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19727}$"
+            }
+          },
+          "required": [
+            "numerator",
+            "denominator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Maximum ratio of optional bonus contribution."
+    },
+    "result_cap_ratio": {
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,19727})$"
+        },
+        "denominator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,19727}$"
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator"
+      ],
+      "additionalProperties": false,
+      "description": "Maximum normalized result before parent aggregation."
+    },
+    "propagate_bonus": {
+      "type": "boolean",
+      "default": false,
+      "description": "Permit normalized category above one to parent."
+    },
+    "protected": {
+      "type": "boolean",
+      "default": false,
+      "description": "Prevent category dropping under parent policy."
+    },
+    "academic_period_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Grading and reporting period within same institution.",
+      "x-entity-reference": "AcademicPeriod",
+      "x-reference-scope": "Grading and reporting period within same institution."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "offering_id",
+    "policy_version_id",
+    "category_key",
+    "parent_id",
+    "label",
+    "position",
+    "mode",
+    "parent_points",
+    "parent_weight_bps",
+    "drop_mode",
+    "drop_count",
+    "bonus_mode",
+    "bonus_cap_ratio",
+    "result_cap_ratio",
+    "propagate_bonus",
+    "protected",
+    "academic_period_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "policy_version_id",
+      "category_key"
+    ],
+    [
+      "policy_version_id",
+      "parent_id",
+      "position"
+    ]
+  ],
+  "x-invariants": [
+    "Unique root enforced despite nullable parent semantics.",
+    "Depth at most 8 and sibling count at most 128.",
+    "Parent capacities and category weights are required only in corresponding modes.",
+    "Protected unresolved children cannot be dropped."
+  ]
+}

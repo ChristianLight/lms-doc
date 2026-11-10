@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TeamSnapshot",
+  "description": "Frozen membership and credit eligibility for one team delivery.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique TeamSnapshot identifier."
+    },
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering-bound team activity.",
+      "x-entity-reference": "AssessmentDelivery",
+      "x-reference-scope": "Offering-bound team activity."
+    },
+    "learning_group_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Source group scoped to the offering.",
+      "x-entity-reference": "LearningGroup",
+      "x-reference-scope": "Source group scoped to the offering."
+    },
+    "membership_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Source membership snapshot sequence."
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "enrollment_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "editor",
+              "observer",
+              "submitter"
+            ]
+          },
+          "eligible_for_credit": {
+            "type": "boolean"
+          },
+          "enrollment_release_id": {
+            "type": "string",
+            "format": "uuid",
+            "x-entity-reference": "EnrollmentRelease"
+          }
+        },
+        "required": [
+          "enrollment_id",
+          "role",
+          "eligible_for_credit",
+          "enrollment_release_id"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 200,
+      "description": "Frozen scoped enrollment members and participation capabilities."
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time membership and eligibility were evaluated."
+    },
+    "capture_request_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable owner-coordinated start reservation identity, unique for this team capture."
+    }
+  },
+  "required": [
+    "id",
+    "delivery_id",
+    "learning_group_id",
+    "membership_revision",
+    "members",
+    "captured_at",
+    "capture_request_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "delivery_id",
+      "learning_group_id",
+      "capture_request_id"
+    ]
+  ],
+  "x-invariants": [
+    "Members belong to the same offering.",
+    "Current access remains required for edits.",
+    "Historical eligibility is immutable.",
+    "Each member supplies the EnrollmentRelease current at attempt start. All captured releases resolve to the same delivery placement CourseVersion.",
+    "Each attempt captures one fresh exact eligibility snapshot. Historical snapshot changes never reset team quota."
+  ]
+}

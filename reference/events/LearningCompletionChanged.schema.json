@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LearningCompletionChanged",
+  "description": "Effective academic completion decision appended.",
+  "type": "object",
+  "properties": {
+    "completion_record_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "enrollment_release_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "content_placement_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "earned",
+        "exempt",
+        "revoked"
+      ]
+    }
+  },
+  "required": [
+    "completion_record_id",
+    "enrollment_release_id",
+    "content_placement_id",
+    "decision"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "Causal by completion chain.",
+  "x-deduplication": "Completion record ID.",
+  "x-privacy": "No grade, reason or private evidence payload."
+}

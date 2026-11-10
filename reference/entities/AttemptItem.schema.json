@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttemptItem",
+  "description": "Realized pinned form occurrence and private scoring inputs.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AttemptItem identifier."
+    },
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning attempt.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Owning attempt."
+    },
+    "assessment_slot_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Slot in captured assessment revision.",
+      "x-entity-reference": "AssessmentSlot",
+      "x-reference-scope": "Slot in captured assessment revision."
+    },
+    "occurrence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Positive occurrence within a slot."
+    },
+    "display_order": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Distinct order across realized form."
+    },
+    "item_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Pinned selected item content.",
+      "x-entity-reference": "ItemVersion",
+      "x-reference-scope": "Pinned selected item content."
+    },
+    "variant_profile_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact variant generator revision when used.",
+      "x-entity-reference": "VariantProfileVersion",
+      "x-reference-scope": "Exact variant generator revision when used."
+    },
+    "resolved_parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "rational",
+              "decimal",
+              "identifier",
+              "text"
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "value",
+          "kind"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "description": "Versioned private and public rendered parameter vector under scoped access."
+    },
+    "choice_order": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "interaction_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "interaction_key",
+          "keys"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 32,
+      "description": "Versioned ordered keys grouped by interaction, where local option keys retain their original meaning."
+    },
+    "locale": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8}){0,6}$",
+      "description": "Effective reviewed localization."
+    },
+    "maximum": {
+      "type": "string",
+      "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])",
+      "description": "Realized slot maximum."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Canonical realized rendering and scoring input digest."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_id",
+    "assessment_slot_id",
+    "occurrence",
+    "display_order",
+    "item_version_id",
+    "resolved_parameters",
+    "choice_order",
+    "locale",
+    "maximum",
+    "digest"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "attempt_id",
+      "assessment_slot_id",
+      "occurrence"
+    ],
+    [
+      "attempt_id",
+      "display_order"
+    ]
+  ],
+  "x-invariants": [
+    "Realized form is immutable.",
+    "All choice keys and referenced content belong to the resolved revision."
+  ]
+}

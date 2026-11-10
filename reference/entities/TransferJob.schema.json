@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TransferJob",
+  "description": "A retryable plan to detect, review and promote an inbound graph or export selection.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning these data and their access policy.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "actor_principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor or service identity for the recorded operation.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "artifact_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Inbound input or outbound artifact when produced.",
+      "x-entity-reference": "TransferArtifact",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "source_namespace": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Authorized source namespace."
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "native_curriculum",
+        "olx_course",
+        "olx_legacy_library",
+        "olx_versioned_library",
+        "scorm_12",
+        "scorm_2004_2",
+        "scorm_2004_3",
+        "scorm_2004_4",
+        "scorm_2004_unverified",
+        "qti_21",
+        "qti_22",
+        "qti_301",
+        "common_cartridge",
+        "oneroster_12",
+        "cmi5_quartz",
+        "historic_records"
+      ],
+      "description": "Exact approved format profile."
+    },
+    "adapter_build": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Immutable adapter and policy build identifier."
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "import",
+        "export"
+      ],
+      "description": "Direction of transfer."
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "dry_run",
+        "editable_draft",
+        "historical",
+        "delivery_package",
+        "export"
+      ],
+      "description": "Configured operational intent."
+    },
+    "target_scope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Typed scope identifier and optional owner key, interpreted under format profile."
+    },
+    "selection_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Fingerprint of immutable outbound selection."
+    },
+    "plan_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Fingerprint of staged owner commands and target baseline."
+    },
+    "fence_epoch": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Monotonic worker ownership epoch."
+    },
+    "worker_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Authenticated worker lease owner."
+    },
+    "lease_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC fencing deadline."
+    },
+    "checkpoint": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Opaque resumable partition and item position, excludes learner payload."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "received",
+        "quarantined",
+        "validated",
+        "staged",
+        "awaiting_review",
+        "approved",
+        "applying",
+        "applied",
+        "failed",
+        "cancelled"
+      ],
+      "description": "Authoritative lifecycle state advanced only through owner commands."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server time of last transition."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "actor_principal_id",
+    "source_namespace",
+    "adapter_build",
+    "direction",
+    "mode",
+    "target_scope",
+    "fence_epoch",
+    "revision",
+    "state",
+    "created_at",
+    "updated_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Import requires an artifact and export requires an immutable selection.",
+    "Only the active fence can checkpoint or alter the plan.",
+    "A changed plan digest invalidates all previous approvals."
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeResultCalculated",
+  "description": "New staff-visible immutable computed or override result exists.",
+  "type": "object",
+  "properties": {
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "grade_result_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "result_revision_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "offering_id",
+    "grade_result_id",
+    "result_revision_id",
+    "fingerprint"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per grade result revision.",
+  "x-deduplication": "result_revision_id.",
+  "x-privacy": "Internal pointers only, no score or learner identity."
+}

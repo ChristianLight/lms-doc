@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageSequencingState",
+  "description": "Authoritative execution cursor, frozen attempt tree and revision.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "registration_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Single current instance of edition sequencing for the package attempt.",
+      "x-entity-reference": "PackageRegistration",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "organization_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable selected activity tree.",
+      "x-entity-reference": "PackageOrganization",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "current_occurrence_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Current delivery or activity cursor.",
+      "x-entity-reference": "PackageActivity",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "suspended_occurrence_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Resume cursor for a suspended activity.",
+      "x-entity-reference": "PackageActivity",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "active_path": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 256,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Ordered activity IDs from root through current active path.",
+      "x-entity-reference": "PackageActivity",
+      "x-reference-scope": "Each occurrence lies in this state's organization tree."
+    },
+    "delivery_pending": {
+      "type": "boolean",
+      "description": "Whether a selected resource still awaits authorized launch."
+    },
+    "ended": {
+      "type": "boolean",
+      "description": "Whether this sequencing session has ended."
+    },
+    "sequence_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server time of last sequencing transaction."
+    }
+  },
+  "required": [
+    "id",
+    "registration_id",
+    "organization_id",
+    "active_path",
+    "delivery_pending",
+    "ended",
+    "sequence_revision",
+    "updated_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "registration_id"
+    ]
+  ],
+  "x-invariants": [
+    "Current and suspended pointers must be in the same immutable activity tree.",
+    "The active path has no gaps or cycles and frozen per-attempt child lists live on activity attempts."
+  ]
+}

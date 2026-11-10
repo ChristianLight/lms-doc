@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExchangeExportQueued",
+  "description": "An export job pinned an authorized version selection.",
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "selection_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "native_curriculum",
+        "olx_course",
+        "olx_legacy_library",
+        "olx_versioned_library",
+        "scorm_12",
+        "scorm_2004_2",
+        "scorm_2004_3",
+        "scorm_2004_4",
+        "scorm_2004_unverified",
+        "qti_21",
+        "qti_22",
+        "qti_301",
+        "common_cartridge",
+        "oneroster_12",
+        "cmi5_quartz",
+        "historic_records"
+      ]
+    }
+  },
+  "required": [
+    "job_id",
+    "selection_digest",
+    "format"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Job creation order.",
+  "x-deduplication": "Job and selection digest.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

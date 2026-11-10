@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradePolicyAdoptionBatch",
+  "description": "Reviewed staged effective grade policy assignments with atomic visibility switch.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique GradePolicyAdoptionBatch identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering within the same institution.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering within the same institution."
+    },
+    "policy_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Published grade policy in same offering.",
+      "x-entity-reference": "GradePolicyVersion",
+      "x-reference-scope": "Published grade policy in same offering."
+    },
+    "assignment_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 100000,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Complete staged immutable assignment set. Empty only when changing the offering default alone.",
+      "x-entity-reference": "GradePolicyAssignment",
+      "x-reference-scope": "Complete staged immutable assignment set. Empty only when changing the offering default alone."
+    },
+    "set_default_for_new_enrollments": {
+      "type": "boolean",
+      "default": false,
+      "description": "Select this policy for new enrollment releases at the approved effective time."
+    },
+    "scope_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Authorized enrollment scope and expected predecessor digest."
+    },
+    "effective_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Approved effective time."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "staged",
+        "approved",
+        "active",
+        "superseded",
+        "revoked",
+        "stale"
+      ],
+      "default": "staged",
+      "description": "Adoption review and visibility lifecycle."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "offering_id",
+    "policy_version_id",
+    "assignment_ids",
+    "set_default_for_new_enrollments",
+    "scope_digest",
+    "effective_at",
+    "state",
+    "actor_id",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "policy_version_id",
+      "scope_digest",
+      "effective_at"
+    ]
+  ],
+  "x-invariants": [
+    "Current assignments remain visible until whole batch activates.",
+    "A changed predecessor or enrollment release rejects activation.",
+    "Activated default-setting batches are ordered by exclusive approved effective boundary and guarded sequence. Offering default is the latest active applicable default-setting batch."
+  ]
+}

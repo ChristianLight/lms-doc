@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CompetencyDecision",
+  "description": "Immutable aggregate determination of a learner competency.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique CompetencyDecision identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Educational identity within the same institution.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Educational identity within the same institution."
+    },
+    "competency_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Pinned exact skill and evidence policy.",
+      "x-entity-reference": "CompetencyVersion",
+      "x-reference-scope": "Pinned exact skill and evidence policy."
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 500,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Accepted exact source revisions considered.",
+      "x-entity-reference": "CompetencyEvidence",
+      "x-reference-scope": "Accepted exact source revisions considered."
+    },
+    "supersedes_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Prior mastery decision in same person and competency.",
+      "x-entity-reference": "CompetencyDecision",
+      "x-reference-scope": "Prior mastery decision in same person and competency."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "insufficient",
+        "developing",
+        "demonstrated",
+        "expired",
+        "revoked"
+      ],
+      "description": "Published or prospective mastery outcome."
+    },
+    "level_code": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Derived scale code, null when no level available."
+    },
+    "cutoff_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Academic evaluation cutoff."
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exclusive mastery expiration."
+    },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Exact policy and evidence lineage digest."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "person_id",
+    "competency_version_id",
+    "evidence_ids",
+    "supersedes_id",
+    "status",
+    "level_code",
+    "cutoff_at",
+    "expires_at",
+    "fingerprint",
+    "actor_id",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "person_id",
+      "competency_version_id",
+      "fingerprint"
+    ]
+  ],
+  "x-invariants": [
+    "Separate insufficient evidence from lowest observed rank.",
+    "Order is based on observed instant, source revision and stable ID."
+  ]
+}

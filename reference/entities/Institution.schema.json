@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Institution",
+  "description": "Independent policy, access and retention boundary.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Public operator-issued code unique within this deployment. Stable after activation."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Institution display name."
+    },
+    "default_locale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 35,
+      "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+      "description": "Fallback BCP 47 content and UI language."
+    },
+    "default_timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^(UTC|[A-Za-z_+-]+(?:/[A-Za-z0-9_+-]+)+)$",
+      "description": "Default civil zone validated against the deployed IANA database."
+    },
+    "authorization_epoch": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Institution-wide permission version. Bump in each role, delegation, hierarchy or visibility policy mutation."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "closed"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "created_at",
+    "version",
+    "updated_at",
+    "code",
+    "name",
+    "default_locale",
+    "default_timezone",
+    "authorization_epoch",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "code"
+    ]
+  ],
+  "x-invariants": [
+    "Institution ID is its root scope ID. No operation treats a subordinate organization as an independent tenant.",
+    "Closing or suspending gates access while retaining academic records and scoped privacy processing."
+  ]
+}

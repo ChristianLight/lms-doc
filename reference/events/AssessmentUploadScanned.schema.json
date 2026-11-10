@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentUploadScanned",
+  "description": "A protected staged artifact was processed.",
+  "type": "object",
+  "properties": {
+    "upload_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "scan": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "safe",
+        "rejected"
+      ]
+    }
+  },
+  "required": [
+    "upload_id",
+    "attempt_id",
+    "scan"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Per AssessmentUpload accepted scan.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "No filename or asset pointer."
+}

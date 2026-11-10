@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cmi5FetchRedeemed",
+  "description": "A valid fetch credential was consumed exactly once.",
+  "type": "object",
+  "properties": {
+    "launch_session_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "session_uuid": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "launch_session_id",
+    "session_uuid"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "AU session state order.",
+  "x-deduplication": "Session and redemption.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

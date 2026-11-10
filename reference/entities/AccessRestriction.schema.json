@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AccessRestriction",
+  "description": "Explicit deny gate for safeguarding, investigation or emergency response.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "principal_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Affected principal or null when policy denies every principal in scope.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "scope_type": {
+      "type": "string",
+      "enum": [
+        "Institution",
+        "OrganizationUnit",
+        "AcademicPeriod",
+        "Program",
+        "Course",
+        "CourseOffering",
+        "Section",
+        "LearningGroup",
+        "Cohort",
+        "Library",
+        "Person",
+        "IntegrationConnection",
+        "AssessmentDelivery",
+        "ExternalToolDeployment",
+        "RosterFeed"
+      ],
+      "description": "Validated scope type."
+    },
+    "scope_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact target scope ID."
+    },
+    "capability_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+      },
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "description": "Only these declared capabilities are blocked."
+    },
+    "include_descendants": {
+      "type": "boolean",
+      "default": false,
+      "description": "Apply to scoped descendants when explicitly approved."
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive activation."
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive boundary. Default emergency maximum 24 hours."
+    },
+    "reason_ref": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Restricted case evidence. Public messages remain generic."
+    },
+    "issued_by_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized security officer or automated containment actor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "revoked"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "scope_type",
+    "scope_id",
+    "capability_keys",
+    "include_descendants",
+    "valid_from",
+    "valid_until",
+    "reason_ref",
+    "issued_by_id",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Restriction wins over any role grant. Empty capability lists are rejected.",
+    "A service suspension may be institutional. No unaudited system bypass."
+  ]
+}

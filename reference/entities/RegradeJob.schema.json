@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RegradeJob",
+  "description": "Approved scope, dry-run manifest and correction lifecycle.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique RegradeJob identifier."
+    },
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering-scoped correction target.",
+      "x-entity-reference": "AssessmentDelivery",
+      "x-reference-scope": "Offering-scoped correction target."
+    },
+    "source_rule_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact scoring rule originally applied in affected population.",
+      "x-entity-reference": "MarkingRuleVersion",
+      "x-reference-scope": "Exact scoring rule originally applied in affected population."
+    },
+    "replacement_rule_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved compatible correction rule.",
+      "x-entity-reference": "MarkingRuleVersion",
+      "x-reference-scope": "Approved compatible correction rule."
+    },
+    "preview_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Stable exact regrade population and computed effects."
+    },
+    "proposed_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Scoped requester.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Scoped requester."
+    },
+    "approved_by": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Independent approver where required.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Independent approver where required."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "previewed",
+        "approved",
+        "running",
+        "completed",
+        "stopped"
+      ],
+      "description": "Preparation, preview, approved execution and final state."
+    },
+    "allow_decrease": {
+      "type": "boolean",
+      "description": "Whether approved policy permits decreasing previously released evidence."
+    },
+    "preserve_manual_overrides": {
+      "type": "boolean",
+      "description": "Protect separately accepted manual decisions."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "description": "Why the correction is requested."
+    },
+    "counts": {
+      "type": "object",
+      "properties": {
+        "planned": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "changed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "unchanged": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "excluded": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "conflicted": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "planned",
+        "changed",
+        "unchanged",
+        "excluded",
+        "conflicted",
+        "failed"
+      ],
+      "additionalProperties": false,
+      "description": "Reconciliation counters by case disposition."
+    }
+  },
+  "required": [
+    "id",
+    "delivery_id",
+    "source_rule_version_id",
+    "replacement_rule_version_id",
+    "proposed_by",
+    "state",
+    "allow_decrease",
+    "preserve_manual_overrides",
+    "reason",
+    "counts"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Approval pins the dry-run digest.",
+    "A conflict never overwrites an intervening adjudication.",
+    "Abort never rolls back completed judgments."
+  ]
+}

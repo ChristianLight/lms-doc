@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RecoveryExercise",
+  "description": "Approved recovery test or incident reconciliation with protected evidence.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "environment_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Approved infrastructure environment identifier."
+    },
+    "backup_set_ref": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable signed recovery manifest reference.",
+      "x-entity-reference": "BackupSet",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "target_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Requested recovery point."
+    },
+    "actual_restore_time": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Verified durable record horizon."
+    },
+    "rpo_seconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 86400,
+      "description": "Maximum acceptable age of data loss target."
+    },
+    "rto_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 604800,
+      "description": "Maximum restoration service downtime target."
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exercise start time."
+    },
+    "reopened_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Verified service reopening or simulated equivalent."
+    },
+    "evidence_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Protected restore checklist and integrity evidence."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "restoring",
+        "verifying",
+        "passed",
+        "failed"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "environment_key",
+    "backup_set_ref",
+    "target_time",
+    "rpo_seconds",
+    "rto_seconds",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Reconnect delivery systems only after fencing old writers, replaying revocations and dispositions, and verifying integrity.",
+    "Passing requires measured RPO and RTO, application-level integrity and an independent verification sign-off."
+  ]
+}

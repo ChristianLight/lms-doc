@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PrivacyRequest",
+  "description": "Verified and auditable case for an individual data-rights or records request.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "subject_person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Individual whose records are in scope.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "requester_principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Verified actor who filed on own or delegated behalf.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "request_kind": {
+      "type": "string",
+      "enum": [
+        "access",
+        "correction",
+        "restrict",
+        "dispose",
+        "portability"
+      ],
+      "description": "Requested institutional workflow."
+    },
+    "scope_classes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "identity_contact",
+          "enrollment_history",
+          "academic_official",
+          "submissions",
+          "drafts",
+          "exam_telemetry",
+          "audit",
+          "connector_message",
+          "communication",
+          "backup",
+          "private_export",
+          "asset_bytes"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "description": "Specific requested data classes."
+    },
+    "received_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time of institution receipt."
+    },
+    "due_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Institution-specific review deadline. Default operational target is 30 days absent local override."
+    },
+    "proof_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Restricted authority and verification evidence."
+    },
+    "decision_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Restricted approved disposition or refusal record."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "received",
+        "verified",
+        "executing",
+        "completed",
+        "denied",
+        "blocked"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "subject_person_id",
+    "requester_principal_id",
+    "request_kind",
+    "scope_classes",
+    "received_at",
+    "due_at",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Proof and jurisdictional authority are evaluated before disclosure or destructive action.",
+    "Incomplete provider work remains blocked or executing and never reports complete."
+  ]
+}

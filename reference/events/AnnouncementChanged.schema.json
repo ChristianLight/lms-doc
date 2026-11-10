@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AnnouncementChanged",
+  "description": "Scoped announcement revision or retraction changed.",
+  "type": "object",
+  "properties": {
+    "announcement_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "published",
+        "withdrawn"
+      ]
+    }
+  },
+  "required": [
+    "announcement_id",
+    "offering_id",
+    "revision",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By announcement revision.",
+  "x-deduplication": "Announcement plus revision.",
+  "x-privacy": "No message body or recipient identities."
+}

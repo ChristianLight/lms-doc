@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PrincipalAccessChanged",
+  "description": "Authentication binding or principal access was changed.",
+  "type": "object",
+  "properties": {
+    "principal_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "record_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "state": {
+      "type": "string",
+      "maxLength": 48
+    }
+  },
+  "required": [
+    "principal_id",
+    "record_version",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "platform",
+  "x-ordering": "By aggregate ID, version and event ordinal.",
+  "x-deduplication": "Stable OutboxEvent ID. Consumers deduplicate using source and message ID.",
+  "x-privacy": "Only institution, object IDs, versions and classified states. Fetch additional authorized projections through owner."
+}

@@ -1,0 +1,267 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DeliveryPolicyVersion",
+  "description": "Immutable effective access, time, submission and disclosure settings.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique DeliveryPolicyVersion identifier."
+    },
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Target delivery that owns this policy.",
+      "x-entity-reference": "AssessmentDelivery",
+      "x-reference-scope": "Target delivery that owns this policy."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic policy version."
+    },
+    "opens_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Earliest admissible candidate action."
+    },
+    "due_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Instant after which admissible submissions are classified late."
+    },
+    "closes_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive candidate mutation cutoff."
+    },
+    "time_zone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "IANA zone used to interpret authored local schedule."
+    },
+    "duration_seconds": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 604800
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional elapsed sitting limit."
+    },
+    "attempt_limit": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Allowed formal starts, with null meaning unlimited."
+    },
+    "navigation": {
+      "type": "string",
+      "enum": [
+        "free",
+        "section_linear",
+        "item_linear"
+      ],
+      "description": "Default navigation control."
+    },
+    "expiry": {
+      "type": "string",
+      "enum": [
+        "auto_submit",
+        "expire"
+      ],
+      "description": "Automatic submit or expire disposition."
+    },
+    "review": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "immediate",
+            "after_close",
+            "staff_release",
+            "never"
+          ]
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "response",
+              "points",
+              "rubric",
+              "comments",
+              "answer_key",
+              "model_solution"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 6
+        },
+        "delay_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2592000
+        }
+      },
+      "required": [
+        "mode",
+        "fields"
+      ],
+      "additionalProperties": false,
+      "description": "Field-by-field disclosure model and timing."
+    },
+    "pause_total_seconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Maximum approved pause time, zero by default."
+    },
+    "requires_blank_acknowledgement": {
+      "type": "boolean",
+      "description": "Require candidate confirmation for unanswered entries."
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Effective version release time."
+    },
+    "require_exam_grant": {
+      "type": "boolean",
+      "description": "Whether to consume an independent authorized one-use grant at start. Defaults false."
+    },
+    "practice": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "check_limit": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "allow_hints": {
+              "type": "boolean"
+            },
+            "delay_answer_until_exhaustion": {
+              "type": "boolean"
+            },
+            "same_response_repeat": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "check_limit",
+            "allow_hints",
+            "delay_answer_until_exhaustion",
+            "same_response_repeat"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional formative check and hint behavior."
+    },
+    "self_review": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "rubric_version_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "opens_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "closes_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "required": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "rubric_version_id",
+            "required"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional candidate-only self-reflection profile and frozen rubric."
+    }
+  },
+  "required": [
+    "id",
+    "delivery_id",
+    "revision",
+    "time_zone",
+    "navigation",
+    "expiry",
+    "review",
+    "pause_total_seconds",
+    "requires_blank_acknowledgement",
+    "published_at",
+    "require_exam_grant"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "delivery_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "When both present due is on or before close.",
+    "Admission window is half-open.",
+    "Exam requires explicit close and bounded duration by default."
+  ]
+}

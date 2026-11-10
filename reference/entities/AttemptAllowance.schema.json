@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttemptAllowance",
+  "description": "Reviewed bounded extra sitting capacity or resubmission grant.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AttemptAllowance identifier."
+    },
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Scoped delivery whose base quota may be extended.",
+      "x-entity-reference": "AssessmentDelivery",
+      "x-reference-scope": "Scoped delivery whose base quota may be extended."
+    },
+    "enrollment_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Individual eligible enrollment if not a team grant.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Individual eligible enrollment if not a team grant."
+    },
+    "learning_group_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Stable same-offering team recipient when not an individual grant.",
+      "x-entity-reference": "LearningGroup",
+      "x-reference-scope": "Stable same-offering team recipient when not an individual grant."
+    },
+    "previous_attempt_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Prior linked attempt for retake or remediation.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Prior linked attempt for retake or remediation."
+    },
+    "reason_kind": {
+      "type": "string",
+      "enum": [
+        "retake",
+        "resubmission",
+        "alternate_sitting",
+        "remediation"
+      ],
+      "description": "Distinguishes sanctioned retake and resubmission purpose."
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Maximum extra starts under this allowance."
+    },
+    "consumed_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Committed extra starts count."
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive validity start."
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive validity end."
+    },
+    "approved_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized instructor or coordinator.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized instructor or coordinator."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "description": "Audited instructional or incident reason."
+    },
+    "revoked_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional unused allowance cutoff."
+    }
+  },
+  "required": [
+    "id",
+    "delivery_id",
+    "reason_kind",
+    "count",
+    "consumed_count",
+    "valid_from",
+    "valid_until",
+    "approved_by",
+    "reason"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Exactly one candidate identity.",
+    "Count positive and consumed count cannot exceed count.",
+    "Ordinal never resets."
+  ]
+}

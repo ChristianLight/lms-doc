@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LearnerBookmark",
+  "description": "Private placement or anchor marker for one person.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Bookmark owner.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Must resolve to an authorized Person in the owning institution."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Navigation context.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "placement_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable occurrence key."
+    },
+    "anchor_key": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 160,
+      "default": "",
+      "description": "Normalized anchor or empty string."
+    },
+    "label": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 240,
+      "default": "",
+      "description": "Optional learner-private name."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation time."
+    }
+  },
+  "required": [
+    "id",
+    "person_id",
+    "offering_id",
+    "placement_key",
+    "anchor_key",
+    "label",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "person_id",
+      "offering_id",
+      "placement_key",
+      "anchor_key"
+    ]
+  ],
+  "x-invariants": [
+    "Unresolved or inaccessible placement never leaks a hidden title."
+  ]
+}

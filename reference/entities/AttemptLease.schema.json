@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttemptLease",
+  "description": "Scoped writer admission token for one attempt and device or team editor.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AttemptLease identifier."
+    },
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Active attempt target.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Active attempt target."
+    },
+    "principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authenticated authorized editor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authenticated authorized editor."
+    },
+    "lease_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic writer session revision."
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation time."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive validity cutoff."
+    },
+    "revoked_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Explicit takeover or access revocation."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_id",
+    "principal_id",
+    "lease_revision",
+    "issued_at",
+    "expires_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "attempt_id",
+      "principal_id",
+      "lease_revision"
+    ]
+  ],
+  "x-invariants": [
+    "Taking over a formal sitting revokes the prior writer.",
+    "No lease bypasses current authorization or deadline."
+  ]
+}

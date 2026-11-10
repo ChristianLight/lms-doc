@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LearningGroup",
+  "description": "Offering-local team, audience or collaboration group.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning delivery.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "section_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional restricting section.",
+      "x-entity-reference": "Section",
+      "x-reference-scope": "Section must belong to offering."
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Normalized group code."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Display title."
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "team",
+        "discussion",
+        "instruction",
+        "collaboration"
+      ],
+      "description": "Group behavior classification."
+    },
+    "membership_mode": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "self_join",
+        "rule"
+      ],
+      "default": "manual",
+      "description": "Admission mode."
+    },
+    "capacity": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional lower cap."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "closed"
+      ],
+      "default": "active",
+      "description": "Membership availability."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Compare-and-swap token."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "code",
+    "title",
+    "purpose",
+    "membership_mode",
+    "state",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "offering_id",
+      "code"
+    ]
+  ],
+  "x-invariants": [
+    "Section-limited members must be in the effective section."
+  ]
+}

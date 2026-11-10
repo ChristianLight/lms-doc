@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageCommit",
+  "description": "Immutable runtime batch receipt with exact accepted sequence and state revision.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "launch_session_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Active session that submitted a valid batch.",
+      "x-entity-reference": "PackageLaunchSession",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "sco_state_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Changed occurrence state.",
+      "x-entity-reference": "PackageScoState",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "payload_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of canonical request envelope and mutations."
+    },
+    "first_sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "First sequence in this receipt, or next expected sequence for an empty finalization."
+    },
+    "accepted_through_sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Highest accepted contiguous sequence."
+    },
+    "mutation_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 256,
+      "description": "Number of typed mutations accepted atomically."
+    },
+    "state_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "finalized": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if this receipt closed the run-time session."
+    },
+    "accepted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Database commit time."
+    }
+  },
+  "required": [
+    "id",
+    "launch_session_id",
+    "sco_state_id",
+    "payload_digest",
+    "first_sequence",
+    "accepted_through_sequence",
+    "mutation_count",
+    "state_revision",
+    "finalized",
+    "accepted_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "launch_session_id",
+      "first_sequence",
+      "accepted_through_sequence",
+      "finalized"
+    ]
+  ],
+  "x-invariants": [
+    "A repeated payload cannot award duplicate time or evidence.",
+    "Receipt exists only after atomic state and outbox commit."
+  ]
+}

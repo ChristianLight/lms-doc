@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CollaborationSpaceChanged",
+  "description": "Desired or observed provider resource state advanced.",
+  "type": "object",
+  "properties": {
+    "space_link_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "desired_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "observed_revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "synced",
+        "degraded",
+        "retrying",
+        "retired"
+      ]
+    }
+  },
+  "required": [
+    "space_link_id",
+    "desired_revision",
+    "observed_revision",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By local link effect revision.",
+  "x-deduplication": "Link ID and state revisions.",
+  "x-privacy": "No remote IDs, URLs or credentials."
+}

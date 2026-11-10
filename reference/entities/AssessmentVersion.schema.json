@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentVersion",
+  "description": "Versioned assembly, marking and navigation plan.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AssessmentVersion identifier."
+    },
+    "assessment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable definition and course scope.",
+      "x-entity-reference": "Assessment",
+      "x-reference-scope": "Stable definition and course scope."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic revision in the assessment."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "description": "Editable draft or immutable publication. Review approval is a separate AssessmentAssemblyReview record."
+    },
+    "draft_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Authoring optimistic lock sequence."
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "practice",
+        "survey",
+        "coursework",
+        "quiz",
+        "formal_exam"
+      ],
+      "description": "Candidate use and default delivery policy category."
+    },
+    "maximum": {
+      "type": "string",
+      "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])",
+      "description": "Total maximum for the resolved form."
+    },
+    "content_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Digest over published form assembly rules."
+    },
+    "published_by": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved publisher for this version.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Approved publisher for this version."
+    },
+    "published_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Release time."
+    }
+  },
+  "required": [
+    "id",
+    "assessment_id",
+    "revision",
+    "state",
+    "draft_version",
+    "purpose",
+    "maximum",
+    "content_digest"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "assessment_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Validate feasible variants and total scale before publication.",
+    "Bind immutable section, pool and scoring references."
+  ]
+}

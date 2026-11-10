@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RegradeCase",
+  "description": "Per-attempt plan and authoritative batch outcome.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique RegradeCase identifier."
+    },
+    "job_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved parent regrade scope.",
+      "x-entity-reference": "RegradeJob",
+      "x-reference-scope": "Approved parent regrade scope."
+    },
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Attempt in job delivery.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Attempt in job delivery."
+    },
+    "input_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Frozen original sealed evidence and accepted mark heads."
+    },
+    "expected_mark_revision_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "CAS heads used in preview.",
+      "x-entity-reference": "ItemMarkRevision",
+      "x-reference-scope": "CAS heads used in preview."
+    },
+    "old_points": {
+      "type": "string",
+      "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])",
+      "description": "Original accepted score for comparison."
+    },
+    "proposed_points": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Dry-run candidate value where available."
+    },
+    "disposition": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Verified preview and case status."
+    },
+    "result_mark_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Committed corrections scoped to same attempt.",
+      "x-entity-reference": "ItemMarkRevision",
+      "x-reference-scope": "Committed corrections scoped to same attempt."
+    }
+  },
+  "required": [
+    "id",
+    "job_id",
+    "attempt_id",
+    "input_digest",
+    "expected_mark_revision_ids",
+    "old_points",
+    "disposition",
+    "result_mark_ids"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "job_id",
+      "attempt_id"
+    ]
+  ],
+  "x-invariants": [
+    "A case mutates results at most once per approved input fingerprint."
+  ]
+}

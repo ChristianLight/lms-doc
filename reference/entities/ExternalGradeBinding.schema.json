@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExternalGradeBinding",
+  "description": "One deployment-scoped grade-service line item mapped to an owner GradeItem.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "deployment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized service and role context.",
+      "x-entity-reference": "ExternalToolDeployment",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "resource_link_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Optional link scope permitted by approved deployment.",
+      "x-entity-reference": "ExternalToolResourceLink",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "grade_item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Formal destination validated by records owner.",
+      "x-entity-reference": "GradeItem",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "external_line_item_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Scoped opaque service line-item ID."
+    },
+    "points_maximum": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]{0,11})(?:\\.[0-9]{1,6})?$",
+      "description": "Positive maximum for grade normalization and service exchange."
+    },
+    "release_policy_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Pinned assessment and records policy boundary."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "disabled",
+        "retired"
+      ],
+      "description": "Authoritative lifecycle state advanced only through owner commands."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    }
+  },
+  "required": [
+    "id",
+    "deployment_id",
+    "grade_item_id",
+    "external_line_item_key",
+    "points_maximum",
+    "release_policy_revision",
+    "state",
+    "revision",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "deployment_id",
+      "external_line_item_key"
+    ]
+  ],
+  "x-invariants": [
+    "A tool result is imported evidence, never direct formal grade publication.",
+    "Scale transformations and above-maximum policy are explicit."
+  ]
+}

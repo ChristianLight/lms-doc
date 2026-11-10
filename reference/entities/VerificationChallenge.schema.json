@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VerificationChallenge",
+  "description": "Short-lived, one-use proof for a particular verified contact or identity link intent.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Actor authorized to satisfy the challenge.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "contact_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Contact being verified, when purpose is contact verification.",
+      "x-entity-reference": "PersonContact",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "connection_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Identity connector, when purpose is an external account link.",
+      "x-entity-reference": "IntegrationConnection",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "verify_contact",
+        "link_external_identity"
+      ],
+      "description": "Exact operation to which this challenge is bound."
+    },
+    "target_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Version of the contact or principal being verified."
+    },
+    "secret_fingerprint": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Keyed fingerprint of proof. Present only while a challenge is open. No plaintext proof persists."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive expiry, default creation plus 15 minutes."
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5,
+      "description": "Attempts observed. Starts at zero."
+    },
+    "consumed_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "First durable successful use."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "open",
+        "consumed",
+        "revoked"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "principal_id",
+    "purpose",
+    "target_version",
+    "expires_at",
+    "attempts",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Require one contact for contact verification and one connection for account link. Proof fingerprint includes purpose and target.",
+    "Five failed attempts revoke the challenge. Expiry is enforced using server time even when persisted state is open."
+  ]
+}

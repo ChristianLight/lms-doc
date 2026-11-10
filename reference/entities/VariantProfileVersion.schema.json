@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VariantProfileVersion",
+  "description": "Pinned constrained parameter generation and expected value derivation.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique VariantProfileVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution that owns the generator profile.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Institution that owns the generator profile."
+    },
+    "profile_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Stable profile key within institution."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Profile revision."
+    },
+    "generator_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Registered bounded generator capability."
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "number",
+              "rational",
+              "text",
+              "identifier",
+              "boolean",
+              "structured"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16000
+          }
+        },
+        "required": [
+          "name",
+          "kind",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "description": "Typed ordered parameter declarations and constraints."
+    },
+    "iteration_limit": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Maximum sampled candidates before resolution fails."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Protected generator and schema digest."
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Generation approval time."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "profile_key",
+    "revision",
+    "generator_key",
+    "parameters",
+    "iteration_limit",
+    "digest",
+    "approved_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "profile_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Default limit 64.",
+    "No unregistered executable generator.",
+    "Constraint and parameter dependencies are acyclic."
+  ]
+}

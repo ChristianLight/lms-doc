@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LearningEvidenceAccepted",
+  "description": "Trusted evidence accepted for exact placement and release.",
+  "type": "object",
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "enrollment_release_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "content_placement_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "acknowledgment",
+        "view",
+        "video_coverage",
+        "assessment_submission",
+        "assessment_result",
+        "attendance",
+        "package",
+        "accessible_equivalent",
+        "waiver",
+        "carry"
+      ]
+    }
+  },
+  "required": [
+    "evidence_id",
+    "enrollment_release_id",
+    "content_placement_id",
+    "sequence",
+    "kind"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By enrollment release ingestion sequence.",
+  "x-deduplication": "Evidence ID.",
+  "x-privacy": "No raw source payload."
+}

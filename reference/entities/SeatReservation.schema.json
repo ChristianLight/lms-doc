@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SeatReservation",
+  "description": "Time-bounded hold for eligible waitlist candidate.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "application_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Promoted candidate.",
+      "x-entity-reference": "EnrollmentApplication",
+      "x-reference-scope": "Must resolve to an authorized EnrollmentApplication in the owning institution."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering capacity scope.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "section_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional section seat.",
+      "x-entity-reference": "Section",
+      "x-reference-scope": "Must resolve to an authorized Section in the owning institution."
+    },
+    "token_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Hash of one-use acceptance token."
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Issue instant."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive expiry."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "held",
+        "consumed",
+        "released",
+        "expired"
+      ],
+      "default": "held",
+      "description": "Seat lifecycle."
+    }
+  },
+  "required": [
+    "id",
+    "application_id",
+    "offering_id",
+    "token_digest",
+    "issued_at",
+    "expires_at",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "token_digest"
+    ]
+  ],
+  "x-invariants": [
+    "Only held and unexpired reservations count.",
+    "Capacity check, consumption and enrollment commit together."
+  ]
+}

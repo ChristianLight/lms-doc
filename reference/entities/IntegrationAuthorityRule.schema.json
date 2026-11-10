@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IntegrationAuthorityRule",
+  "description": "Pinned field authority and permitted direction for one connector model attribute.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "connection_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Connector installation.",
+      "x-entity-reference": "IntegrationConnection",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "connection_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Exact configuration version owning this immutable rule."
+    },
+    "resource_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Mapped connector model."
+    },
+    "field_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Allowlisted field or action name."
+    },
+    "authority": {
+      "type": "string",
+      "enum": [
+        "local",
+        "provider",
+        "review"
+      ],
+      "description": "Source of truth for this field. Review queues conflicts."
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound",
+        "both"
+      ],
+      "description": "Permitted transport direction."
+    },
+    "allow_clear": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether an explicit authorized clear is accepted for this field."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "connection_id",
+    "connection_version",
+    "resource_type",
+    "field_key",
+    "authority",
+    "direction",
+    "allow_clear"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "connection_id",
+      "connection_version",
+      "resource_type",
+      "field_key"
+    ]
+  ],
+  "x-invariants": [
+    "Undefined fields are denied by default. Incoming null and absent keys are different.",
+    "Official grade release remains local. A provider result can supply evidence through a declared adapter only."
+  ]
+}

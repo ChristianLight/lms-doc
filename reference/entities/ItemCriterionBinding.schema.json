@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ItemCriterionBinding",
+  "description": "Maps item responses to a versioned scoring criterion.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ItemCriterionBinding identifier."
+    },
+    "item_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Item version owning this criterion.",
+      "x-entity-reference": "ItemVersion",
+      "x-reference-scope": "Item version owning this criterion."
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Stable scoring key within item version."
+    },
+    "marking_rule_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Same-institution approved rule for automated judging.",
+      "x-entity-reference": "MarkingRuleVersion",
+      "x-reference-scope": "Same-institution approved rule for automated judging."
+    },
+    "rubric_criterion_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Same-institution criterion used for human judgment.",
+      "x-entity-reference": "RubricCriterion",
+      "x-reference-scope": "Same-institution criterion used for human judgment."
+    },
+    "interaction_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Declared local response inputs for this criterion."
+    },
+    "dependency_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Other criterion keys required before evaluating this binding."
+    },
+    "maximum": {
+      "type": "string",
+      "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])",
+      "description": "Criterion bound within item scoring scale."
+    },
+    "blank_disposition": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Approved zero, review or explicit excused rule."
+    },
+    "invalid_disposition": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Configured response policy for a captured invalid value."
+    }
+  },
+  "required": [
+    "id",
+    "item_version_id",
+    "key",
+    "interaction_keys",
+    "dependency_keys",
+    "maximum",
+    "blank_disposition",
+    "invalid_disposition"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "item_version_id",
+      "key"
+    ]
+  ],
+  "x-invariants": [
+    "Exactly one evaluation source selected.",
+    "Inputs and dependencies resolve in the same ItemVersion.",
+    "No criterion cycle.",
+    "Baseline requires all human criteria in one item version to use the same rubric revision."
+  ]
+}

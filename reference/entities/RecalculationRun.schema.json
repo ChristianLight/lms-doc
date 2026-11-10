@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RecalculationRun",
+  "description": "Scoped dry run or reviewed recalculation job with pinned policy and inputs.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique RecalculationRun identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering within the same institution.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering within the same institution."
+    },
+    "policy_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact candidate policy in same offering.",
+      "x-entity-reference": "GradePolicyVersion",
+      "x-reference-scope": "Exact candidate policy in same offering."
+    },
+    "algorithm_version": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Candidate calculation engine version."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "ready",
+        "partially_ready",
+        "applying",
+        "applied",
+        "cancelled",
+        "failed"
+      ],
+      "default": "queued",
+      "description": "Job lifecycle."
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "preview",
+        "proposed_correction",
+        "policy_adoption"
+      ],
+      "default": "preview",
+      "description": "Authorized recalc intent."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 3000,
+      "description": "Recorded review purpose."
+    },
+    "input_cutoff_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Approved evidence boundary."
+    },
+    "input_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Frozen target set and exact cutoff vector digest."
+    },
+    "review_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Deterministic complete comparison fingerprint."
+    },
+    "expected_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100000,
+      "description": "Size of frozen target set."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "offering_id",
+    "policy_version_id",
+    "algorithm_version",
+    "state",
+    "mode",
+    "reason",
+    "input_cutoff_at",
+    "input_digest",
+    "review_digest",
+    "expected_count",
+    "actor_id",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Preview never changes learner-visible grade.",
+    "Approved apply requires current material target state and exact review digest."
+  ]
+}

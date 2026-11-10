@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GuardianRelationship",
+  "description": "Verified and expiring rights relation between an observer and a learner.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "guardian_person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Requested or approved guardian or observer.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "learner_person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Learner subject.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "relationship_kind": {
+      "type": "string",
+      "enum": [
+        "parent",
+        "legal_guardian",
+        "adult_delegate",
+        "observer"
+      ],
+      "description": "Relationship and evidentiary category."
+    },
+    "evidence_ref": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected verified evidence reference. Do not expose to teachers or observers."
+    },
+    "visible_categories": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "progress_summary",
+          "attendance_summary",
+          "released_report",
+          "teacher_contact"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "description": "Approved summary categories."
+    },
+    "valid_from": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Inclusive activation time. Absent while requested."
+    },
+    "valid_until": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive expiration or compulsory review time. Required when verified."
+    },
+    "reviewed_by_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Independent institution reviewer.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "verified",
+        "revoked",
+        "denied"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "guardian_person_id",
+    "learner_person_id",
+    "relationship_kind",
+    "evidence_ref",
+    "visible_categories",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "No default visibility categories. A relationship is required in addition to capability. Staff cannot approve where a conflict applies.",
+    "Learner adult or unknown age status requires explicit institution-approved authority for continued visibility.",
+    "No overlapping verified relationship for the same ordered pair unless institution supports separately evidenced scopes."
+  ]
+}

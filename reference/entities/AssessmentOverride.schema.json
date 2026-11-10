@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentOverride",
+  "description": "Approved policy delta for one learner, section or learning group.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AssessmentOverride identifier."
+    },
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Delivery subject to accommodation.",
+      "x-entity-reference": "AssessmentDelivery",
+      "x-reference-scope": "Delivery subject to accommodation."
+    },
+    "scope_kind": {
+      "type": "string",
+      "enum": [
+        "Enrollment",
+        "Section",
+        "LearningGroup"
+      ],
+      "description": "Enrollment, Section or LearningGroup."
+    },
+    "scope_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID of applicable scope in same offering."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Override record version in scope."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive approval effect."
+    },
+    "effective_until": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive interval end."
+    },
+    "deltas": {
+      "type": "object",
+      "properties": {
+        "opens_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "due_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closes_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "duration_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 604800
+        },
+        "attempt_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "duration_factor_numerator": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "duration_factor_denominator": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "alternate_assessment_version_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "pause_total_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3600
+        },
+        "alternate_presentation_profile": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "description": "Only approved field values with explicit types."
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Non-sensitive reason category."
+    },
+    "approved_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Accommodation approver for the delivery.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Accommodation approver for the delivery."
+    },
+    "protected_reference": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Opaque protected support document link."
+    }
+  },
+  "required": [
+    "id",
+    "delivery_id",
+    "scope_kind",
+    "scope_id",
+    "revision",
+    "effective_from",
+    "deltas",
+    "reason_code",
+    "approved_by"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "delivery_id",
+      "scope_kind",
+      "scope_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Enrollment takes precedence over group fields.",
+    "Reject same-priority conflicts.",
+    "Support information is separate and access-restricted."
+  ]
+}

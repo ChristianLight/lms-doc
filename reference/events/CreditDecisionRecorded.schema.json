@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CreditDecisionRecorded",
+  "description": "Institutional or recognition credit ledger decision appended.",
+  "type": "object",
+  "properties": {
+    "credit_decision_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "credit_key": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "credit_decision_id",
+    "credit_key",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per credit award stream.",
+  "x-deduplication": "credit_decision_id.",
+  "x-privacy": "Scoped retrieval required for amounts and subject."
+}

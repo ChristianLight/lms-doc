@@ -1,0 +1,7 @@
+<problem display_name="Nearest fraction" weight="2.0" rerandomize="never" showanswer="finished">
+  <numericalresponse answer="0.5">
+    <label>Enter one half as a decimal.</label>
+    <responseparam type="tolerance" default="0.01"/>
+    <formulaequationinput/>
+  </numericalresponse>
+</problem>

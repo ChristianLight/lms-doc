@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cmi5LaunchIssued",
+  "description": "One authorized AU launch and one-use fetch grant were recorded.",
+  "type": "object",
+  "properties": {
+    "registration_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "launch_session_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "session_uuid": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "registration_id",
+    "launch_session_id",
+    "session_uuid"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "AU session creation order.",
+  "x-deduplication": "Session UUID.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeRecalculationApplied",
+  "description": "Reviewed candidates applied to calculated pointers.",
+  "type": "object",
+  "properties": {
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "run_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "review_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "offering_id",
+    "run_id",
+    "review_digest"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per run status.",
+  "x-deduplication": "run_id and applied transition.",
+  "x-privacy": "No affected learner list or scores."
+}

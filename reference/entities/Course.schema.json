@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Course",
+  "description": "Durable course catalog identity and owner scope.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Must resolve to an authorized Institution in the owning institution."
+    },
+    "owner_unit_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning unit.",
+      "x-entity-reference": "OrganizationUnit",
+      "x-reference-scope": "Must resolve to an authorized OrganizationUnit in the owning institution."
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Display catalog code."
+    },
+    "normalized_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Canonical case-folded code."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Catalog title."
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 6000,
+      "default": "",
+      "description": "Plain catalog description."
+    },
+    "default_locale": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 35,
+      "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+      "description": "Default published locale."
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "institution",
+        "restricted"
+      ],
+      "default": "restricted",
+      "description": "Catalog discoverability."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ],
+      "default": "active",
+      "description": "Catalog lifecycle."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Compare-and-swap token."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "owner_unit_id",
+    "code",
+    "normalized_code",
+    "title",
+    "summary",
+    "default_locale",
+    "visibility",
+    "state",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "normalized_code"
+    ]
+  ],
+  "x-invariants": [
+    "Business code normalization is invariant within an institution.",
+    "Archive does not revoke academic evidence."
+  ]
+}

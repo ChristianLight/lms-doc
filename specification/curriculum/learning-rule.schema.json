@@ -1,0 +1,528 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Version 1 declarative learning rule",
+  "type": "object",
+  "properties": {
+    "gate": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/gate"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "completion": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/criterion"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "show_locked": {
+      "type": "boolean"
+    },
+    "continuity": {
+      "type": "string",
+      "enum": [
+        "live",
+        "sticky_after_start"
+      ]
+    }
+  },
+  "required": [
+    "gate",
+    "completion",
+    "show_locked",
+    "continuity"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "gate": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "all"
+              ]
+            },
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/gate"
+              },
+              "maxItems": 100,
+              "minItems": 1
+            }
+          },
+          "required": [
+            "type",
+            "children"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "any"
+              ]
+            },
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/gate"
+              },
+              "maxItems": 100,
+              "minItems": 1
+            }
+          },
+          "required": [
+            "type",
+            "children"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "placement_completed"
+              ]
+            },
+            "placement_key": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "type",
+            "placement_key"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "course_completed"
+              ]
+            },
+            "course_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "equivalence_set_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "type",
+            "course_id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "result_at_least"
+              ]
+            },
+            "grade_item_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "scale_version_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "minimum": {
+              "type": "string",
+              "pattern": "^-?(0|[1-9][0-9]{0,14})(\\.[0-9]{1,6})?$"
+            },
+            "evidence_policy": {
+              "type": "string",
+              "enum": [
+                "released",
+                "certified"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "grade_item_id",
+            "scale_version_id",
+            "minimum",
+            "evidence_policy"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "member_of"
+              ]
+            },
+            "scope_kind": {
+              "type": "string",
+              "enum": [
+                "section",
+                "learning_group",
+                "cohort"
+              ]
+            },
+            "scope_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "type",
+            "scope_kind",
+            "scope_id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "time_at_or_after"
+              ]
+            },
+            "instant": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "type",
+            "instant"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "approval"
+              ]
+            },
+            "approval_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+            }
+          },
+          "required": [
+            "type",
+            "approval_key"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "evidence_present"
+              ]
+            },
+            "evidence_kind": {
+              "type": "string",
+              "enum": [
+                "acknowledgment",
+                "view",
+                "video_coverage",
+                "assessment_submission",
+                "assessment_result",
+                "attendance",
+                "package",
+                "accessible_equivalent",
+                "waiver",
+                "carry"
+              ]
+            },
+            "placement_key": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "type",
+            "evidence_kind"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "criterion": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "all"
+              ]
+            },
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/criterion"
+              },
+              "maxItems": 100,
+              "minItems": 1
+            }
+          },
+          "required": [
+            "type",
+            "children"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "any"
+              ]
+            },
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/criterion"
+              },
+              "maxItems": 100,
+              "minItems": 1
+            }
+          },
+          "required": [
+            "type",
+            "children"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "accepted_event"
+              ]
+            },
+            "event_kind": {
+              "type": "string",
+              "enum": [
+                "acknowledgment",
+                "view",
+                "video_coverage",
+                "assessment_submission",
+                "assessment_result",
+                "attendance",
+                "package",
+                "accessible_equivalent",
+                "waiver",
+                "carry"
+              ]
+            },
+            "minimum_count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000
+            }
+          },
+          "required": [
+            "type",
+            "event_kind",
+            "minimum_count"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "media_coverage"
+              ]
+            },
+            "minimum_fraction": {
+              "type": "string",
+              "pattern": "^(0(?:\\.[0-9]{1,6})?|1(?:\\.0{1,6})?)$"
+            },
+            "alternative_placement_key": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "type",
+            "minimum_fraction"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "verified_submission"
+              ]
+            },
+            "assessment_delivery_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "type",
+            "assessment_delivery_id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "released_result"
+              ]
+            },
+            "grade_item_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "scale_version_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "minimum": {
+              "type": "string",
+              "pattern": "^-?(0|[1-9][0-9]{0,14})(\\.[0-9]{1,6})?$"
+            }
+          },
+          "required": [
+            "type",
+            "grade_item_id",
+            "scale_version_id",
+            "minimum"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "attendance_fraction"
+              ]
+            },
+            "meeting_series_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "minimum_fraction": {
+              "type": "string",
+              "pattern": "^(0(?:\\.[0-9]{1,6})?|1(?:\\.0{1,6})?)$"
+            },
+            "accept_late": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "meeting_series_id",
+            "minimum_fraction",
+            "accept_late"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "staff_decision"
+              ]
+            },
+            "decision_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+            }
+          },
+          "required": [
+            "type",
+            "decision_key"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "examples": [
+    {
+      "gate": {
+        "type": "all",
+        "children": [
+          {
+            "type": "placement_completed",
+            "placement_key": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "type": "any",
+            "children": [
+              {
+                "type": "approval",
+                "approval_key": "approved-prior-learning"
+              },
+              {
+                "type": "time_at_or_after",
+                "instant": "2026-11-10T08:00:00Z"
+              }
+            ]
+          }
+        ]
+      },
+      "completion": {
+        "type": "media_coverage",
+        "minimum_fraction": "0.9"
+      },
+      "show_locked": true,
+      "continuity": "live"
+    }
+  ]
+}

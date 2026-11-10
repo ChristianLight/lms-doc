@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeScalePublished",
+  "description": "Approved exact scale becomes available for new grade policies.",
+  "type": "object",
+  "properties": {
+    "scale_version_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "scale_key": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "scale_version_id",
+    "scale_key",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Scale family revision.",
+  "x-deduplication": "scale_version_id.",
+  "x-privacy": "No learner data."
+}

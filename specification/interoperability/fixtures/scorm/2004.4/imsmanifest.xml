@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="Fraction2004" version="1.0"
+  xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3"
+  xmlns:imsss="http://www.imsglobal.org/xsd/imsss">
+  <metadata><schema>ADL SCORM</schema><schemaversion>2004 4th Edition</schemaversion></metadata>
+  <organizations default="org">
+    <organization identifier="org" structure="hierarchical">
+      <title>Fractions SCORM 2004</title>
+      <item identifier="intro" identifierref="lesson" parameters="?mode=intro">
+        <title>Introduction</title>
+      </item>
+      <item identifier="review" identifierref="lesson" parameters="?mode=review">
+        <title>Review</title>
+      </item>
+      <imsss:sequencing><imsss:controlMode choice="true" flow="true"/></imsss:sequencing>
+    </organization>
+  </organizations>
+  <resources xml:base="course/">
+    <resource identifier="lesson" type="webcontent" adlcp:scormType="sco" xml:base="first/" href="index.html">
+      <file href="index.html"/>
+      <file href="runtime.js"/>
+      <dependency identifierref="asset"/>
+    </resource>
+    <resource identifier="asset" type="webcontent" adlcp:scormType="asset" xml:base="review/">
+      <file href="style.css"/>
+    </resource>
+  </resources>
+</manifest>

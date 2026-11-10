@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentExamIncidentOpened",
+  "description": "Protected operational review work exists.",
+  "type": "object",
+  "properties": {
+    "incident_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "incident_id",
+    "delivery_id"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Per ExamIncident creation.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "No candidate, proctoring or evidentiary details."
+}

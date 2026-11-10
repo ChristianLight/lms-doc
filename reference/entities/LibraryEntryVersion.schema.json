@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LibraryEntryVersion",
+  "description": "Published immutable entry or template baseline.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "library_entry_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable library item.",
+      "x-entity-reference": "LibraryEntry",
+      "x-reference-scope": "Must resolve to an authorized LibraryEntry in the owning institution."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic publication number."
+    },
+    "content_node_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact resource payload.",
+      "x-entity-reference": "ContentNodeVersion",
+      "x-reference-scope": "Must resolve to an authorized ContentNodeVersion in the owning institution."
+    },
+    "activity_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact activity payload.",
+      "x-entity-reference": "ActivityVersion",
+      "x-reference-scope": "Must resolve to an authorized ActivityVersion in the owning institution."
+    },
+    "template_course_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact outline publication used as a managed template.",
+      "x-entity-reference": "CourseVersion",
+      "x-reference-scope": "Must resolve to an authorized CourseVersion in the owning institution."
+    },
+    "protected_paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 400
+      },
+      "maxItems": 64,
+      "minItems": 0,
+      "description": "Managed JSON pointers or structural aspects."
+    },
+    "license_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Approved use rules."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Entry manifest digest."
+    },
+    "published_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Accountable publisher.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Publication instant."
+    }
+  },
+  "required": [
+    "id",
+    "library_entry_id",
+    "revision",
+    "protected_paths",
+    "license_key",
+    "digest",
+    "published_by",
+    "published_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "library_entry_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Exactly one payload binds, matching entry kind."
+  ]
+}

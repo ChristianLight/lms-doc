@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RoleAssignment",
+  "description": "An exact role revision granted to a Principal for an explicit scope and time window.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Recipient of the contextual grant.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "role_definition_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Pinned capability definition.",
+      "x-entity-reference": "RoleDefinitionVersion",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "scope_type": {
+      "type": "string",
+      "enum": [
+        "Institution",
+        "OrganizationUnit",
+        "AcademicPeriod",
+        "Program",
+        "Course",
+        "CourseOffering",
+        "Section",
+        "LearningGroup",
+        "Cohort",
+        "Library",
+        "Person",
+        "IntegrationConnection",
+        "AssessmentDelivery",
+        "ExternalToolDeployment",
+        "RosterFeed"
+      ],
+      "description": "Explicit capability context type."
+    },
+    "scope_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Resource identity in the institution. Validate against the registry for scope_type."
+    },
+    "include_descendants": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, apply only through the declared typed scope relations."
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive activation time."
+    },
+    "valid_until": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive expiration time. Null only for approved standing grants."
+    },
+    "granted_by_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Actor responsible for proposing the grant.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "approved_by_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Independent approver for sensitive grants.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "description": "Purpose of the assignment. Sanitize when displaying or exporting."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "revoked",
+        "denied"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "principal_id",
+    "role_definition_version_id",
+    "scope_type",
+    "scope_id",
+    "include_descendants",
+    "valid_from",
+    "granted_by_id",
+    "reason",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Serialize overlapping writes for the tuple principal, role family, scope type and scope ID. Multiple approved overlapping windows for that tuple are forbidden.",
+    "An expired approved grant has no effect. Revocation never rewrites history.",
+    "Assignee cannot approve their own grant. Scope overlap does not authorize a role outside the delegate's approved authority."
+  ]
+}

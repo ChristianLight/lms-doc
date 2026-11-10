@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SyncRun",
+  "description": "A resumable dry run, incremental feed, or full reconciliation against a configured connector.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "connection_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Connector installation.",
+      "x-entity-reference": "IntegrationConnection",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "connection_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Exact connector configuration pinned at start."
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "dry_run",
+        "incremental",
+        "complete_snapshot"
+      ],
+      "description": "Run semantics and removal eligibility."
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound"
+      ],
+      "description": "Planned transfer direction."
+    },
+    "initial_cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Provider cursor at start, treated as opaque."
+    },
+    "committed_cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Last completely applied checkpoint."
+    },
+    "pages_applied": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "description": "Number of committed pages. Starts at zero."
+    },
+    "records_seen": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "description": "Number of validated unique records observed. Starts at zero."
+    },
+    "conflicts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "description": "Number of records requiring review. Starts at zero."
+    },
+    "snapshot_marker": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Provider proof of a complete consistent snapshot, required for absence review."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "review",
+        "succeeded",
+        "failed",
+        "canceled"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "connection_id",
+    "connection_version",
+    "mode",
+    "direction",
+    "pages_applied",
+    "records_seen",
+    "conflicts",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Dry run never changes local domain records, persisted connector cursor, or provider.",
+    "No absence-based removals from partial data. Complete snapshots stage diffs and require explicit approval before applying removals."
+  ]
+}

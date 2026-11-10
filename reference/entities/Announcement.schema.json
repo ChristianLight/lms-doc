@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Announcement",
+  "description": "Scoped instructional communication with separate dispatch results.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning delivery.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "audience": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "offering",
+            "section",
+            "learning_group",
+            "enrollment"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "additionalProperties": false,
+      "description": "Offering-local scoped recipients."
+    },
+    "author_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized author.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Notification title."
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 12000,
+      "description": "Sanitized visible announcement body."
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "information",
+        "important",
+        "urgent"
+      ],
+      "default": "information",
+      "description": "Display and dispatch class."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "published",
+        "withdrawn"
+      ],
+      "default": "draft",
+      "description": "Announcement lifecycle."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Optimistic token."
+    },
+    "publish_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Scheduled or actual visibility start."
+    },
+    "withdraw_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exclusive withdrawal time."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "audience",
+    "author_id",
+    "title",
+    "body",
+    "severity",
+    "state",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Notification payload excludes grades and sensitive accommodations.",
+    "Dispatch is unique per recipient, channel and revision."
+  ]
+}

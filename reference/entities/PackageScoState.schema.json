@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageScoState",
+  "description": "Current confirmed run-time state for one registration and activity occurrence.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "registration_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning learner attempt.",
+      "x-entity-reference": "PackageRegistration",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "occurrence_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "SCO occurrence within registered organization.",
+      "x-entity-reference": "PackageActivity",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "launch_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Count of activated sessions for this occurrence."
+    },
+    "total_time_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Exact fixed-unit millisecond projection only when duration has no unresolved calendar components."
+    },
+    "last_exit": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 32,
+      "description": "Edition-specific prior exit token."
+    },
+    "completion_status": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Last accepted raw completion token, when supported."
+    },
+    "success_status": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Last accepted raw success token, when supported."
+    },
+    "state_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC time of last durably accepted mutation."
+    },
+    "activity_attempt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Activity attempt whose RTE model this is.",
+      "x-entity-reference": "PackageActivityAttempt",
+      "x-reference-scope": "Same registration and exact occurrence."
+    },
+    "duration_total": {
+      "type": "object",
+      "properties": {
+        "years": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "months": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "fixed_milliseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "years",
+        "months",
+        "fixed_milliseconds"
+      ],
+      "additionalProperties": false,
+      "description": "Lossless duration sum. Preserve calendar components separately from fixed elapsed units."
+    }
+  },
+  "required": [
+    "id",
+    "registration_id",
+    "occurrence_id",
+    "launch_count",
+    "state_revision",
+    "updated_at",
+    "activity_attempt_id",
+    "duration_total"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "activity_attempt_id"
+    ]
+  ],
+  "x-invariants": [
+    "Raw status values remain edition-specific.",
+    "A read of cached values is not evidence of commit.",
+    "Only the runtime owner can write after valid edition checks.",
+    "A new attempt within an existing registration starts from edition defaults. A resumed attempt reuses its own state. Preview, browse and review state never replaces official attempt evidence."
+  ]
+}

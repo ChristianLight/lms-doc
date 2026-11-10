@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttemptTimingAdjustment",
+  "description": "Append-only timing intervention or permitted pause record.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AttemptTimingAdjustment identifier."
+    },
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Affected active sitting.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Affected active sitting."
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic timing decision sequence."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized accommodation coordinator or permitted candidate.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized accommodation coordinator or permitted candidate."
+    },
+    "kind": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Extension, pause start, pause end or reviewed correction."
+    },
+    "prior_deadline_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Effective prior exclusive cutoff."
+    },
+    "new_deadline_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Computed replacement cutoff when applicable."
+    },
+    "effective_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative time of action."
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Non-sensitive reason classification."
+    },
+    "incident_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Restricted linked incident only where applicable.",
+      "x-entity-reference": "ExamIncident",
+      "x-reference-scope": "Restricted linked incident only where applicable."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_id",
+    "sequence",
+    "actor_id",
+    "kind",
+    "effective_at",
+    "reason_code"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "attempt_id",
+      "sequence"
+    ]
+  ],
+  "x-invariants": [
+    "Changing timer policy does not mutate original start snapshot.",
+    "Pause seconds counted at most once.",
+    "Existing sealed evidence is immutable."
+  ]
+}

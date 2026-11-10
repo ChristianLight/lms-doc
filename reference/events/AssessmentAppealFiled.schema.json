@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentAppealFiled",
+  "description": "A learner requested review of disclosed evidence.",
+  "type": "object",
+  "properties": {
+    "appeal_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "appeal_id",
+    "attempt_id"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Per AssessmentAppeal creation.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "Protected service scope. No learner allegations."
+}

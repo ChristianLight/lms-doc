@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EnrollmentReleaseChanged",
+  "description": "One enrollment assigned an exact different publication.",
+  "type": "object",
+  "properties": {
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "prior_release_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "new_release_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "course_version_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "effective_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "enrollment_id",
+    "prior_release_id",
+    "new_release_id",
+    "course_version_id",
+    "effective_at"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By enrollment effective interval.",
+  "x-deduplication": "New release ID.",
+  "x-privacy": "No attempts or evaluation payloads."
+}

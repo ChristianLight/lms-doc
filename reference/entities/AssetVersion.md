@@ -234,6 +234,7 @@ Required. Null is rejected.
 - Managed versions use a StorageObject and platform scan result. Externally hosted versions use a pinned ExternalResourceMap and cannot carry a managed storage object.
 - Approval follows the platform authoritative object or provider result. Withdrawal blocks this resource without modifying platform custody state.
 - Only explicitly hosted versions can use the hosted approval command. Managed bytes require a trusted platform scan verdict.
+- An authoring-source AssetVersion uses a Platform StorageObject of evidence purpose. Learner content placements require a separate approved content-purpose AssetVersion with rights and accessibility checks even if the bytes match.
 
 ## Unique keys
 

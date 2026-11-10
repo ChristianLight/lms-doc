@@ -147,6 +147,22 @@
           "description": "Detected input shape independently of installation support."
         },
         {
+          "name": "detected_container",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "zip",
+              "tar_gzip",
+              "xml",
+              "csv",
+              "json"
+            ]
+          },
+          "description": "Outer verified container independently of the source format and profile.",
+          "required": false,
+          "nullable": false
+        },
+        {
           "name": "signature_evidence",
           "schema": {
             "type": "string",
@@ -226,6 +242,7 @@
         ],
         [
           "institution_id",
+          "source_namespace",
           "storage_scope",
           "sha256"
         ]
@@ -251,7 +268,8 @@
         "The verified digest is immutable after quarantine.",
         "Raw archive reads need explicit artifact authority and permission to every included data class.",
         "Detect and retain profile evidence before import approval.",
-        "Release eligibility requires an accepted StorageObject version with matching hash and exact byte length. Quarantine may read it only through the storage owner. Storage deduplication never shares domain authorization."
+        "Release eligibility requires an accepted StorageObject version with matching hash and exact byte length. Quarantine may read it only through the storage owner. Storage deduplication never shares domain authorization.",
+        "A verified blob may be physically deduplicated within approved storage custody. Separate source namespaces or protected artifact authorities still require distinct TransferArtifact identity."
       ],
       "retention": "Retain accepted curriculum originals while referenced and by default 365 days after transfer. Quarantine or failed artifacts expire after 30 days unless an active investigation or hold applies.",
       "states": [],
@@ -456,6 +474,54 @@
           "description": "Exact approved format profile."
         },
         {
+          "name": "source_container",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "zip",
+              "tar_gzip",
+              "xml",
+              "csv",
+              "json"
+            ]
+          },
+          "description": "Exact verified outer container of the selected input. Absent on exports and before verified inspection.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "source_profile",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.-]{0,55}/[0-9a-z][0-9a-z_.-]{0,31}$"
+          },
+          "description": "Pinned case-sensitive source decoding profile, independent of archive extension and target format.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "inspection_manifest_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Immutable restricted index of scanned input, candidate roots, rejected entries and adapter evidence.",
+          "required": false,
+          "nullable": false,
+          "references": "StorageObject",
+          "reference_scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+        },
+        {
+          "name": "inspection_manifest_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "description": "Canonical fingerprint of protected verified inspection inventory.",
+          "required": false,
+          "nullable": false
+        },
+        {
           "name": "adapter_build",
           "schema": {
             "type": "string",
@@ -507,6 +573,124 @@
           "description": "Typed scope identifier and optional owner key, interpreted under format profile."
         },
         {
+          "name": "selected_source_roots",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "root_key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "course",
+                    "library",
+                    "package",
+                    "assessment",
+                    "historic_scope"
+                  ]
+                },
+                "source_scope": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "layer": {
+                  "type": "string",
+                  "enum": [
+                    "published",
+                    "draft",
+                    "shared"
+                  ]
+                },
+                "dependency_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "root_record_id": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "required": [
+                "root_key",
+                "kind",
+                "source_scope",
+                "layer",
+                "dependency_digest",
+                "root_record_id"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 1000,
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "description": "Exact approved artifact roots, logical source scopes, layers and dependency fingerprints. Persist when the import plan is built. Mutually exclusive with an outbound selection.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "root_commit_policy",
+          "schema": {
+            "type": "string",
+            "const": "atomic_selected_closure"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "One selected required dependency closure commits atomically. Required when several roots are selected. Independent promotions require separately approved jobs."
+        },
+        {
+          "name": "dependency_artifacts",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "artifact_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "source_profile": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_.-]{0,55}/[0-9a-z][0-9a-z_.-]{0,31}$"
+                }
+              },
+              "required": [
+                "artifact_id",
+                "sha256",
+                "source_profile"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 200,
+            "minItems": 0,
+            "uniqueItems": true
+          },
+          "description": "Immutable authorized input artifact IDs and verified digests, distinct by artifact.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "plan_revision",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "description": "Revision of frozen selection, graph and owner baselines. Changes on plan rebuild or repair only. Approval or heartbeat increments job revision without changing this field.",
+          "required": false,
+          "nullable": false
+        },
+        {
           "name": "selection_digest",
           "schema": {
             "type": "string",
@@ -525,6 +709,267 @@
           "required": false,
           "nullable": false,
           "description": "Fingerprint of staged owner commands and target baseline."
+        },
+        {
+          "name": "plan_manifest_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Exact immutable current plan manifest. Its protected predecessor reference preserves inspectable prior plan revisions, owner baselines, edges or export reports.",
+          "references": "StorageObject",
+          "reference_scope": "Exact clean StorageObject owned by this transfer plan and Institution."
+        },
+        {
+          "name": "generation_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "One target generation for the applying or applied import. Allocated before any staged owner command and stable during retries.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "generation_visibility",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "private",
+              "activated"
+            ]
+          },
+          "description": "Authoritative visibility of committed imported generation. Absent until commit. Private permits only authorized editor workflows.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "generation_receipt_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "description": "Fingerprint of exact committed generation, plan revision, owner receipts, crosswalk result and visibility.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "generation_committed_at",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": "UTC time visibility and mapping receipt committed.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "owner_stage_receipts",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "owner": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "baseline_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "stage_receipt_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "stage_receipt_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              },
+              "required": [
+                "owner",
+                "baseline_digest",
+                "stage_receipt_id",
+                "stage_receipt_digest"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 32,
+            "minItems": 1,
+            "uniqueItems": false
+          },
+          "description": "One protected, independently verified receipt per required owner. No owner draft may surface before the generation visibility decision.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "selection_manifest_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Immutable protected archive-export selection, including exact source revisions, option choices, rights snapshots and receiving profile. Validate the stored representation with export-projection.schema.json and its owning command.",
+          "required": false,
+          "nullable": false,
+          "references": "StorageObject",
+          "reference_scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+        },
+        {
+          "name": "export_profile_revision",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "description": "Pinned approved egress profile revision. Review is repeated if target format or profile changes.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "export_edition",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "native_1",
+              "olx_course_1",
+              "olx_legacy_library_1",
+              "olx_library_archive_1",
+              "scorm_1_2",
+              "scorm_2004_2",
+              "scorm_2004_3",
+              "scorm_2004_4",
+              "qti_2_1",
+              "qti_2_2",
+              "qti_3_0_1",
+              "common_cartridge_1_3"
+            ]
+          },
+          "description": "Exact output edition validated independently from inbound format detection.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "capability_report_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Protected immutable capability projection keyed to exact source selection, generator and destination. Validate the stored representation with export-projection.schema.json and its owning command.",
+          "required": false,
+          "nullable": false,
+          "references": "StorageObject",
+          "reference_scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+        },
+        {
+          "name": "capability_report_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "description": "Verified digest of exact capability decisions.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "loss_report_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Protected immutable loss report for that projection. A zero-loss report is still required. Validate the stored representation with export-projection.schema.json and its owning command.",
+          "required": false,
+          "nullable": false,
+          "references": "StorageObject",
+          "reference_scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+        },
+        {
+          "name": "loss_report_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "description": "Verified digest of exact loss decisions and required feature blockers.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "export_validation_report_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Immutable protected artifact validation and independent profile test evidence. Validate the stored representation with export-projection.schema.json and its owning command.",
+          "required": false,
+          "nullable": false,
+          "references": "StorageObject",
+          "reference_scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+        },
+        {
+          "name": "export_validation_report_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "description": "Verified validation report digest for exact output bytes and selected profile.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "export_result_storage_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Protected clean immutable output owned by this completed export job. Absent while queued or under review.",
+          "required": false,
+          "nullable": false,
+          "references": "StorageObject",
+          "reference_scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+        },
+        {
+          "name": "export_result_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "description": "SHA-256 of the generated output bytes.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "export_result_bytes",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "description": "Measured positive byte length of the verified output.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "export_expires_at",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": "Exclusive authorized output collection expiry. Does not dispose underlying academic records.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "export_completed_at",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": "Authoritative UTC instant result validation and availability were committed.",
+          "required": false,
+          "nullable": false
         },
         {
           "name": "fence_epoch",
@@ -642,12 +1087,35 @@
             "lease_expires_at"
           ],
           "purpose": "Find claimable expired worker leases."
+        },
+        {
+          "fields": [
+            "institution_id",
+            "generation_id"
+          ],
+          "purpose": "Resolve immutable generation receipt across fenced retries."
+        },
+        {
+          "fields": [
+            "institution_id",
+            "direction",
+            "state",
+            "export_expires_at"
+          ],
+          "purpose": "Find completed export artifacts approaching collection expiry."
         }
       ],
       "invariants": [
         "Import requires an artifact and export requires an immutable selection.",
         "Only the active fence can checkpoint or alter the plan.",
-        "A changed plan digest invalidates all previous approvals."
+        "A changed plan digest invalidates all previous approvals.",
+        "Every import after inspection pins source container, source profile and immutable inspection manifest. A staged import pins selected roots, dependency artifact digests and plan revision.",
+        "Import dry run does not create owner-visible drafts, active crosswalks, generation commitments or learner effects.",
+        "A generation can commit once. Require all exact owner receipts and active approvals, then publish private editor visibility or an explicitly authorized activation barrier with crosswalk receipts. No partial root is visible.",
+        "Export uses a direction-enabled exact format, edition and profile revision. The selection is immutable. Required losses and missing disclosure or rights approvals block result availability.",
+        "An applied export has one protected output, validation receipt and collection expiry. Retrying completion returns the same result. A generated or expired output cannot be redownloaded solely by knowing its UUID.",
+        "The current plan manifest pins its exact graph or export reports and predecessor manifest. A replaced private generation remains closed and cannot be resumed under a successor plan.",
+        "Every selected root names its exact same-plan TransferRecord, so dependent reachability is reproducible for each selected root."
       ],
       "retention": "Retain job, decision history and published owner receipts for seven years by default. Expire failed private staging after 30 days unless held.",
       "states": [
@@ -723,7 +1191,7 @@
           "command": "ApplyTransferPlan",
           "guard": "All owners confirm the staged generation and baseline.",
           "effects": [
-            "Activate one generation and record mapping."
+            "Commit exactly one private or separately authorized activated generation with baseline, crosswalk and owner receipts."
           ]
         },
         {
@@ -751,6 +1219,42 @@
           "guard": "Requester authorized and no visible commit exists.",
           "effects": [
             "Revoke stage grants."
+          ]
+        },
+        {
+          "from": "received",
+          "to": "awaiting_review",
+          "command": "RecordCurriculumExportProjection",
+          "guard": "Export worker is current and protected reports match exact frozen selection.",
+          "effects": [
+            "Pin immutable capability and loss reports and plan revision without making a result available."
+          ]
+        },
+        {
+          "from": "awaiting_review",
+          "to": "awaiting_review",
+          "command": "RecordCurriculumExportProjection",
+          "guard": "An authorized private reprojection changes decisions or has an identical receipt.",
+          "effects": [
+            "Replay same reports or append a new projection revision and invalidate approvals for changed results."
+          ]
+        },
+        {
+          "from": "approved",
+          "to": "applying",
+          "command": "CompleteCurriculumExport",
+          "guard": "Worker fence and current approved export profile and projection match.",
+          "effects": [
+            "Verify restricted generated artifact and independent validation evidence."
+          ]
+        },
+        {
+          "from": "applying",
+          "to": "applied",
+          "command": "CompleteCurriculumExport",
+          "guard": "Exact output bytes, validation results and release gates are verified.",
+          "effects": [
+            "Commit export receipt and short-lived collection eligibility in one durable transaction."
           ]
         }
       ]
@@ -782,6 +1286,17 @@
           "description": "Transfer job and source profile.",
           "references": "TransferJob",
           "reference_scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+        },
+        {
+          "name": "plan_revision",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "description": "Immutable transfer plan revision that owns this candidate record. Never resolves against a newer plan implicitly.",
+          "required": true,
+          "nullable": false
         },
         {
           "name": "source_scope",
@@ -817,6 +1332,64 @@
           "description": "Exact original case-sensitive source key."
         },
         {
+          "name": "source_layer",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "published",
+              "draft",
+              "shared"
+            ]
+          },
+          "description": "Independent source publication layer. Shared definitions have no draft or published-only selector.",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "record_role",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "definition",
+              "placement",
+              "asset",
+              "policy",
+              "reference",
+              "package",
+              "document"
+            ]
+          },
+          "description": "Semantic source occurrence role. Reusable definitions and placements always have separate records.",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "occurrence_key",
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "description": "Stable source-scoped occurrence disambiguator. Use defined sentinel definition for a single non-occurrence record. An ambiguous move or reorder requires review.",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "reachability",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "selected_required",
+              "selected_optional",
+              "detached",
+              "outside_selection"
+            ]
+          },
+          "description": "Classification in the frozen selected root dependency closure. Detached and outside-selection rows do not certify publishability.",
+          "required": true,
+          "nullable": false
+        },
+        {
           "name": "source_revision",
           "schema": {
             "type": "string",
@@ -847,36 +1420,6 @@
           "required": true,
           "nullable": false,
           "description": "Digest of preserved source record identity, bytes and projection-relevant metadata."
-        },
-        {
-          "name": "parent_record_id",
-          "schema": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "required": false,
-          "nullable": false,
-          "description": "Structural parent within the same job.",
-          "references": "TransferRecord",
-          "reference_scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
-        },
-        {
-          "name": "dependency_record_ids",
-          "schema": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "maxItems": 2048,
-            "minItems": 0,
-            "uniqueItems": true
-          },
-          "required": true,
-          "nullable": false,
-          "description": "Typed job record dependencies validated against the staging graph.",
-          "references": "TransferRecord",
-          "reference_scope": "Every referenced record belongs to this transfer job."
         },
         {
           "name": "target_kind",
@@ -954,9 +1497,13 @@
         ],
         [
           "job_id",
+          "plan_revision",
           "source_scope",
           "object_kind",
           "source_key",
+          "source_layer",
+          "record_role",
+          "occurrence_key",
           "source_revision"
         ]
       ],
@@ -974,14 +1521,319 @@
             "target_id"
           ],
           "purpose": "Reconcile a canonical object against source evidence."
+        },
+        {
+          "fields": [
+            "job_id",
+            "plan_revision",
+            "reachability",
+            "disposition"
+          ],
+          "purpose": "Reconcile selected roots and detached issue counts without mixing plan generations."
         }
       ],
       "invariants": [
         "References stay within the job graph or an explicit authorized external map.",
         "Protected drafts are not visible to learners.",
-        "Every processed or blocked source object contributes to the reconciliation totals."
+        "Every processed or blocked source object contributes to the reconciliation totals.",
+        "A record and its typed TransferEdge relationships are immutable within a plan revision. Plan correction appends another revision.",
+        "An opaque source key is not a native UUID. Allocation uses approved scoped identity and occurrence, never a raw hexadecimal token or archive path.",
+        "Required selected reachability with an unresolved blocking issue prohibits promotion of the dependent root. Detached and outside-selection records remain in restricted inventory."
       ],
       "retention": "Retain source and target fingerprints with job evidence. Expire private payloads under their own information class.",
+      "states": [],
+      "transitions": []
+    },
+    {
+      "name": "TransferEdge",
+      "description": "One typed relationship occurrence from a source record to a version-pinned destination, before native owner promotion.",
+      "owner": "interoperability",
+      "identity": "id",
+      "fields": [
+        {
+          "name": "id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Opaque immutable identity of the relationship occurrence.",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "job_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Owning transfer job.",
+          "required": true,
+          "nullable": false,
+          "references": "TransferJob",
+          "reference_scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+        },
+        {
+          "name": "plan_revision",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "description": "Frozen plan revision containing the source and any local target.",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "from_record_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Source record in the same frozen plan.",
+          "required": true,
+          "nullable": false,
+          "references": "TransferRecord",
+          "reference_scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+        },
+        {
+          "name": "edge_key",
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "description": "Adapter-owned exact semantic relationship occurrence key within the source record. Distinct from a display label or target ID.",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "kind",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "containment",
+              "definition",
+              "asset_use",
+              "internal_link",
+              "prerequisite",
+              "library_pin",
+              "assessment_binding",
+              "grade_binding",
+              "package_dependency",
+              "translation",
+              "policy_binding"
+            ]
+          },
+          "description": "Typed owner projection relationship. An ordinary hyperlink cannot be evaluated as a prerequisite.",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "required",
+          "schema": {
+            "type": "boolean"
+          },
+          "description": "Required for this source occurrence's selected deliverable. The plan separately computes reachability.",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "ordinal",
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "description": "Order only where semantic order exists, such as outline containment or authored reference use.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "source_locator",
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "description": "Restricted original source location used for adjudication. Never emit it in a broad event.",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "placement_context_record_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Exact source placement occurrence that supplies context to a placement-sensitive relative link or policy.",
+          "required": false,
+          "nullable": false,
+          "references": "TransferRecord",
+          "reference_scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+        },
+        {
+          "name": "target_source",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "source_scope": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "object_kind": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "source_key": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "source_layer": {
+                "type": "string",
+                "enum": [
+                  "published",
+                  "draft",
+                  "shared"
+                ]
+              },
+              "occurrence_key": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "source_revision": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              }
+            },
+            "required": [
+              "source_scope",
+              "object_kind",
+              "source_key"
+            ],
+            "additionalProperties": false
+          },
+          "description": "Typed unresolved source resolver intent with optional layer, occurrence and revision pins.",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "target_record_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Resolved candidate target inside the same job and plan revision.",
+          "required": false,
+          "nullable": false,
+          "references": "TransferRecord",
+          "reference_scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+        },
+        {
+          "name": "external_map_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Reviewed, currently authorized same-institution external target binding used instead of a local record.",
+          "required": false,
+          "nullable": false,
+          "references": "ExternalObjectMap",
+          "reference_scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+        },
+        {
+          "name": "target_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Exact canonical target revision when pinned after verified resolution. Owner validates the polymorphic kind.",
+          "required": false,
+          "nullable": false
+        },
+        {
+          "name": "resolution",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "resolved_local",
+              "resolved_external",
+              "unresolved",
+              "ambiguous",
+              "rejected",
+              "accepted_optional_exclusion"
+            ]
+          },
+          "description": "Primary verified resolution or blocking/optional disposition.",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "issue_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Current same-job issue documenting ambiguous, rejected or missing required resolution.",
+          "required": false,
+          "nullable": false,
+          "references": "TransferIssue",
+          "reference_scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+        }
+      ],
+      "unique_keys": [
+        [
+          "id"
+        ],
+        [
+          "job_id",
+          "plan_revision",
+          "from_record_id",
+          "edge_key"
+        ]
+      ],
+      "indexes": [
+        {
+          "fields": [
+            "job_id",
+            "plan_revision",
+            "from_record_id",
+            "kind",
+            "ordinal"
+          ],
+          "purpose": "Read ordered and contextual outgoing relationships."
+        },
+        {
+          "fields": [
+            "job_id",
+            "plan_revision",
+            "target_record_id",
+            "kind"
+          ],
+          "purpose": "Trace reverse dependency closure before releasing or replacing a target."
+        },
+        {
+          "fields": [
+            "job_id",
+            "plan_revision",
+            "resolution",
+            "required"
+          ],
+          "purpose": "Find unresolved relationship blockers for review."
+        }
+      ],
+      "invariants": [
+        "Resolved local edges name exactly one same-plan target record. Resolved external edges name exactly one same-institution authorized external map. Unresolved, ambiguous and rejected edges name neither.",
+        "Required resolved dependency must retain an exact approved target version before promotion. No title, guessed path or matching digest silently resolves an edge.",
+        "Containment and prerequisite graphs are validated as separate cycle-sensitive relation sets. Ordinary hyperlinks can be reciprocal.",
+        "The same source reusable definition can create distinct context-specific edges from distinct placement records. Sharing a target does not merge edge occurrence identity.",
+        "Edge order and target baseline are immutable for the current plan. Remediation produces a successor plan and new scope review."
+      ],
+      "retention": "Retain applied graph and reviewed edges with transfer provenance. Expire abandoned private staging after the approved schedule and any active hold.",
       "states": [],
       "transitions": []
     },
@@ -1012,6 +1864,17 @@
           "description": "Job producing the finding.",
           "references": "TransferJob",
           "reference_scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+        },
+        {
+          "name": "plan_revision",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Exact plan for typed issue evidence. Absent only for pre-plan artifact diagnostics."
         },
         {
           "name": "record_id",
@@ -1179,7 +2042,8 @@
       ],
       "invariants": [
         "Blocking scoring loss cannot become an accepted difference without a verified replacement that changes the issue classification.",
-        "Safe summaries exclude responses, tokens and unredacted scripts."
+        "Safe summaries exclude responses, tokens and unredacted scripts.",
+        "A typed record or edge issue refers to the same job and plan revision. Keep superseded issues with original reviewed plan evidence."
       ],
       "retention": "Retain issue and review result for the life of the plan and associated publication. Expire sensitive raw evidence separately.",
       "states": [
@@ -1250,6 +2114,16 @@
           "description": "Registered and verified authoritative source."
         },
         {
+          "name": "source_profile",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.-]{0,55}/[0-9a-z][0-9a-z_.-]{0,31}$"
+          },
+          "description": "Registered source identity profile. Container variants of the same decoding profile do not create separate identities.",
+          "required": true,
+          "nullable": false
+        },
+        {
           "name": "source_scope",
           "schema": {
             "type": "string",
@@ -1283,6 +2157,35 @@
           "description": "Exact source identifier retained as an opaque value."
         },
         {
+          "name": "record_role",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "definition",
+              "placement",
+              "asset",
+              "policy",
+              "reference",
+              "package",
+              "document"
+            ]
+          },
+          "description": "Stable crosswalk role distinguishing definitions from their placement and reference occurrences.",
+          "required": true,
+          "nullable": false
+        },
+        {
+          "name": "occurrence_key",
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "description": "Stable occurrence key in the approved source scope, or explicit definition sentinel. A changed ordinal alone cannot retarget an existing mapping.",
+          "required": true,
+          "nullable": false
+        },
+        {
           "name": "target_kind",
           "schema": {
             "type": "string",
@@ -1304,35 +2207,180 @@
           "description": "Canonical owner entity UUID, validated via owner adapter."
         },
         {
-          "name": "last_source_revision",
+          "name": "baseline_tracks",
           "schema": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+            "type": "object",
+            "properties": {
+              "published": {
+                "type": "object",
+                "properties": {
+                  "source_revision": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "source_fingerprint": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "target_fingerprint": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "job_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "roster_snapshot_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "source_revision",
+                  "source_fingerprint",
+                  "target_fingerprint"
+                ],
+                "additionalProperties": false,
+                "oneOf": [
+                  {
+                    "required": [
+                      "job_id"
+                    ],
+                    "not": {
+                      "required": [
+                        "roster_snapshot_id"
+                      ]
+                    }
+                  },
+                  {
+                    "required": [
+                      "roster_snapshot_id"
+                    ],
+                    "not": {
+                      "required": [
+                        "job_id"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "draft": {
+                "type": "object",
+                "properties": {
+                  "source_revision": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "source_fingerprint": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "target_fingerprint": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "job_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "roster_snapshot_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "source_revision",
+                  "source_fingerprint",
+                  "target_fingerprint"
+                ],
+                "additionalProperties": false,
+                "oneOf": [
+                  {
+                    "required": [
+                      "job_id"
+                    ],
+                    "not": {
+                      "required": [
+                        "roster_snapshot_id"
+                      ]
+                    }
+                  },
+                  {
+                    "required": [
+                      "roster_snapshot_id"
+                    ],
+                    "not": {
+                      "required": [
+                        "job_id"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "shared": {
+                "type": "object",
+                "properties": {
+                  "source_revision": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "source_fingerprint": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "target_fingerprint": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "job_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "roster_snapshot_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "source_revision",
+                  "source_fingerprint",
+                  "target_fingerprint"
+                ],
+                "additionalProperties": false,
+                "oneOf": [
+                  {
+                    "required": [
+                      "job_id"
+                    ],
+                    "not": {
+                      "required": [
+                        "roster_snapshot_id"
+                      ]
+                    }
+                  },
+                  {
+                    "required": [
+                      "roster_snapshot_id"
+                    ],
+                    "not": {
+                      "required": [
+                        "job_id"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "required": [],
+            "additionalProperties": false,
+            "minProperties": 1
           },
+          "description": "Separate last approved source and target pair by publication layer. Published and draft tracks for one definition keep the same canonical identity.",
           "required": true,
-          "nullable": false,
-          "description": "Most recent approved source version."
-        },
-        {
-          "name": "last_source_fingerprint",
-          "schema": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
-          },
-          "required": true,
-          "nullable": false,
-          "description": "Canonical fingerprint of the most recent approved source input."
-        },
-        {
-          "name": "last_target_fingerprint",
-          "schema": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
-          },
-          "required": true,
-          "nullable": false,
-          "description": "Fingerprint of the target at last successful promotion."
+          "nullable": false
         },
         {
           "name": "last_job_id",
@@ -1340,11 +2388,23 @@
             "type": "string",
             "format": "uuid"
           },
-          "required": true,
+          "required": false,
           "nullable": false,
-          "description": "Successful transfer receipt that established this baseline.",
+          "description": "Successful curriculum transfer receipt for the last accepted import baseline. Absent for provider roster mappings.",
           "references": "TransferJob",
           "reference_scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+        },
+        {
+          "name": "last_roster_snapshot_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Applied roster snapshot receipt for the last accepted feed baseline. Absent for curriculum imports.",
+          "references": "RosterSnapshot",
+          "reference_scope": "Resolve same-institution authorized RosterSnapshot for the exact verified source authority."
         },
         {
           "name": "state",
@@ -1389,9 +2449,12 @@
         [
           "institution_id",
           "source_namespace",
+          "source_profile",
           "source_scope",
           "object_kind",
-          "external_key"
+          "external_key",
+          "record_role",
+          "occurrence_key"
         ]
       ],
       "indexes": [
@@ -1406,7 +2469,10 @@
       ],
       "invariants": [
         "Crosswalk updates require source authority and matching target baseline.",
-        "Multiple aliases may identify one native object, but one source tuple cannot identify multiple current targets."
+        "Multiple aliases may identify one native object, but one source tuple cannot identify multiple current targets.",
+        "A re-import compares only the matching accepted layer baseline. Local divergence does not advance the baseline or erase published history.",
+        "A fork creates an independently scoped source branch or target lineage. It never silently retargets the existing active crosswalk.",
+        "Each committed baseline retains exactly one transfer or roster application receipt. A roster or operational baseline uses the shared track and cannot mutate curriculum publication tracks."
       ],
       "retention": "Keep active aliases while referenced. Keep retirement tombstones to prevent source ID reuse for seven years by default.",
       "states": [],
@@ -1462,6 +2528,18 @@
           "description": "Exact graph and baseline digest approved."
         },
         {
+          "name": "plan_manifest_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Protected immutable manifest reviewed by this approval. Must match the approved digest and exact plan revision.",
+          "references": "StorageObject",
+          "reference_scope": "Exact clean StorageObject owned by this transfer plan and Institution."
+        },
+        {
           "name": "reviewer_principal_id",
           "schema": {
             "type": "string",
@@ -1481,7 +2559,8 @@
               "curriculum",
               "assessment",
               "privacy",
-              "publication"
+              "publication",
+              "export_projection"
             ]
           },
           "required": true,
@@ -1550,7 +2629,8 @@
       ],
       "invariants": [
         "Approvals cannot be edited or moved to a new plan revision.",
-        "Reviewer authority is revalidated before activation."
+        "Reviewer authority is revalidated before activation.",
+        "An export projection approval pins both the frozen selection and the exact capability and loss report digest. Required losses cannot be approved into a successful output."
       ],
       "retention": "Retain with the transfer and publication audit history.",
       "states": [],
@@ -7137,6 +8217,20 @@
               "cmi5_quartz",
               "historic_records"
             ]
+          },
+          "requested_container": {
+            "type": "string",
+            "enum": [
+              "zip",
+              "tar_gzip",
+              "xml",
+              "csv",
+              "json"
+            ]
+          },
+          "requested_source_profile": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.-]{0,55}/[0-9a-z][0-9a-z_.-]{0,31}$"
           }
         },
         "required": [
@@ -7187,9 +8281,8 @@
       "concurrency": "Scope operation keys to actor, target and request digest. Lock the named aggregate during its versioned update.",
       "preconditions": [],
       "transaction": [
-        "Check uploader ownership and namespace.",
-        "Bind verified archive identity and target scope.",
-        "Create received job and worker lease eligibility."
+        "Verify artifact, uploader and the exact institution-owned namespace authority. Treat requested container and profile only as claimed hints.",
+        "Pin verified archive identity, target scope and operational mode. Mark the new job received before worker claim."
       ],
       "errors": [
         {
@@ -7290,6 +8383,75 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 9007199254740991
+          },
+          "source_container": {
+            "type": "string",
+            "enum": [
+              "zip",
+              "tar_gzip",
+              "xml",
+              "csv",
+              "json"
+            ]
+          },
+          "source_profile": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.-]{0,55}/[0-9a-z][0-9a-z_.-]{0,31}$"
+          },
+          "candidate_roots": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "root_key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "course",
+                    "library",
+                    "package",
+                    "assessment",
+                    "historic_scope"
+                  ]
+                },
+                "source_scope": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "layer": {
+                  "type": "string",
+                  "enum": [
+                    "published",
+                    "draft",
+                    "shared"
+                  ]
+                },
+                "dependency_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              },
+              "required": [
+                "root_key",
+                "kind",
+                "source_scope",
+                "layer",
+                "dependency_digest"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 1000,
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "inspection_manifest_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
           }
         },
         "required": [
@@ -7297,7 +8459,11 @@
           "state",
           "revision",
           "format",
-          "record_count"
+          "record_count",
+          "source_container",
+          "source_profile",
+          "candidate_roots",
+          "inspection_manifest_digest"
         ],
         "additionalProperties": false
       },
@@ -7306,9 +8472,10 @@
       "concurrency": "Scope operation keys to actor, target and request digest. Lock the named aggregate during its versioned update.",
       "preconditions": [],
       "transaction": [
-        "Fence worker epoch and verify platform StorageObject generation, matching artifact digest, scan evidence and extraction quotas.",
-        "Pin detected schema and parse source graph without evaluating code.",
-        "Checkpoint graph and record validation and detection evidence."
+        "Fence worker epoch and verify platform StorageObject generation, exact artifact digest, scan evidence and bounded extraction.",
+        "Detect the container independently. Check the selected adapter's root and schema signatures, and quarantine any contradiction with requested hints.",
+        "Parse the source graph without evaluating code. Classify pointers and inline definitions separately. List each recognized root with its full source scope, publication layer and exact dependency fingerprint.",
+        "Pin source container, profile, adapter and restricted inspection manifest. Do not silently select between competing root scopes."
       ],
       "errors": [
         {
@@ -7328,6 +8495,12 @@
           "code": "WORKER_FENCE_STALE",
           "condition": "A newer worker holds this job.",
           "recovery": "Stop the stale worker and query the current checkpoint."
+        },
+        {
+          "status": 422,
+          "code": "PROFILE_SIGNATURE_MISMATCH",
+          "condition": "The detected root, manifest or outer container conflicts with the requested profile.",
+          "recovery": "Choose the verified supported profile or obtain a correct archive."
         }
       ],
       "events": [
@@ -7380,15 +8553,55 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 128
+          },
+          "expected_inspection_manifest_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "selected_root_keys": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "maxItems": 1000,
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "root_commit_policy": {
+            "type": "string",
+            "const": "atomic_selected_closure"
           }
         },
         "required": [
           "epoch",
           "expected_revision",
           "mode",
-          "dependency_artifact_ids"
+          "dependency_artifact_ids",
+          "expected_inspection_manifest_digest",
+          "selected_root_keys"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "selected_root_keys": {
+                  "minItems": 2
+                }
+              },
+              "required": [
+                "selected_root_keys"
+              ]
+            },
+            "then": {
+              "required": [
+                "root_commit_policy"
+              ]
+            }
+          }
+        ]
       },
       "response_schema": {
         "type": "object",
@@ -7430,6 +8643,16 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 9007199254740991
+          },
+          "plan_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "selected_root_count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
           }
         },
         "required": [
@@ -7438,18 +8661,24 @@
           "revision",
           "plan_digest",
           "record_count",
-          "blocking_issue_count"
+          "blocking_issue_count",
+          "plan_revision",
+          "selected_root_count"
         ],
         "additionalProperties": false
       },
       "success_status": 201,
       "idempotency": "required",
       "concurrency": "Scope operation keys to actor, target and request digest. Lock the named aggregate during its versioned update.",
-      "preconditions": [],
+      "preconditions": [
+        "Caller authorized the selected roots and their namespace. Selecting multiple independent roots requires an explicit atomic closure decision or separate reviewed jobs.",
+        "Every requested dependency artifact is authorized, verified and bound by its exact digest."
+      ],
       "transaction": [
-        "Read typed source records and resolve crosswalks in two passes.",
-        "Compare source and target fingerprints and validate dependency graph.",
-        "Persist private owner staging, reconciliation and exact plan digest."
+        "Compare fence, job version and verified inspection manifest. Resolve the exact selected roots and authorized dependency artifact revisions from the frozen inventory.",
+        "Allocate stable target candidates before binding typed TransferEdge rows. Pin source layer, occurrence and selected-root reachability for every candidate record.",
+        "Separate reachable missing definitions and required links from detached issues. Compare source and target fingerprints and compute exact owner baselines.",
+        "Write immutable plan revision and protected manifest with the prior manifest reference, records, edges, selected roots, redacted reconciliation and exact digest. Dry run commits no owner-visible draft, map or activation."
       ],
       "errors": [
         {
@@ -7457,10 +8686,42 @@
           "code": "TARGET_SCOPE_CHANGED",
           "condition": "Current destination differs from the baseline being compiled.",
           "recovery": "Recompute from the latest owner revisions."
+        },
+        {
+          "status": 409,
+          "code": "SOURCE_ROOT_SELECTION_REQUIRED",
+          "condition": "Competing root candidates were not explicitly resolved or chosen root no longer matches frozen inspection.",
+          "recovery": "Choose authorized exact root keys and replay against the same verified manifest or re-inspect."
         }
       ],
       "events": [
         "TransferPlanStaged"
+      ],
+      "request_examples": [
+        {
+          "epoch": 4,
+          "expected_revision": 7,
+          "mode": "create",
+          "dependency_artifact_ids": [],
+          "default_locale": "en",
+          "source_timezone": "Etc/UTC",
+          "expected_inspection_manifest_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "selected_root_keys": [
+            "training-a"
+          ]
+        }
+      ],
+      "response_examples": [
+        {
+          "job_id": "00000000-0000-4000-8000-000000000901",
+          "state": "awaiting_review",
+          "revision": 8,
+          "plan_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "plan_revision": 3,
+          "record_count": 8,
+          "blocking_issue_count": 0,
+          "selected_root_count": 1
+        }
       ]
     },
     {
@@ -7588,17 +8849,77 @@
                     "unchanged",
                     "retirement_candidate"
                   ]
+                },
+                "record_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "source_layer": {
+                  "type": "string",
+                  "enum": [
+                    "published",
+                    "draft",
+                    "shared"
+                  ]
+                },
+                "record_role": {
+                  "type": "string",
+                  "enum": [
+                    "definition",
+                    "placement",
+                    "asset",
+                    "policy",
+                    "reference",
+                    "package",
+                    "document"
+                  ]
+                },
+                "occurrence_key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "reachability": {
+                  "type": "string",
+                  "enum": [
+                    "selected_required",
+                    "selected_optional",
+                    "detached",
+                    "outside_selection"
+                  ]
                 }
               },
               "required": [
                 "source",
-                "disposition"
+                "disposition",
+                "record_id",
+                "source_layer",
+                "record_role",
+                "occurrence_key",
+                "reachability"
               ],
               "additionalProperties": false
             },
             "maxItems": 200,
             "minItems": 0,
             "uniqueItems": false
+          },
+          "plan_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "selected_root_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "generation_visibility": {
+            "type": "string",
+            "enum": [
+              "private",
+              "activated"
+            ]
           }
         },
         "required": [
@@ -7607,7 +8928,8 @@
           "revision",
           "record_count",
           "blocking_issue_count",
-          "records"
+          "records",
+          "selected_root_count"
         ],
         "additionalProperties": false
       },
@@ -7616,8 +8938,10 @@
       "concurrency": "Scope operation keys to actor, target and request digest. Lock the named aggregate during its versioned update.",
       "preconditions": [],
       "transaction": [
-        "Validate Institution and evidence scope.",
-        "Read one stable plan revision and redact answer-protected or personal data."
+        "Resolve authorized TransferJob, current plan and visibility before reading any source metadata.",
+        "Return only job status and zero plan counts before a plan exists. A selected plan revision is required for record or edge pagination.",
+        "Bind the cursor to the frozen plan revision and caller scope. Return typed record roles and reachability with a safe disposition.",
+        "Do not include raw source locators, answer-protected evidence, archive content or output download capability."
       ],
       "errors": [
         {
@@ -7767,7 +9091,8 @@
               "curriculum",
               "assessment",
               "privacy",
-              "publication"
+              "publication",
+              "export_projection"
             ]
           },
           "scope_keys": {
@@ -7785,6 +9110,11 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 2000
+          },
+          "expected_plan_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
           }
         },
         "required": [
@@ -7792,7 +9122,8 @@
           "plan_digest",
           "approval_kind",
           "scope_keys",
-          "reason"
+          "reason",
+          "expected_plan_revision"
         ],
         "additionalProperties": false
       },
@@ -7841,9 +9172,9 @@
       "concurrency": "Scope operation keys to actor, target and request digest. Lock the named aggregate during its versioned update.",
       "preconditions": [],
       "transaction": [
-        "Verify matching plan digest and reviewer scopes.",
-        "Verify no blockers in approved scope.",
-        "Append reviewer approval and update job gate coverage."
+        "Verify job and exact plan revision, sealed digest and current reviewer authority.",
+        "Check selected required graph edges, owner receipts or export capability/loss blockers for the requested approval scope.",
+        "Append a new approval bound to the exact protected plan manifest. An export projection approval binds frozen selection, destination, profile revision and capability/loss reports."
       ],
       "errors": [
         {
@@ -7912,13 +9243,19 @@
             "maxItems": 32,
             "minItems": 1,
             "uniqueItems": false
+          },
+          "expected_plan_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
           }
         },
         "required": [
           "expected_revision",
           "plan_digest",
           "publish_intent",
-          "owner_baselines"
+          "owner_baselines",
+          "expected_plan_revision"
         ],
         "additionalProperties": false
       },
@@ -7956,6 +9293,17 @@
           "receipt_digest": {
             "type": "string",
             "pattern": "^[0-9a-f]{64}$"
+          },
+          "generation_visibility": {
+            "type": "string",
+            "enum": [
+              "private",
+              "activated"
+            ]
+          },
+          "generation_committed_at": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "required": [
@@ -7963,18 +9311,23 @@
           "state",
           "revision",
           "generation_id",
-          "receipt_digest"
+          "receipt_digest",
+          "generation_visibility",
+          "generation_committed_at"
         ],
         "additionalProperties": false
       },
       "success_status": 201,
       "idempotency": "required",
       "concurrency": "Scope operation keys to actor, target and request digest. Lock the named aggregate during its versioned update.",
-      "preconditions": [],
+      "preconditions": [
+        "An import dry run cannot apply. Export jobs use the separate export completion command.",
+        "Native publication and activation authority is required independently of editor-only keep_private promotion."
+      ],
       "transaction": [
-        "Revalidate all review gates and native owner authority.",
-        "Fence target scope and compare baseline revisions.",
-        "Activate acknowledged owner generation and mapping receipts atomically."
+        "Revalidate owner approvals, plan and selected root closure. Refuse unresolved required edges or stale owner baselines.",
+        "Allocate one generation and apply idempotent private owner stages using stable effect keys, each with independent stage receipt and checked baseline.",
+        "Reconcile any uncertain owner receipt before continuing. Under current fence and a single visibility barrier commit private or separately authorized activation, scoped crosswalk tracks, exact receipts and outbox."
       ],
       "errors": [
         {
@@ -7988,6 +9341,24 @@
           "code": "OWNER_RECEIPT_PENDING",
           "condition": "One staged owner has not acknowledged publication readiness.",
           "recovery": "Poll or retry with the same idempotency key. Keep staging private."
+        },
+        {
+          "status": 409,
+          "code": "DRY_RUN_CANNOT_APPLY",
+          "condition": "A dry run has no owner-visible side effects or generation to apply.",
+          "recovery": "Start or rebuild a separately authorized editable or delivery import plan."
+        },
+        {
+          "status": 409,
+          "code": "OWNER_STAGE_RECEIPT_PENDING",
+          "condition": "An owner stage is not durably confirmed or its outcome is uncertain.",
+          "recovery": "Read the current job and reconcile the original owner receipt. Do not send a new effect."
+        },
+        {
+          "status": 422,
+          "code": "REQUIRED_EDGE_UNRESOLVED",
+          "condition": "One or more selected required relationships lack an authorized version pin.",
+          "recovery": "Restore the source dependency or approve an exact replacement and rebuild the plan."
         }
       ],
       "events": [
@@ -8096,14 +9467,10 @@
               "scorm_2004_2",
               "scorm_2004_3",
               "scorm_2004_4",
-              "scorm_2004_unverified",
               "qti_21",
               "qti_22",
               "qti_301",
-              "common_cartridge",
-              "oneroster_12",
-              "cmi5_quartz",
-              "historic_records"
+              "common_cartridge"
             ]
           },
           "root_version_ids": {
@@ -8131,6 +9498,44 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 128
+          },
+          "edition": {
+            "type": "string",
+            "enum": [
+              "native_1",
+              "olx_course_1",
+              "olx_legacy_library_1",
+              "olx_library_archive_1",
+              "scorm_1_2",
+              "scorm_2004_2",
+              "scorm_2004_3",
+              "scorm_2004_4",
+              "qti_2_1",
+              "qti_2_2",
+              "qti_3_0_1",
+              "common_cartridge_1_3"
+            ]
+          },
+          "profile_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "delivery_mode": {
+            "type": "string",
+            "enum": [
+              "editable",
+              "portable",
+              "approved_hosted"
+            ]
+          },
+          "solution_disclosure": {
+            "type": "string",
+            "enum": [
+              "none",
+              "approved_embedded_practice",
+              "protected_authoring"
+            ]
           }
         },
         "required": [
@@ -8139,9 +9544,367 @@
           "include_answers",
           "include_drafts",
           "destination_scope",
-          "projection_profile"
+          "projection_profile",
+          "edition",
+          "profile_revision",
+          "delivery_mode",
+          "solution_disclosure"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "native_curriculum"
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "edition": {
+                  "const": "native_1"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "olx_course"
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "edition": {
+                  "const": "olx_course_1"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "olx_legacy_library"
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "edition": {
+                  "const": "olx_legacy_library_1"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "olx_versioned_library"
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "edition": {
+                  "const": "olx_library_archive_1"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "scorm_12"
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "edition": {
+                  "const": "scorm_1_2"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "scorm_2004_2"
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "edition": {
+                  "const": "scorm_2004_2"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "scorm_2004_3"
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "edition": {
+                  "const": "scorm_2004_3"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "scorm_2004_4"
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "edition": {
+                  "const": "scorm_2004_4"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "qti_21"
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "edition": {
+                  "const": "qti_2_1"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "qti_22"
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "edition": {
+                  "const": "qti_2_2"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "qti_301"
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "edition": {
+                  "const": "qti_3_0_1"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "common_cartridge"
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "edition": {
+                  "const": "common_cartridge_1_3"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "solution_disclosure": {
+                  "enum": [
+                    "approved_embedded_practice",
+                    "protected_authoring"
+                  ]
+                }
+              },
+              "required": [
+                "solution_disclosure"
+              ]
+            },
+            "then": {
+              "properties": {
+                "include_answers": {
+                  "const": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "solution_disclosure": {
+                  "const": "protected_authoring"
+                }
+              },
+              "required": [
+                "solution_disclosure"
+              ]
+            },
+            "then": {
+              "properties": {
+                "delivery_mode": {
+                  "const": "editable"
+                },
+                "format": {
+                  "enum": [
+                    "native_curriculum",
+                    "olx_course",
+                    "olx_legacy_library",
+                    "olx_versioned_library",
+                    "qti_21",
+                    "qti_22",
+                    "qti_301",
+                    "common_cartridge"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "include_drafts": {
+                  "const": true
+                }
+              },
+              "required": [
+                "include_drafts"
+              ]
+            },
+            "then": {
+              "properties": {
+                "delivery_mode": {
+                  "const": "editable"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "enum": [
+                    "scorm_12",
+                    "scorm_2004_2",
+                    "scorm_2004_3",
+                    "scorm_2004_4"
+                  ]
+                }
+              },
+              "required": [
+                "format"
+              ]
+            },
+            "then": {
+              "properties": {
+                "delivery_mode": {
+                  "enum": [
+                    "portable",
+                    "approved_hosted"
+                  ]
+                },
+                "include_drafts": {
+                  "const": false
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "include_answers": {
+                  "const": true
+                }
+              },
+              "required": [
+                "include_answers"
+              ]
+            },
+            "then": {
+              "properties": {
+                "solution_disclosure": {
+                  "enum": [
+                    "approved_embedded_practice",
+                    "protected_authoring"
+                  ]
+                }
+              }
+            }
+          }
+        ]
       },
       "response_schema": {
         "type": "object",
@@ -8173,24 +9936,64 @@
           "selection_digest": {
             "type": "string",
             "pattern": "^[0-9a-f]{64}$"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "native_curriculum",
+              "olx_course",
+              "olx_legacy_library",
+              "olx_versioned_library",
+              "scorm_12",
+              "scorm_2004_2",
+              "scorm_2004_3",
+              "scorm_2004_4",
+              "qti_21",
+              "qti_22",
+              "qti_301",
+              "common_cartridge"
+            ]
+          },
+          "edition": {
+            "type": "string",
+            "enum": [
+              "native_1",
+              "olx_course_1",
+              "olx_legacy_library_1",
+              "olx_library_archive_1",
+              "scorm_1_2",
+              "scorm_2004_2",
+              "scorm_2004_3",
+              "scorm_2004_4",
+              "qti_2_1",
+              "qti_2_2",
+              "qti_3_0_1",
+              "common_cartridge_1_3"
+            ]
           }
         },
         "required": [
           "job_id",
           "state",
           "revision",
-          "selection_digest"
+          "selection_digest",
+          "format",
+          "edition"
         ],
         "additionalProperties": false
       },
       "success_status": 201,
       "idempotency": "required",
       "concurrency": "Scope operation keys to actor, target and request digest. Lock the named aggregate during its versioned update.",
-      "preconditions": [],
+      "preconditions": [
+        "The exact selected format, edition, revision and direction must be installed and enabled for the destination.",
+        "A legacy source-compatible, SCORM second or third edition, QTI or other optional projection is unavailable until verified."
+      ],
       "transaction": [
-        "Authorize each root version, included answer or draft class and asset rights.",
-        "Record graph selection and profile digest.",
-        "Queue protected generation with independent output expiry."
+        "Resolve exact selected roots and immutable versions, and independently authorize requested draft, answer, asset and disclosure classes.",
+        "Validate output format, edition, egress profile, recipient purpose and redistributable rights. Reject intake-only or unverified profiles.",
+        "Treat a client-supplied delivery mode as an explicit request, not proof that the selected projection has native parity or receiving support.",
+        "Freeze protected selection manifest, selected version references, profile revision, disclosure and delivery choices. Queue generation and review without creating download availability."
       ],
       "errors": [
         {
@@ -8204,10 +10007,48 @@
           "code": "ANSWER_EXPORT_DENIED",
           "condition": "Requester lacks authority to export protected scoring data.",
           "recovery": "Request a redacted learner profile or use an authorized assessment exporter."
+        },
+        {
+          "status": 422,
+          "code": "EXPORT_PROFILE_NOT_ENABLED",
+          "condition": "Exact format, edition or revision is unsupported in egress or disabled for the receiving profile.",
+          "recovery": "Choose an explicitly supported edition and capability profile. Never silently downgrade."
+        },
+        {
+          "status": 422,
+          "code": "EXPORT_SOLUTION_DISCLOSURE_DENIED",
+          "condition": "Requested packaging would expose prohibited embedded answers, evaluator logic or a private variant bank.",
+          "recovery": "Choose an authorized protected editable archive, an explicitly approved low-stakes projection or a verified hosted alternative."
         }
       ],
       "events": [
         "ExchangeExportQueued"
+      ],
+      "request_examples": [
+        {
+          "format": "scorm_2004_4",
+          "edition": "scorm_2004_4",
+          "root_version_ids": [
+            "00000000-0000-4000-8000-000000000906"
+          ],
+          "include_answers": false,
+          "include_drafts": false,
+          "destination_scope": "portable-course",
+          "projection_profile": "portable-scorm",
+          "profile_revision": 1,
+          "delivery_mode": "portable",
+          "solution_disclosure": "none"
+        }
+      ],
+      "response_examples": [
+        {
+          "job_id": "00000000-0000-4000-8000-000000000901",
+          "state": "received",
+          "revision": 1,
+          "selection_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "format": "scorm_2004_4",
+          "edition": "scorm_2004_4"
+        }
       ]
     },
     {
@@ -11064,6 +12905,915 @@
       "events": [
         "ToolLaunchAuthorized"
       ]
+    },
+    {
+      "name": "ReadTransferEdges",
+      "method": "GET",
+      "path": "/v1/interoperability/transfers/{job_id}/edges",
+      "description": "Read typed, ordered and scope-redacted relationships from one frozen transfer plan.",
+      "permission": "interoperability.transfer.inspect",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "plan_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "from_record_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "containment",
+              "definition",
+              "asset_use",
+              "internal_link",
+              "prerequisite",
+              "library_pin",
+              "assessment_binding",
+              "grade_binding",
+              "package_dependency",
+              "translation",
+              "policy_binding"
+            ]
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "resolved_local",
+              "resolved_external",
+              "unresolved",
+              "ambiguous",
+              "rejected",
+              "accepted_optional_exclusion"
+            ]
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "plan_revision"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "plan_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "edges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "from_record_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "edge_key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "containment",
+                    "definition",
+                    "asset_use",
+                    "internal_link",
+                    "prerequisite",
+                    "library_pin",
+                    "assessment_binding",
+                    "grade_binding",
+                    "package_dependency",
+                    "translation",
+                    "policy_binding"
+                  ]
+                },
+                "required": {
+                  "type": "boolean"
+                },
+                "resolution": {
+                  "type": "string",
+                  "enum": [
+                    "resolved_local",
+                    "resolved_external",
+                    "unresolved",
+                    "ambiguous",
+                    "rejected",
+                    "accepted_optional_exclusion"
+                  ]
+                },
+                "ordinal": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "placement_context_record_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "target_record_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "issue_id": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "required": [
+                "id",
+                "from_record_id",
+                "edge_key",
+                "kind",
+                "required",
+                "resolution"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 200,
+            "minItems": 0,
+            "uniqueItems": false
+          },
+          "next_cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "required": [
+          "job_id",
+          "plan_revision",
+          "edges"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "none",
+      "concurrency": "Use one plan revision and caller authority snapshot for the entire page.",
+      "preconditions": [
+        "The source and any returned target or issue are visible to this actor under current authority."
+      ],
+      "transaction": [
+        "Resolve exact authorized job and frozen plan.",
+        "Verify record filters belong to the same plan and current read scope.",
+        "Page in stable kind, ordinal and ID order. Return redacted safe edge data, never source locators."
+      ],
+      "errors": [
+        {
+          "status": 409,
+          "code": "TRANSFER_CURSOR_STALE",
+          "condition": "The cursor names a different plan revision, scope or filter.",
+          "recovery": "Restart with the current authorized plan and filter."
+        }
+      ],
+      "events": [],
+      "request_examples": [
+        {
+          "plan_revision": 3,
+          "from_record_id": "00000000-0000-4000-8000-000000000902",
+          "kind": "internal_link",
+          "limit": 25
+        }
+      ],
+      "response_examples": [
+        {
+          "job_id": "00000000-0000-4000-8000-000000000901",
+          "plan_revision": 3,
+          "edges": [
+            {
+              "id": "00000000-0000-4000-8000-000000000904",
+              "from_record_id": "00000000-0000-4000-8000-000000000902",
+              "edge_key": "body-link-2",
+              "kind": "internal_link",
+              "required": true,
+              "resolution": "resolved_local",
+              "ordinal": 2,
+              "placement_context_record_id": "00000000-0000-4000-8000-000000000902",
+              "target_record_id": "00000000-0000-4000-8000-000000000903"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "RecordCurriculumExportProjection",
+      "method": "POST",
+      "path": "/v1/interoperability/exports/{job_id}/projection",
+      "description": "Pin verified capability and loss reports for a frozen curriculum export selection.",
+      "permission": "interoperability.transfer.export.worker",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "fence_epoch": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "selection_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "capability_report_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "capability_report_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "loss_report_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "loss_report_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "fence_epoch",
+          "expected_revision",
+          "selection_digest",
+          "capability_report_id",
+          "capability_report_digest",
+          "loss_report_id",
+          "loss_report_digest"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "plan_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "awaiting_review"
+            ]
+          },
+          "plan_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "blocking_loss_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "optional_difference_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "job_id",
+          "revision",
+          "plan_revision",
+          "state",
+          "plan_digest",
+          "blocking_loss_count",
+          "optional_difference_count"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 201,
+      "idempotency": "required",
+      "concurrency": "Compare current worker fence and expected job revision in one locked export transaction.",
+      "preconditions": [
+        "Approved egress profile still applies. Reports are private clean objects whose selection, generator and destination match the frozen job."
+      ],
+      "transaction": [
+        "Recheck export job direction, immutable selection, profile and worker fence.",
+        "Verify protected storage scope, scan state, exact bytes and report schemas.",
+        "Derive blocker counts and canonical plan digest from verified report contents and pinned selection. Append an immutable plan manifest with predecessor and report refs. Reopen review on change."
+      ],
+      "errors": [
+        {
+          "status": 409,
+          "code": "EXPORT_FENCE_STALE",
+          "condition": "Worker fence or expected job version is stale.",
+          "recovery": "Stop and reconcile the current worker lease and approved selection."
+        },
+        {
+          "status": 422,
+          "code": "EXPORT_PROJECTION_INVALID",
+          "condition": "The report has incorrect scope, digest, schema or missing capability coverage.",
+          "recovery": "Correct the private report and repeat projection review."
+        }
+      ],
+      "events": [
+        "CurriculumExportProjectionRecorded"
+      ],
+      "request_examples": [
+        {
+          "fence_epoch": 2,
+          "expected_revision": 3,
+          "selection_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "capability_report_id": "00000000-0000-4000-8000-000000000912",
+          "capability_report_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "loss_report_id": "00000000-0000-4000-8000-000000000913",
+          "loss_report_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        }
+      ],
+      "response_examples": [
+        {
+          "job_id": "00000000-0000-4000-8000-000000000901",
+          "revision": 4,
+          "plan_revision": 1,
+          "state": "awaiting_review",
+          "plan_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "blocking_loss_count": 0,
+          "optional_difference_count": 1
+        }
+      ]
+    },
+    {
+      "name": "CompleteCurriculumExport",
+      "method": "POST",
+      "path": "/v1/interoperability/exports/{job_id}/completion",
+      "description": "Commit an approved immutable curriculum export artifact and its collection deadline.",
+      "permission": "interoperability.transfer.export.worker",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "fence_epoch": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "plan_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "approved_plan_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "output_storage_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "output_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "output_byte_length": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "validation_report_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "validation_report_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "fence_epoch",
+          "expected_revision",
+          "plan_revision",
+          "approved_plan_digest",
+          "output_storage_id",
+          "output_sha256",
+          "output_byte_length",
+          "validation_report_id",
+          "validation_report_digest"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "applied"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "native_curriculum",
+              "olx_course",
+              "olx_legacy_library",
+              "olx_versioned_library",
+              "scorm_12",
+              "scorm_2004_2",
+              "scorm_2004_3",
+              "scorm_2004_4",
+              "qti_21",
+              "qti_22",
+              "qti_301",
+              "common_cartridge"
+            ]
+          },
+          "edition": {
+            "type": "string",
+            "enum": [
+              "native_1",
+              "olx_course_1",
+              "olx_legacy_library_1",
+              "olx_library_archive_1",
+              "scorm_1_2",
+              "scorm_2004_2",
+              "scorm_2004_3",
+              "scorm_2004_4",
+              "qti_2_1",
+              "qti_2_2",
+              "qti_3_0_1",
+              "common_cartridge_1_3"
+            ]
+          },
+          "output_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "output_byte_length": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "job_id",
+          "revision",
+          "state",
+          "format",
+          "edition",
+          "output_sha256",
+          "output_byte_length",
+          "completed_at",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 201,
+      "idempotency": "required",
+      "concurrency": "Compare worker fence, job revision and approved plan revision under lock. Return prior verified result for identical authorized replay.",
+      "preconditions": [
+        "Export projection is approved, no required loss remains, and requested delivery format and edition exactly match the approved selection."
+      ],
+      "transaction": [
+        "Lock the export job. Check exact approved plan, worker fence, selection, profile, current disclosure and rights policy.",
+        "Verify output storage ownership, measured bytes and validation report digest. Verify exact artifact edition, required capabilities and independent package/runtime evidence where applicable.",
+        "Commit protected result and outbox. Set collection expiry from the institution's approved export policy, default seven days from successful completion, capped by rights and custody expiry."
+      ],
+      "errors": [
+        {
+          "status": 409,
+          "code": "EXPORT_PLAN_CHANGED",
+          "condition": "An approval, worker lease, profile, right or selected projection has changed.",
+          "recovery": "Reconcile and obtain a fresh exact approval. Old bytes remain private."
+        },
+        {
+          "status": 422,
+          "code": "EXPORT_VALIDATION_FAILED",
+          "condition": "Generated output or its validation does not meet the approved projection.",
+          "recovery": "Fix and independently validate a candidate before retrying completion."
+        }
+      ],
+      "events": [
+        "CurriculumExportCompleted"
+      ],
+      "request_examples": [
+        {
+          "fence_epoch": 3,
+          "expected_revision": 5,
+          "plan_revision": 1,
+          "approved_plan_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "output_storage_id": "00000000-0000-4000-8000-000000000914",
+          "output_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "output_byte_length": 48000,
+          "validation_report_id": "00000000-0000-4000-8000-000000000915",
+          "validation_report_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "response_examples": [
+        {
+          "job_id": "00000000-0000-4000-8000-000000000901",
+          "revision": 6,
+          "state": "applied",
+          "format": "scorm_2004_4",
+          "edition": "scorm_2004_4",
+          "output_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "output_byte_length": 48000,
+          "completed_at": "2027-04-15T10:00:00Z",
+          "expires_at": "2027-04-22T10:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "ReadCurriculumExport",
+      "method": "GET",
+      "path": "/v1/interoperability/exports/{job_id}",
+      "description": "Read protected export state, approved exact edition, safe loss decisions and collection expiry.",
+      "permission": "interoperability.transfer.export",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "received",
+              "quarantined",
+              "validated",
+              "staged",
+              "awaiting_review",
+              "approved",
+              "applying",
+              "applied",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "native_curriculum",
+              "olx_course",
+              "olx_legacy_library",
+              "olx_versioned_library",
+              "scorm_12",
+              "scorm_2004_2",
+              "scorm_2004_3",
+              "scorm_2004_4",
+              "qti_21",
+              "qti_22",
+              "qti_301",
+              "common_cartridge"
+            ]
+          },
+          "edition": {
+            "type": "string",
+            "enum": [
+              "native_1",
+              "olx_course_1",
+              "olx_legacy_library_1",
+              "olx_library_archive_1",
+              "scorm_1_2",
+              "scorm_2004_2",
+              "scorm_2004_3",
+              "scorm_2004_4",
+              "qti_2_1",
+              "qti_2_2",
+              "qti_3_0_1",
+              "common_cartridge_1_3"
+            ]
+          },
+          "profile_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "plan_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "plan_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "delivery_status": {
+            "type": "string",
+            "enum": [
+              "unavailable",
+              "available",
+              "expired",
+              "revoked"
+            ]
+          },
+          "loss_items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "information",
+                    "warning",
+                    "blocking"
+                  ]
+                },
+                "capability": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "preserved",
+                    "equivalent_projection",
+                    "delivery_only",
+                    "approved_optional_difference",
+                    "redacted_by_policy",
+                    "blocked"
+                  ]
+                },
+                "safe_reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                }
+              },
+              "required": [
+                "code",
+                "severity",
+                "capability",
+                "status",
+                "safe_reason"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 200,
+            "minItems": 0,
+            "uniqueItems": false
+          },
+          "next_cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "output_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "output_byte_length": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "job_id",
+          "revision",
+          "state",
+          "format",
+          "edition",
+          "profile_revision",
+          "delivery_status",
+          "loss_items"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "none",
+      "concurrency": "Read one approved projection revision with scope-bound pagination.",
+      "preconditions": [
+        "Current actor can view this exact export job, selection and returned report details."
+      ],
+      "transaction": [
+        "Resolve export job, exact selection and current recipient scope.",
+        "Return one stable safe report page and lifecycle state.",
+        "Expose verified artifact checksum, length and deadline only to authorized recipients. Do not include provider locator or credential."
+      ],
+      "errors": [
+        {
+          "status": 409,
+          "code": "EXPORT_CURSOR_STALE",
+          "condition": "Export projection or visibility changed since this cursor was issued.",
+          "recovery": "Restart review at the current authorized projection."
+        }
+      ],
+      "events": [],
+      "request_examples": [
+        {
+          "limit": 25
+        }
+      ],
+      "response_examples": [
+        {
+          "job_id": "00000000-0000-4000-8000-000000000901",
+          "revision": 6,
+          "state": "applied",
+          "format": "scorm_2004_4",
+          "edition": "scorm_2004_4",
+          "profile_revision": 1,
+          "plan_revision": 1,
+          "plan_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "delivery_status": "available",
+          "output_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "output_byte_length": 48000,
+          "completed_at": "2027-04-15T10:00:00Z",
+          "expires_at": "2027-04-22T10:00:00Z",
+          "loss_items": [
+            {
+              "code": "OPTIONAL_NOTE_OMITTED",
+              "severity": "information",
+              "capability": "editor_notes/1",
+              "status": "redacted_by_policy",
+              "safe_reason": "Private editorial notes are outside portable delivery."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AuthorizeCurriculumExportDownload",
+      "method": "POST",
+      "path": "/v1/interoperability/exports/{job_id}/download-tickets",
+      "description": "Issue a short-lived Principal-bound ticket for one completed authorized export.",
+      "permission": "interoperability.transfer.export",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "expected_output_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "expected_revision",
+          "expected_output_sha256"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "delivery_url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "ticket": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "ticket_id",
+          "delivery_url",
+          "ticket",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 201,
+      "idempotency": "none",
+      "concurrency": "Check exact completed output and current effective authority under the export scope before issuing an ephemeral gateway ticket.",
+      "preconditions": [
+        "Result is applied, approved, current, downloadable and unexpired. A previously issued ticket never bypasses a later revocation."
+      ],
+      "transaction": [
+        "Compare exact export revision and artifact digest. Recheck scope, rights and collection expiry.",
+        "Ask the trusted storage gateway to issue one independently scoped Principal-bound access ticket. Bind deadline to the earlier of ticket or export expiry.",
+        "Return only the gateway access URL and dedicated header credential over the protected authenticated response. Redact credential from logs."
+      ],
+      "errors": [
+        {
+          "status": 410,
+          "code": "EXPORT_DOWNLOAD_EXPIRED",
+          "condition": "Collection is expired, revoked or no longer permitted.",
+          "recovery": "Request a newly approved export if authorized."
+        },
+        {
+          "status": 409,
+          "code": "EXPORT_RESULT_CHANGED",
+          "condition": "Expected job revision or output digest is not current.",
+          "recovery": "Read the exact current export before requesting a ticket."
+        }
+      ],
+      "events": [],
+      "request_examples": [
+        {
+          "expected_revision": 6,
+          "expected_output_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        }
+      ],
+      "response_examples": [
+        {
+          "ticket_id": "00000000-0000-4000-8000-000000000917",
+          "delivery_url": "https://delivery.example.test/v1/platform/delivery/00000000-0000-4000-8000-000000000917",
+          "ticket": "synthetic-opaque-export-ticket",
+          "expires_at": "2027-04-16T09:05:00Z"
+        }
+      ]
     }
   ],
   "events": [
@@ -12049,6 +14799,145 @@
       "ordering": "Exact deployment challenge creation order.",
       "deduplication": "Launch challenge identity.",
       "privacy": "Do not include login hints, state, nonce, JWTs or learner profile."
+    },
+    {
+      "name": "CurriculumExportProjectionRecorded",
+      "version": 1,
+      "description": "An exact private capability and loss projection was staged for review.",
+      "producer": "interoperability",
+      "payload_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "plan_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "native_curriculum",
+              "olx_course",
+              "olx_legacy_library",
+              "olx_versioned_library",
+              "scorm_12",
+              "scorm_2004_2",
+              "scorm_2004_3",
+              "scorm_2004_4",
+              "qti_21",
+              "qti_22",
+              "qti_301",
+              "common_cartridge"
+            ]
+          },
+          "edition": {
+            "type": "string",
+            "enum": [
+              "native_1",
+              "olx_course_1",
+              "olx_legacy_library_1",
+              "olx_library_archive_1",
+              "scorm_1_2",
+              "scorm_2004_2",
+              "scorm_2004_3",
+              "scorm_2004_4",
+              "qti_2_1",
+              "qti_2_2",
+              "qti_3_0_1",
+              "common_cartridge_1_3"
+            ]
+          }
+        },
+        "required": [
+          "job_id",
+          "revision",
+          "plan_revision",
+          "format",
+          "edition"
+        ],
+        "additionalProperties": false
+      },
+      "ordering": "By export job revision.",
+      "deduplication": "Stable outbox ID and export job revision. Identical command replay emits no new event.",
+      "privacy": "Only opaque job ID, revision and approved format or decision. No source scopes, asset locators, solution data or download credentials."
+    },
+    {
+      "name": "CurriculumExportCompleted",
+      "version": 1,
+      "description": "A reviewed export completed and has an authorized collection window.",
+      "producer": "interoperability",
+      "payload_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "native_curriculum",
+              "olx_course",
+              "olx_legacy_library",
+              "olx_versioned_library",
+              "scorm_12",
+              "scorm_2004_2",
+              "scorm_2004_3",
+              "scorm_2004_4",
+              "qti_21",
+              "qti_22",
+              "qti_301",
+              "common_cartridge"
+            ]
+          },
+          "edition": {
+            "type": "string",
+            "enum": [
+              "native_1",
+              "olx_course_1",
+              "olx_legacy_library_1",
+              "olx_library_archive_1",
+              "scorm_1_2",
+              "scorm_2004_2",
+              "scorm_2004_3",
+              "scorm_2004_4",
+              "qti_2_1",
+              "qti_2_2",
+              "qti_3_0_1",
+              "common_cartridge_1_3"
+            ]
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "job_id",
+          "revision",
+          "format",
+          "edition",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      },
+      "ordering": "By export job revision.",
+      "deduplication": "Stable outbox ID and export job revision. Identical command replay emits no new event.",
+      "privacy": "Only opaque job ID, revision and approved format or decision. No source scopes, asset locators, solution data or download credentials."
     }
   ],
   "permissions": [
@@ -12113,13 +15002,15 @@
       "scopes": [
         "Institution",
         "Course",
-        "Library"
+        "Library",
+        "TransferJob"
       ],
       "default_roles": [
         "transfer_exporter"
       ],
       "constraints": [
-        "Separate authority is required for learner data or protected answers."
+        "Separate authority is required for learner data or protected answers.",
+        "Read and collect only the exact current authorized export selection. Possession of job or storage identity cannot grant package download."
       ]
     },
     {
@@ -12336,6 +15227,20 @@
       ],
       "constraints": [
         "Historical reads require a valid owning learner session or scoped inspector grant. A revoked or expired runtime grant alone does not authorize recovery."
+      ]
+    },
+    {
+      "key": "interoperability.transfer.export.worker",
+      "description": "Record protected capability/loss reports and verified output for a scoped export job.",
+      "scopes": [
+        "TransferJob"
+      ],
+      "default_roles": [
+        "transfer_worker"
+      ],
+      "constraints": [
+        "Require live worker mandate, current fence, expected revision and exact frozen selection.",
+        "Worker may generate or validate but cannot approve the projection, authorize answer disclosure or download a user-facing result."
       ]
     }
   ],
@@ -13244,6 +16149,121 @@
         "tool_nonce": "N1",
         "redirect_uri": "https://tool.example.org/lti/redirect",
         "tokens_signed": 1
+      }
+    },
+    {
+      "id": "INT-035",
+      "title": "Root selection and typed edges remain scoped to the selected graph",
+      "covers": [
+        "InspectTransferArtifact",
+        "BuildTransferPlan",
+        "ReadTransferPlan",
+        "ReadTransferEdges",
+        "TransferJob",
+        "TransferRecord",
+        "TransferEdge"
+      ],
+      "given": [
+        "One synthetic ZIP has two root candidates with shared body bytes and separate policy scopes.",
+        "The chosen root contains two placements of one reusable definition and a valid inline extension with no same-type directory. A detached pointer is missing."
+      ],
+      "when": [
+        "Inspect the container and profile. Explicitly select one frozen root key. Build the plan and page the outgoing edges by exact plan revision."
+      ],
+      "then": [
+        "The verified container and decoder profile are recorded independently. Shared body does not merge root policy.",
+        "The placements and context-sensitive links have distinct occurrence keys. The inline definition resolves. The detached problem remains restricted inventory."
+      ],
+      "fixtures": {
+        "candidate_roots": 2,
+        "selected_roots": 1,
+        "shared_definitions": 1,
+        "distinct_placements": 2,
+        "detached_missing_pointers": 1
+      }
+    },
+    {
+      "id": "INT-036",
+      "title": "Required selected edges block dry-run application and expose no generation",
+      "covers": [
+        "BuildTransferPlan",
+        "ApplyTransferPlan",
+        "ApproveTransferPlan",
+        "TransferEdge",
+        "ExternalObjectMap"
+      ],
+      "given": [
+        "The selected published graph has a missing required dependency. A dry-run plan includes a detached warning as well."
+      ],
+      "when": [
+        "Read reconciliation, attempt approval and application, then restore the dependency and approve a separate editable plan. Apply keep_private twice with one logical key."
+      ],
+      "then": [
+        "No dry-run owner-visible drafts or active crosswalks exist. An unresolved required edge cannot be promoted.",
+        "Once reviewed and repaired, the exact private generation and scoped map commit once. No EnrollmentRelease or learner publication changes."
+      ],
+      "fixtures": {
+        "dry_run_writes": 0,
+        "required_unresolved": 1,
+        "detached_warnings": 1,
+        "private_generations": 1,
+        "learner_publications": 0
+      }
+    },
+    {
+      "id": "INT-037",
+      "title": "Completed portable export pins approval, exact bytes and revocable collection",
+      "covers": [
+        "QueueCurriculumExport",
+        "RecordCurriculumExportProjection",
+        "ApproveTransferPlan",
+        "CompleteCurriculumExport",
+        "ReadCurriculumExport",
+        "AuthorizeCurriculumExportDownload"
+      ],
+      "given": [
+        "A synthetic published course is eligible for a tested fourth-edition generator. Its portable projection intentionally excludes one optional private editorial note."
+      ],
+      "when": [
+        "Queue the exact profile, record protected reports, independently approve the plan, complete verified bytes, replay the completion, read the safe projection and request a ticket.",
+        "Revoke the actor's export authority before ticket redemption."
+      ],
+      "then": [
+        "One completed exact edition and output digest are recorded. The optional omission is reported. Identical retry creates no second result or event.",
+        "Revoked authority blocks redemption even before the collection window ends."
+      ],
+      "fixtures": {
+        "format": "scorm_2004_4",
+        "required_losses": 0,
+        "optional_differences": 1,
+        "completed_results": 1,
+        "bytes_after_revocation": 0
+      }
+    },
+    {
+      "id": "INT-038",
+      "title": "Prohibited solution disclosure and unverified output never fall back",
+      "covers": [
+        "QueueCurriculumExport",
+        "RecordCurriculumExportProjection",
+        "ApproveTransferPlan",
+        "CompleteCurriculumExport",
+        "ReadCurriculumExport"
+      ],
+      "given": [
+        "The target edition is disabled on one profile. A second approved profile could render a required assessment only by embedding confidential solutions."
+      ],
+      "when": [
+        "Try the disabled output and the recognized-but-unverified input edition. Attempt portable projection under the second profile with answer disclosure off."
+      ],
+      "then": [
+        "The unsupported directions are rejected without fallback. The scorer is a blocking required loss. No approval can make an output available or relabel another edition."
+      ],
+      "fixtures": {
+        "input_only_format": "scorm_2004_unverified",
+        "embedded_disclosure_allowed": false,
+        "required_losses": 1,
+        "available_results": 0
       }
     }
   ]

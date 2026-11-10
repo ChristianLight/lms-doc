@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceExtractionStateChanged",
+  "description": "Protected exact extraction reached a new stage.",
+  "type": "object",
+  "properties": {
+    "extraction_run_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "extracting",
+        "needs_review",
+        "sealed",
+        "blocked",
+        "canceled"
+      ]
+    }
+  },
+  "required": [
+    "extraction_run_id",
+    "institution_id",
+    "revision",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "curriculum",
+  "x-ordering": "Monotonic by extraction run revision.",
+  "x-deduplication": "Run ID and revision.",
+  "x-privacy": "Restricted stream. No file name, source text, coordinates, policy basis or storage locator."
+}

@@ -10,8 +10,6 @@ Read the architecture contracts first, then the owning domain chapters and catal
 - [Joomla component allocation](joomla/component-map.json)
 - [Catalog structure schema](../tooling/catalog.schema.json)
 
-## Reading order
-
 ## Architecture
 
 - [Specification contract and reading order](architecture/01-specification-contract.md)
@@ -107,3 +105,28 @@ Read the architecture contracts first, then the owning domain chapters and catal
 - [Collaboration and document adapters](joomla/04-collaboration-and-document-adapters.md)
 - [Agent build and release workflow](joomla/05-agent-build-and-release-workflow.md)
 - [Component allocation and Admin View budget](joomla/06-component-allocation.md)
+
+## Migration and curriculum recovery
+
+- [01. Archive discovery and graph inventory](migration/01-archive-discovery-and-graph.md)
+- [02. Identity allocation and link resolution](migration/02-identity-allocation-and-link-resolution.md)
+- [03. Assessment and prose extraction](migration/03-assessment-and-prose-extraction.md)
+- [04. Grading parity and migration validation](migration/04-grading-parity-and-validation.md)
+- [05. Import transactions and reconciliation](migration/05-import-transactions-and-reconciliation.md)
+- [06. Export projections and round trips](migration/06-export-projections-and-round-trips.md)
+- [07 Implementation acceptance and release evidence](migration/07-implementation-acceptance.md)
+
+## Relational persistence
+
+- [Relational storage for native curriculum](persistence/01-relational-content-storage.md)
+- [MySQL and MariaDB physical persistence contract](persistence/02-mysql-mariadb-physical-contract.md)
+- [Native relationship indexes and publication bindings](persistence/03-reference-index-contract.md)
+
+## PDF and agent authoring
+
+- [01. Source document custody, extraction and provenance](authoring/01-source-document-ingestion.md)
+- [02. Agent curriculum production](authoring/02-agent-curriculum-production.md)
+- [03. Review, quality gates and publication](authoring/03-review-quality-and-publication.md)
+- [04. Portable agent handoff from a PDF](authoring/04-portable-agent-handoff.md)
+
+The [runtime composition chapter](joomla/07-runtime-composition-and-format-boundaries.md) connects native database storage, Joomla page rendering and independent delivery exports.

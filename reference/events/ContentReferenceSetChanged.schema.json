@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContentReferenceSetChanged",
+  "description": "Derived coverage was completed or invalidated for one owner snapshot and context.",
+  "type": "object",
+  "properties": {
+    "institution_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "set_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "ready",
+        "stale",
+        "failed"
+      ]
+    }
+  },
+  "required": [
+    "institution_id",
+    "set_id",
+    "generation",
+    "revision",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "platform",
+  "x-ordering": "By set ID and monotonic revision.",
+  "x-deduplication": "Canonical OutboxEvent ID; consumers additionally reject older set revisions.",
+  "x-privacy": "No source text, answer data, external locator or target list. Reauthorize before fetching source diagnostics."
+}

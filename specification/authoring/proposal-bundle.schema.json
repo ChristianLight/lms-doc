@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Unbound PDF-to-curriculum proposal envelope",
+  "description": "Local authoring handoff only. Referenced stage bodies use the existing authoring task contracts, with protected artifact paths replacing installed storage references. No owner IDs, admission, publication or export result is represented.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "lms.unbound-authoring-proposal"
+    },
+    "contract_version": {
+      "const": "1.0.0"
+    },
+    "state": {
+      "const": "unbound_review_proposal"
+    },
+    "proposal_id": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$",
+      "description": "Random proposal scope allocated once, persisted and reused for the same proposal."
+    },
+    "source_namespace": {
+      "type": "string",
+      "pattern": "^urn:lms:source:sha256:[a-f0-9]{64}$"
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 52428800
+        },
+        "physical_page_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100001
+        },
+        "selected_page_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "minItems": 1,
+          "maxItems": 500,
+          "uniqueItems": true
+        },
+        "handling": {
+          "const": "private_local_review_required"
+        }
+      },
+      "required": [
+        "sha256",
+        "bytes",
+        "physical_page_count",
+        "selected_page_indices",
+        "handling"
+      ],
+      "additionalProperties": false
+    },
+    "source_pages": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifact"
+      },
+      "minItems": 1,
+      "maxItems": 500
+    },
+    "stages": {
+      "type": "object",
+      "properties": {
+        "coverage_plan": {
+          "$ref": "#/$defs/artifact"
+        },
+        "course_plan": {
+          "$ref": "#/$defs/artifact"
+        },
+        "learning_blocks": {
+          "$ref": "#/$defs/artifact"
+        },
+        "assessment_candidates": {
+          "$ref": "#/$defs/artifact"
+        },
+        "verification": {
+          "$ref": "#/$defs/artifact"
+        }
+      },
+      "required": [
+        "coverage_plan",
+        "course_plan",
+        "learning_blocks",
+        "assessment_candidates",
+        "verification"
+      ],
+      "additionalProperties": false
+    },
+    "review": {
+      "$ref": "#/$defs/artifact"
+    },
+    "requested_outputs": {
+      "type": "object",
+      "properties": {
+        "editable_archive": {
+          "enum": [
+            "future_bound_native_archive",
+            "not_requested"
+          ]
+        },
+        "delivery": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "profile": {
+                  "const": "scorm_2004_fourth_edition"
+                },
+                "state": {
+                  "const": "capability_and_review_required"
+                }
+              },
+              "required": [
+                "profile",
+                "state"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "profile": {
+                  "const": "none"
+                },
+                "state": {
+                  "const": "not_requested"
+                }
+              },
+              "required": [
+                "profile",
+                "state"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "editable_archive",
+        "delivery"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "format",
+    "contract_version",
+    "state",
+    "proposal_id",
+    "source_namespace",
+    "source",
+    "source_pages",
+    "stages",
+    "review",
+    "requested_outputs"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "properties": {
+        "relative_path": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*$",
+          "maxLength": 240
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "relative_path",
+        "sha256"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

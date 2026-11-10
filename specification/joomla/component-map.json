@@ -85,7 +85,7 @@
       "code": "com_lmsattemptwork",
       "domain": "assessment",
       "title": "Supplemental attempt evidence",
-      "purpose": "Accept private scanned uploads and authorized formative checks against the exact active attempt evidence.",
+      "purpose": "Accept private scanned uploads, authorized formative checks and scoped hint-disclosure receipts against the exact active attempt evidence.",
       "workspace_entity": "AssessmentUpload",
       "admin_views": [
         {
@@ -103,6 +103,14 @@
           "list_code": "practice_checks",
           "table": "#__lmsattemptwork_practice_check",
           "visibility": "internal"
+        },
+        {
+          "entity": "AssessmentHintUse",
+          "definition_key": "com_lmsattemptwork.assessment_hint_use",
+          "single_code": "assessment_hint_use",
+          "list_code": "assessment_hint_uses",
+          "table": "#__lmsattemptwork_assessment_hint_use",
+          "visibility": "internal"
         }
       ],
       "custom_admin_views": [],
@@ -110,6 +118,7 @@
       "referenced_components": [
         "com_lmsassets",
         "com_lmsidentity",
+        "com_lmsrubrics",
         "com_lmssittings"
       ]
     },
@@ -559,7 +568,7 @@
       "code": "com_lmsrubrics",
       "domain": "assessment",
       "title": "Rubrics and evaluators",
-      "purpose": "Maintain evaluator releases, rules and sealed rubrics with their criterion definitions.",
+      "purpose": "Maintain evaluator releases, protected scoring and feedback rules and sealed rubrics with their criterion definitions.",
       "workspace_entity": "RubricVersion",
       "admin_views": [
         {
@@ -593,6 +602,14 @@
           "list_code": "rubric_criterions",
           "table": "#__lmsrubrics_rubric_criterion",
           "visibility": "internal"
+        },
+        {
+          "entity": "ItemFeedbackRule",
+          "definition_key": "com_lmsrubrics.item_feedback_rule",
+          "single_code": "item_feedback_rule",
+          "list_code": "item_feedback_rules",
+          "table": "#__lmsrubrics_item_feedback_rule",
+          "visibility": "internal"
         }
       ],
       "custom_admin_views": [],
@@ -607,6 +624,7 @@
       ],
       "referenced_components": [
         "com_lmsidentity",
+        "com_lmsitembank",
         "com_lmsorganization"
       ]
     },
@@ -936,6 +954,62 @@
         "com_lmscontent",
         "com_lmsidentity",
         "com_lmsoutlines"
+      ]
+    },
+    {
+      "code": "com_lmssourceauthoring",
+      "domain": "curriculum",
+      "title": "Curriculum source authoring",
+      "purpose": "Preserve protected source extraction evidence, reviewable regions, native drafting runs and exact derivation links under the curriculum owner.",
+      "workspace_entity": "CurriculumAuthoringRun",
+      "admin_views": [
+        {
+          "entity": "SourceExtractionRun",
+          "definition_key": "com_lmssourceauthoring.source_extraction_run",
+          "single_code": "source_extraction_run",
+          "list_code": "source_extraction_runs",
+          "table": "#__lmssourceauthoring_source_extraction_run",
+          "visibility": "internal"
+        },
+        {
+          "entity": "SourceRegion",
+          "definition_key": "com_lmssourceauthoring.source_region",
+          "single_code": "source_region",
+          "list_code": "source_regions",
+          "table": "#__lmssourceauthoring_source_region",
+          "visibility": "internal"
+        },
+        {
+          "entity": "CurriculumAuthoringRun",
+          "definition_key": "com_lmssourceauthoring.curriculum_authoring_run",
+          "single_code": "curriculum_authoring_run",
+          "list_code": "curriculum_authoring_runs",
+          "table": "#__lmssourceauthoring_curriculum_authoring_run",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "SourceDerivationLink",
+          "definition_key": "com_lmssourceauthoring.source_derivation_link",
+          "single_code": "source_derivation_link",
+          "list_code": "source_derivation_links",
+          "table": "#__lmssourceauthoring_source_derivation_link",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsassets",
+        "com_lmscontent",
+        "com_lmsexamforms",
+        "com_lmsidentity",
+        "com_lmsitembank",
+        "com_lmsorganization",
+        "com_lmsoutlines",
+        "com_lmspublications",
+        "com_lmsrubrics",
+        "com_lmsstorage",
+        "com_lmsworkers"
       ]
     },
     {
@@ -1312,7 +1386,7 @@
       "code": "com_lmstransferreview",
       "domain": "interoperability",
       "title": "Transfer mapping and review",
-      "purpose": "Own staged records, exact mapping and reviewer decisions before owner commands promote an approved transfer.",
+      "purpose": "Own staged records, typed edges, exact mapping and reviewer decisions before owner commands promote an approved transfer.",
       "workspace_entity": "TransferIssue",
       "admin_views": [
         {
@@ -1321,6 +1395,14 @@
           "single_code": "transfer_record",
           "list_code": "transfer_records",
           "table": "#__lmstransferreview_transfer_record",
+          "visibility": "internal"
+        },
+        {
+          "entity": "TransferEdge",
+          "definition_key": "com_lmstransferreview.transfer_edge",
+          "single_code": "transfer_edge",
+          "list_code": "transfer_edges",
+          "table": "#__lmstransferreview_transfer_edge",
           "visibility": "internal"
         },
         {
@@ -1353,6 +1435,8 @@
       "referenced_components": [
         "com_lmsidentity",
         "com_lmsorganization",
+        "com_lmsrostersync",
+        "com_lmsstorage",
         "com_lmstransfers"
       ]
     },
@@ -2284,8 +2368,8 @@
     {
       "code": "com_lmsstorage",
       "domain": "platform",
-      "title": "Private objects",
-      "purpose": "Own immutable private storage objects, scanner decisions and purpose-limited access tickets.",
+      "title": "Private objects and reference usage",
+      "purpose": "Own immutable private storage objects, scanner decisions, purpose-limited access tickets and revision-bound reference coverage for safe asset disposition.",
       "workspace_entity": "StorageObject",
       "admin_views": [
         {
@@ -2311,13 +2395,35 @@
           "list_code": "access_tickets",
           "table": "#__lmsstorage_access_ticket",
           "visibility": "internal"
+        },
+        {
+          "entity": "ContentReferenceSet",
+          "definition_key": "com_lmsstorage.content_reference_set",
+          "single_code": "content_reference_set",
+          "list_code": "content_reference_sets",
+          "table": "#__lmsstorage_content_reference_set",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ContentReference",
+          "definition_key": "com_lmsstorage.content_reference",
+          "single_code": "content_reference",
+          "list_code": "content_references",
+          "table": "#__lmsstorage_content_reference",
+          "visibility": "internal"
         }
       ],
       "custom_admin_views": [],
       "normalized_edit_groups": [],
       "referenced_components": [
+        "com_lmsassets",
+        "com_lmscontent",
+        "com_lmsexamforms",
         "com_lmsidentity",
-        "com_lmsorganization"
+        "com_lmsorganization",
+        "com_lmspackagemanifest",
+        "com_lmsproviders",
+        "com_lmspublications"
       ]
     },
     {
@@ -3133,23 +3239,23 @@
   ],
   "counts": {
     "domains": 6,
-    "components": 66,
-    "persisted_entities": 240,
-    "admin_view_definitions": 240,
+    "components": 67,
+    "persisted_entities": 249,
+    "admin_view_definitions": 249,
     "custom_admin_view_definitions": 0,
     "maximum_attached_per_component": 5,
     "by_domain": {
       "assessment": {
         "components": 13,
-        "entities": 51
+        "entities": 53
       },
       "curriculum": {
-        "components": 5,
-        "entities": 18
+        "components": 6,
+        "entities": 22
       },
       "interoperability": {
         "components": 10,
-        "entities": 36
+        "entities": 37
       },
       "participation": {
         "components": 10,
@@ -3157,7 +3263,7 @@
       },
       "platform": {
         "components": 12,
-        "entities": 41
+        "entities": 43
       },
       "records": {
         "components": 16,

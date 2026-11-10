@@ -222,6 +222,41 @@
       "owner_guard": "Validate membership change policy and current cohort institution. A cohort role does not grant powers in offerings or groups occupied by cohort members."
     },
     {
+      "context": "ContentReference",
+      "entity": "ContentReference",
+      "assignable": false,
+      "tenant_path": [
+        "set_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "ContentReferenceSet",
+          "path": [
+            "set_id"
+          ]
+        }
+      ],
+      "owner_guard": "Reauthorize source and any disclosed target independently. Generated diagnostic rows cannot authorize access, publication or destructive retention actions."
+    },
+    {
+      "context": "ContentReferenceSet",
+      "entity": "ContentReferenceSet",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require platform reference capability and exact registered source owner permission. Resolve source_kind through an allowlist and verify source_version_id institution. Index state or a target reference grants no academic access. Placement context also verifies the complete exact source dependency closure."
+    },
+    {
       "context": "Course",
       "entity": "Course",
       "assignable": true,
@@ -285,6 +320,30 @@
         }
       ],
       "owner_guard": "Require scope over the qualification or exact issued credential and current public or authenticated disclosure policy. An optional verification token gives access only to approved limited claims."
+    },
+    {
+      "context": "CurriculumAuthoringRun",
+      "entity": "CurriculumAuthoringRun",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Course",
+          "path": [
+            "target_course_draft_id",
+            "course_id"
+          ]
+        },
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require exact draft authoring authority and current source rights for every input. Agent execution, human review, draft apply and publication are separate authority checks; one run grant does not authorize all downstream owners."
     },
     {
       "context": "Enrollment",
@@ -962,6 +1021,65 @@
         }
       ],
       "owner_guard": "Require the requested section and current teaching or enrollment relationship. A Section does not derive authority from its roster members."
+    },
+    {
+      "context": "SourceDerivationLink",
+      "entity": "SourceDerivationLink",
+      "assignable": false,
+      "tenant_path": [
+        "authoring_run_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "CurriculumAuthoringRun",
+          "path": [
+            "authoring_run_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require authoring run access plus exact target owner visibility and every referenced source-region information class. A provenance relationship never broadens target or PDF access."
+    },
+    {
+      "context": "SourceExtractionRun",
+      "entity": "SourceExtractionRun",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Course",
+          "path": [
+            "target_course_id"
+          ]
+        },
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require protected source inspection or ingestion capability for the exact course and asset, current rights attestation, evidence-purpose storage and allowed processor egress. Course learner membership does not grant access to source documents or answer material."
+    },
+    {
+      "context": "SourceRegion",
+      "entity": "SourceRegion",
+      "assignable": false,
+      "tenant_path": [
+        "extraction_run_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "SourceExtractionRun",
+          "path": [
+            "extraction_run_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require extraction scope and region sensitivity, with separate answer or staff-only source authority. No public OCR fragments or evidence object IDs are included in learner content projections."
     },
     {
       "context": "TeamSnapshot",

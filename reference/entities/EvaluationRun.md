@@ -279,6 +279,10 @@ Optional. Null is rejected.
       "feedback_code": {
         "type": "string",
         "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+      },
+      "level_key": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
       }
     },
     "required": [
@@ -289,7 +293,7 @@ Optional. Null is rejected.
     "additionalProperties": false
   },
   "minItems": 0,
-  "maxItems": 64
+  "maxItems": 128
 }
 ```
 

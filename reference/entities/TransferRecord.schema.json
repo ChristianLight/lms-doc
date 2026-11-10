@@ -16,6 +16,12 @@
       "x-entity-reference": "TransferJob",
       "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
     },
+    "plan_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Immutable transfer plan revision that owns this candidate record. Never resolves against a newer plan implicitly."
+    },
     "source_scope": {
       "type": "string",
       "minLength": 1,
@@ -34,6 +40,44 @@
       "maxLength": 512,
       "description": "Exact original case-sensitive source key."
     },
+    "source_layer": {
+      "type": "string",
+      "enum": [
+        "published",
+        "draft",
+        "shared"
+      ],
+      "description": "Independent source publication layer. Shared definitions have no draft or published-only selector."
+    },
+    "record_role": {
+      "type": "string",
+      "enum": [
+        "definition",
+        "placement",
+        "asset",
+        "policy",
+        "reference",
+        "package",
+        "document"
+      ],
+      "description": "Semantic source occurrence role. Reusable definitions and placements always have separate records."
+    },
+    "occurrence_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Stable source-scoped occurrence disambiguator. Use defined sentinel definition for a single non-occurrence record. An ambiguous move or reorder requires review."
+    },
+    "reachability": {
+      "type": "string",
+      "enum": [
+        "selected_required",
+        "selected_optional",
+        "detached",
+        "outside_selection"
+      ],
+      "description": "Classification in the frozen selected root dependency closure. Detached and outside-selection rows do not certify publishability."
+    },
     "source_revision": {
       "type": "string",
       "minLength": 1,
@@ -50,26 +94,6 @@
       "type": "string",
       "pattern": "^[0-9a-f]{64}$",
       "description": "Digest of preserved source record identity, bytes and projection-relevant metadata."
-    },
-    "parent_record_id": {
-      "type": "string",
-      "format": "uuid",
-      "description": "Structural parent within the same job.",
-      "x-entity-reference": "TransferRecord",
-      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
-    },
-    "dependency_record_ids": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "format": "uuid"
-      },
-      "maxItems": 2048,
-      "minItems": 0,
-      "uniqueItems": true,
-      "description": "Typed job record dependencies validated against the staging graph.",
-      "x-entity-reference": "TransferRecord",
-      "x-reference-scope": "Every referenced record belongs to this transfer job."
     },
     "target_kind": {
       "type": "string",
@@ -114,13 +138,17 @@
   "required": [
     "id",
     "job_id",
+    "plan_revision",
     "source_scope",
     "object_kind",
     "source_key",
+    "source_layer",
+    "record_role",
+    "occurrence_key",
+    "reachability",
     "source_revision",
     "source_locator",
     "source_fingerprint",
-    "dependency_record_ids",
     "disposition"
   ],
   "additionalProperties": false,
@@ -131,15 +159,22 @@
     ],
     [
       "job_id",
+      "plan_revision",
       "source_scope",
       "object_kind",
       "source_key",
+      "source_layer",
+      "record_role",
+      "occurrence_key",
       "source_revision"
     ]
   ],
   "x-invariants": [
     "References stay within the job graph or an explicit authorized external map.",
     "Protected drafts are not visible to learners.",
-    "Every processed or blocked source object contributes to the reconciliation totals."
+    "Every processed or blocked source object contributes to the reconciliation totals.",
+    "A record and its typed TransferEdge relationships are immutable within a plan revision. Plan correction appends another revision.",
+    "An opaque source key is not a native UUID. Allocation uses approved scoped identity and occurrence, never a raw hexadecimal token or archive path.",
+    "Required selected reachability with an unresolved blocking issue prohibits promotion of the dependent root. Detached and outside-selection records remain in restricted inventory."
   ]
 }

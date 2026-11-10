@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentHintUse",
+  "description": "Authorized durable use of one on-demand hint in an exact candidate scope.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable durable hint receipt ID."
+    },
+    "attempt_item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Item occurrence in the active candidate attempt.",
+      "x-entity-reference": "AttemptItem",
+      "x-reference-scope": "Item occurrence in the active candidate attempt."
+    },
+    "feedback_rule_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "On-demand rule in the exact realized item version.",
+      "x-entity-reference": "ItemFeedbackRule",
+      "x-reference-scope": "On-demand rule in the exact realized item version."
+    },
+    "principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized candidate or active team editor who requested the hint.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized candidate or active team editor who requested the hint."
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 256,
+      "description": "Monotonic disclosure sequence in the attempt-item scope."
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative disclosure time."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_item_id",
+    "feedback_rule_id",
+    "principal_id",
+    "ordinal",
+    "requested_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "attempt_item_id",
+      "ordinal"
+    ],
+    [
+      "attempt_item_id",
+      "feedback_rule_id"
+    ]
+  ],
+  "x-invariants": [
+    "A hint receipt is idempotent and does not mutate response or grade evidence.",
+    "An item-scoped hint may be reviewed later only while candidate access and disclosure permit it."
+  ]
+}

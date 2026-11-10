@@ -2937,7 +2937,8 @@
         "Approved bytes and verified metadata are immutable.",
         "Managed versions use a StorageObject and platform scan result. Externally hosted versions use a pinned ExternalResourceMap and cannot carry a managed storage object.",
         "Approval follows the platform authoritative object or provider result. Withdrawal blocks this resource without modifying platform custody state.",
-        "Only explicitly hosted versions can use the hosted approval command. Managed bytes require a trusted platform scan verdict."
+        "Only explicitly hosted versions can use the hosted approval command. Managed bytes require a trusted platform scan verdict.",
+        "An authoring-source AssetVersion uses a Platform StorageObject of evidence purpose. Learner content placements require a separate approved content-purpose AssetVersion with rights and accessibility checks even if the bytes match."
       ],
       "retention": "Preserve while referenced by a publication, active delivery, retained academic evidence or legal hold.",
       "states": [
@@ -3022,6 +3023,1493 @@
           ]
         }
       ]
+    },
+    {
+      "name": "SourceExtractionRun",
+      "description": "Exact protected source PDF extraction and review history.",
+      "identity": "id",
+      "fields": [
+        {
+          "name": "id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Stable opaque identity."
+        },
+        {
+          "name": "institution_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Owning institution.",
+          "references": "Institution",
+          "reference_scope": "Must resolve to an authorized Institution in the owning institution."
+        },
+        {
+          "name": "source_asset_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Immutable authoring-source PDF.",
+          "references": "AssetVersion",
+          "reference_scope": "Same institution. AssetVersion has verified managed bytes and StorageObject purpose evidence."
+        },
+        {
+          "name": "target_course_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Optional explicitly authorized teaching scope.",
+          "references": "Course",
+          "reference_scope": "Must resolve to an authorized Course in the owning institution."
+        },
+        {
+          "name": "predecessor_run_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Exact sealed predecessor for corrections.",
+          "references": "SourceExtractionRun",
+          "reference_scope": "Must resolve to an authorized SourceExtractionRun in the owning institution."
+        },
+        {
+          "name": "platform_job_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Coordinator job.",
+          "references": "PlatformJob",
+          "reference_scope": "Same institution, job_kind course_import and target type SourceExtractionRun."
+        },
+        {
+          "name": "requested_by_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Responsible scoped author.",
+          "references": "Principal",
+          "reference_scope": "Must resolve to an authorized Principal in the owning institution."
+        },
+        {
+          "name": "rights_evidence_object_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Sealed usage attestation and reviewed rights basis.",
+          "references": "StorageObject",
+          "reference_scope": "Same institution. Platform purpose evidence and exact owner source AssetVersion. Resolve actual object version and digest before use."
+        },
+        {
+          "name": "rights_snapshot",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "rights_key": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+              },
+              "policy_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647
+              },
+              "purposes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "private_extract",
+                    "external_process",
+                    "adapt",
+                    "reuse_excerpt",
+                    "reuse_figure",
+                    "learner_download",
+                    "external_export",
+                    "publish_derived"
+                  ]
+                },
+                "maxItems": 8,
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "approved_by_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "effective_from": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "effective_to": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "export_profiles": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                },
+                "maxItems": 20,
+                "minItems": 0
+              },
+              "provider_connection_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "approval_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "recipient_scope_codes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                },
+                "maxItems": 40,
+                "minItems": 0,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "rights_key",
+              "policy_revision",
+              "purposes",
+              "approved_by_id",
+              "effective_from",
+              "effective_to",
+              "export_profiles",
+              "provider_connection_id",
+              "approval_digest",
+              "recipient_scope_codes"
+            ],
+            "additionalProperties": false
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Approved use snapshot. Check current authority again before any protected effect."
+        },
+        {
+          "name": "source_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Measured verified source PDF SHA-256."
+        },
+        {
+          "name": "profile_key",
+          "schema": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Approved extraction profile and tool configuration."
+        },
+        {
+          "name": "profile_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Canonical tool versions, limits and extraction parameters."
+        },
+        {
+          "name": "page_ranges",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from_page": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000
+                },
+                "to_page_inclusive": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000
+                }
+              },
+              "required": [
+                "from_page",
+                "to_page_inclusive"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 500,
+            "minItems": 1
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Normalized sorted nonoverlapping zero-based physical ranges."
+        },
+        {
+          "name": "run_fingerprint",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Canonical source, profile, rights, range, predecessor and corrections identity."
+        },
+        {
+          "name": "page_count",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100001
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Physical count reported by trusted parser."
+        },
+        {
+          "name": "committed_page_count",
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500,
+            "default": 0
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Number of accepted physical page receipts."
+        },
+        {
+          "name": "manifest_object_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Sealed reviewed extraction manifest. Page inventory and tool transforms are indexed inside the manifest.",
+          "references": "StorageObject",
+          "reference_scope": "Same institution. Platform purpose evidence and exact owner SourceExtractionRun. Resolve actual object version and digest before use."
+        },
+        {
+          "name": "manifest_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Verified canonical extraction manifest digest."
+        },
+        {
+          "name": "reviewed_by_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Human approving exact manifest.",
+          "references": "Principal",
+          "reference_scope": "Must resolve to an authorized Principal in the owning institution."
+        },
+        {
+          "name": "state",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "extracting",
+              "needs_review",
+              "sealed",
+              "blocked",
+              "canceled"
+            ],
+            "default": "queued"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Extraction lifecycle."
+        },
+        {
+          "name": "revision",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "default": 1
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Run compare-and-swap revision."
+        },
+        {
+          "name": "created_at",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Start instant."
+        }
+      ],
+      "unique_keys": [
+        [
+          "id"
+        ],
+        [
+          "institution_id",
+          "run_fingerprint"
+        ]
+      ],
+      "indexes": [
+        {
+          "fields": [
+            "institution_id",
+            "source_asset_version_id",
+            "state"
+          ],
+          "purpose": "History by source, changed extraction and impacted drafts."
+        },
+        {
+          "fields": [
+            "platform_job_id",
+            "state"
+          ],
+          "purpose": "Coordinator recovery and outbox replay."
+        }
+      ],
+      "invariants": [
+        "Source PDF is authoring-only and protected by managed evidence purpose.",
+        "One accepted page shard per run and physical page. Sealed pages and regions are immutable.",
+        "A corrected reading creates new sealed extraction with predecessor and new affected region keys.",
+        "A sealed manifest reconciles exact page ordinals, evidence object identities, region digests and reviewed exclusions.",
+        "Export and learner distribution require separate applicable purposes, recipient scope and profile authorization even after private extraction or adaptation."
+      ],
+      "retention": "Retain protected decisions while needed for reviewed source derivation and retention policy or hold. Retain authorized academic lineage tombstone after eligible source disposition.",
+      "states": [
+        "queued",
+        "extracting",
+        "needs_review",
+        "sealed",
+        "blocked",
+        "canceled"
+      ],
+      "transitions": [
+        {
+          "from": "queued",
+          "to": "extracting",
+          "command": "CommitSourceExtractionPage",
+          "guard": "Valid page job fence and exact source.",
+          "effects": [
+            "Commit first bounded page receipt."
+          ]
+        },
+        {
+          "from": "extracting",
+          "to": "needs_review",
+          "command": "CommitSourceExtractionPage",
+          "guard": "All selected page indices have accepted receipts or explicit unresolved outcomes.",
+          "effects": [
+            "Freeze review candidate coverage."
+          ]
+        },
+        {
+          "from": "needs_review",
+          "to": "sealed",
+          "command": "SealSourceExtraction",
+          "guard": "Independent reviewer, exact manifest and every required region resolved.",
+          "effects": [
+            "Pin sealed evidence manifest and accepted rights snapshot."
+          ]
+        },
+        {
+          "from": "needs_review",
+          "to": "blocked",
+          "command": "SealSourceExtraction",
+          "guard": "Review identifies mandatory unresolved evidence.",
+          "effects": [
+            "Record exact blocked paths and permit a later corrected extraction."
+          ]
+        }
+      ],
+      "owner": "curriculum"
+    },
+    {
+      "name": "SourceRegion",
+      "description": "Exact occurrence and evidence locator within one immutable extraction revision.",
+      "identity": "id",
+      "fields": [
+        {
+          "name": "id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Stable opaque identity."
+        },
+        {
+          "name": "extraction_run_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Protected parent extraction.",
+          "references": "SourceExtractionRun",
+          "reference_scope": "Must resolve to an authorized SourceExtractionRun in the owning institution."
+        },
+        {
+          "name": "page_index",
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Zero-based physical PDF page index."
+        },
+        {
+          "name": "ordinal",
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 200000
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Stable region order within accepted page receipt."
+        },
+        {
+          "name": "bbox_mpt",
+          "schema": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 28800000
+              },
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 28800000
+              },
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 28800000
+              },
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 28800000
+              }
+            ],
+            "minItems": 4,
+            "maxItems": 4,
+            "items": false
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Upright cropped page rectangle x0, y0, x1, y1 in integer milli-points."
+        },
+        {
+          "name": "kind",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "text",
+              "heading",
+              "table",
+              "table_cell",
+              "form_field",
+              "figure",
+              "caption",
+              "equation",
+              "footnote",
+              "artifact"
+            ]
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Semantic region kind."
+        },
+        {
+          "name": "method",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "text_layer",
+              "tagged_text",
+              "ocr",
+              "vector_geometry",
+              "transcription",
+              "math_recognition"
+            ]
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Accepted extraction or transcription method."
+        },
+        {
+          "name": "review_state",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "candidate",
+              "needs_review",
+              "accepted",
+              "excluded"
+            ]
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Region decision pinned in the extraction revision."
+        },
+        {
+          "name": "confidence_permille",
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Optional OCR engine signal, not a correctness guarantee."
+        },
+        {
+          "name": "evidence_object_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Protected page evidence shard with raw and normalized representations.",
+          "references": "StorageObject",
+          "reference_scope": "Same institution. Platform purpose evidence and exact owner SourceExtractionRun. Resolve actual object version and digest before use."
+        },
+        {
+          "name": "evidence_path",
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "required": true,
+          "nullable": false,
+          "description": "RFC 6901 JSON Pointer into exact evidence shard."
+        },
+        {
+          "name": "payload_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Canonical accepted region content and geometry digest."
+        },
+        {
+          "name": "created_at",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Accepted extraction write instant."
+        },
+        {
+          "name": "sensitivity",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "authoring_only",
+              "answer_key",
+              "restricted_rights",
+              "personal_data"
+            ],
+            "default": "authoring_only"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Minimum protected retrieval and crop restriction."
+        }
+      ],
+      "unique_keys": [
+        [
+          "id"
+        ],
+        [
+          "extraction_run_id",
+          "page_index",
+          "ordinal"
+        ]
+      ],
+      "indexes": [
+        {
+          "fields": [
+            "extraction_run_id",
+            "page_index",
+            "ordinal"
+          ],
+          "purpose": "Protected source page navigation and review."
+        },
+        {
+          "fields": [
+            "extraction_run_id",
+            "review_state",
+            "kind"
+          ],
+          "purpose": "Review consequential regions and missing evidence."
+        }
+      ],
+      "invariants": [
+        "Rectangle positive area and fully inside reviewed upright page extent.",
+        "Review never discloses protected region bytes through metadata or event payload.",
+        "Regions are referenced only when accepted by a sealed extraction.",
+        "If a page shard contains a restricted region, full shard retrieval requires the strongest applicable authority. A weaker scope receives only an independently approved redacted rendition, never its underlying object ID."
+      ],
+      "retention": "Retain protected decisions while needed for reviewed source derivation and retention policy or hold. Retain authorized academic lineage tombstone after eligible source disposition.",
+      "states": [],
+      "transitions": [],
+      "owner": "curriculum"
+    },
+    {
+      "name": "CurriculumAuthoringRun",
+      "description": "Idempotent staged agent curriculum workflow for a specific draft and exact accepted source versions.",
+      "identity": "id",
+      "fields": [
+        {
+          "name": "id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Stable opaque identity."
+        },
+        {
+          "name": "institution_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Owning institution.",
+          "references": "Institution",
+          "reference_scope": "Must resolve to an authorized Institution in the owning institution."
+        },
+        {
+          "name": "target_course_draft_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Exact authorized draft.",
+          "references": "CourseDraft",
+          "reference_scope": "Must resolve to an authorized CourseDraft in the owning institution."
+        },
+        {
+          "name": "expected_draft_revision",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Draft compare-and-swap revision from approved plan."
+        },
+        {
+          "name": "platform_job_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Coordinator lease and checkpoint job.",
+          "references": "PlatformJob",
+          "reference_scope": "Same institution, job_kind course_import and target type CurriculumAuthoringRun."
+        },
+        {
+          "name": "requested_by_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Accountable authoring requester.",
+          "references": "Principal",
+          "reference_scope": "Must resolve to an authorized Principal in the owning institution."
+        },
+        {
+          "name": "agent_principal_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Scoped authoring service identity.",
+          "references": "Principal",
+          "reference_scope": "Must resolve to an authorized Principal in the owning institution."
+        },
+        {
+          "name": "source_extraction_run_ids",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Exact sealed source evidence versions.",
+          "references": "SourceExtractionRun",
+          "reference_scope": "Every source is sealed, authorized and belongs to same institution."
+        },
+        {
+          "name": "request_fingerprint",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Canonical authorized brief, exact extraction set, target and expected revision."
+        },
+        {
+          "name": "brief_object_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Sealed purpose, teaching brief, allowed provider and privacy constraints.",
+          "references": "StorageObject",
+          "reference_scope": "Same institution and Platform evidence purpose. Input brief is exact and owned by target CourseDraft; an immutable scoped run copy may be linked once the run exists."
+        },
+        {
+          "name": "stage",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "coverage_plan",
+              "course_plan",
+              "learning_blocks",
+              "assessment_candidates",
+              "verification",
+              "apply_plan",
+              "owner_apply"
+            ],
+            "default": "coverage_plan"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Current pipeline stage."
+        },
+        {
+          "name": "stage_manifest_object_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Latest sealed candidate or apply checkpoint manifest.",
+          "references": "StorageObject",
+          "reference_scope": "Same institution. Platform purpose evidence and exact owner CurriculumAuthoringRun. Resolve actual object version and digest before use."
+        },
+        {
+          "name": "stage_manifest_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Exact stage artifact digest."
+        },
+        {
+          "name": "approved_plan_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Exact reviewed candidate selection and target draft fingerprint."
+        },
+        {
+          "name": "approved_by_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Independent human apply approver.",
+          "references": "Principal",
+          "reference_scope": "Must resolve to an authorized Principal in the owning institution."
+        },
+        {
+          "name": "approved_at",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Exact review instant."
+        },
+        {
+          "name": "state",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "generating",
+              "ready_for_review",
+              "changes_requested",
+              "approved",
+              "applying",
+              "applied",
+              "blocked",
+              "canceled"
+            ],
+            "default": "planned"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Authoring run lifecycle."
+        },
+        {
+          "name": "revision",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "default": 1
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Expected run revision used by stage and approval commands."
+        },
+        {
+          "name": "created_at",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Creation instant."
+        }
+      ],
+      "unique_keys": [
+        [
+          "id"
+        ],
+        [
+          "institution_id",
+          "requested_by_id",
+          "target_course_draft_id",
+          "request_fingerprint"
+        ]
+      ],
+      "indexes": [
+        {
+          "fields": [
+            "target_course_draft_id",
+            "state",
+            "created_at"
+          ],
+          "purpose": "Draft authoring history and pending work."
+        },
+        {
+          "fields": [
+            "platform_job_id",
+            "state"
+          ],
+          "purpose": "Reconcile owner effects and job outcomes."
+        }
+      ],
+      "invariants": [
+        "Every selected source and owner effect rechecks current rights and scope.",
+        "Candidate and approved plan manifests are protected immutable StorageObjects.",
+        "The authoring run cannot publish courses or create offerings, attempts, learner evidence or official grades.",
+        "Apply must be selection-closed and bound to exact sealed inputs and draft revision."
+      ],
+      "retention": "Retain protected decisions while needed for reviewed source derivation and retention policy or hold. Retain authorized academic lineage tombstone after eligible source disposition.",
+      "states": [
+        "planned",
+        "generating",
+        "ready_for_review",
+        "changes_requested",
+        "approved",
+        "applying",
+        "applied",
+        "blocked",
+        "canceled"
+      ],
+      "transitions": [
+        {
+          "from": "planned",
+          "to": "generating",
+          "command": "RecordCurriculumAuthoringStage",
+          "guard": "First coverage output and authorized job fence.",
+          "effects": [
+            "Seal stage candidate manifest."
+          ]
+        },
+        {
+          "from": "generating",
+          "to": "ready_for_review",
+          "command": "RecordCurriculumAuthoringStage",
+          "guard": "Validated apply plan and candidate dependency closure.",
+          "effects": [
+            "Expose exact candidate digest to human reviewer."
+          ]
+        },
+        {
+          "from": "ready_for_review",
+          "to": "changes_requested",
+          "command": "ReviewCurriculumAuthoringRun",
+          "guard": "Human reviewer recorded needed corrections.",
+          "effects": [
+            "Invalidate old apply digest."
+          ]
+        },
+        {
+          "from": "ready_for_review",
+          "to": "approved",
+          "command": "ReviewCurriculumAuthoringRun",
+          "guard": "Independent approval and unchanged exact candidate and draft inputs.",
+          "effects": [
+            "Pin approval and candidate selection."
+          ]
+        },
+        {
+          "from": "changes_requested",
+          "to": "generating",
+          "command": "RecordCurriculumAuthoringStage",
+          "guard": "Authorized new candidate revision with corrections.",
+          "effects": [
+            "Preserve old decision and seal new stage output."
+          ]
+        },
+        {
+          "from": "approved",
+          "to": "applying",
+          "command": "ApplyCurriculumAuthoringSelection",
+          "guard": "Reviewed exact plan and current target revisions.",
+          "effects": [
+            "Schedule bounded owner writes."
+          ]
+        },
+        {
+          "from": "applying",
+          "to": "applied",
+          "command": "RecordCurriculumAuthoringStage",
+          "guard": "All selected owner receipts reconciled.",
+          "effects": [
+            "Record exact applied draft revision and lineage receipts."
+          ]
+        },
+        {
+          "from": "applying",
+          "to": "blocked",
+          "command": "RecordCurriculumAuthoringStage",
+          "guard": "Owner conflict or mandatory dependency unresolved.",
+          "effects": [
+            "Retain completed draft outputs and record blockers."
+          ]
+        },
+        {
+          "from": "blocked",
+          "to": "generating",
+          "command": "RecordCurriculumAuthoringStage",
+          "guard": "Replanned authorized input digest and refreshed target.",
+          "effects": [
+            "Revalidate candidate selection and require new approval."
+          ]
+        },
+        {
+          "from": "planned",
+          "to": "canceled",
+          "command": "CancelCurriculumAuthoringRun",
+          "guard": "Authorized actor and current run revision.",
+          "effects": [
+            "Fence pending effects and retain committed owner receipts."
+          ]
+        },
+        {
+          "from": "generating",
+          "to": "canceled",
+          "command": "CancelCurriculumAuthoringRun",
+          "guard": "Authorized actor and current run revision.",
+          "effects": [
+            "Fence pending effects and retain committed owner receipts."
+          ]
+        },
+        {
+          "from": "ready_for_review",
+          "to": "canceled",
+          "command": "CancelCurriculumAuthoringRun",
+          "guard": "Authorized actor and current run revision.",
+          "effects": [
+            "Fence pending effects and retain committed owner receipts."
+          ]
+        },
+        {
+          "from": "changes_requested",
+          "to": "canceled",
+          "command": "CancelCurriculumAuthoringRun",
+          "guard": "Authorized actor and current run revision.",
+          "effects": [
+            "Fence pending effects and retain committed owner receipts."
+          ]
+        },
+        {
+          "from": "approved",
+          "to": "canceled",
+          "command": "CancelCurriculumAuthoringRun",
+          "guard": "Authorized actor and current run revision.",
+          "effects": [
+            "Fence pending effects and retain committed owner receipts."
+          ]
+        },
+        {
+          "from": "applying",
+          "to": "canceled",
+          "command": "CancelCurriculumAuthoringRun",
+          "guard": "Authorized actor and current run revision.",
+          "effects": [
+            "Fence pending effects and retain committed owner receipts."
+          ]
+        },
+        {
+          "from": "blocked",
+          "to": "canceled",
+          "command": "CancelCurriculumAuthoringRun",
+          "guard": "Authorized actor and current run revision.",
+          "effects": [
+            "Fence pending effects and retain committed owner receipts."
+          ]
+        }
+      ],
+      "owner": "curriculum"
+    },
+    {
+      "name": "SourceDerivationLink",
+      "description": "Immutable protected claim-level provenance edge from a source region or approved generated origin to a candidate and optionally exact learning target.",
+      "identity": "id",
+      "fields": [
+        {
+          "name": "id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Stable opaque identity."
+        },
+        {
+          "name": "authoring_run_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Exact authoring run scope.",
+          "references": "CurriculumAuthoringRun",
+          "reference_scope": "Must resolve to an authorized CurriculumAuthoringRun in the owning institution."
+        },
+        {
+          "name": "source_region_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Exact accepted source region when the classification requires one.",
+          "references": "SourceRegion",
+          "reference_scope": "Must be a sealed accepted region in the run exact source set and still readable under the source rights and scope."
+        },
+        {
+          "name": "candidate_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Stable candidate identity inside the run."
+        },
+        {
+          "name": "candidate_revision",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Exact immutable candidate revision."
+        },
+        {
+          "name": "candidate_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Canonical candidate revision checksum."
+        },
+        {
+          "name": "target_kind",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "candidate",
+              "content_node_version",
+              "activity_version",
+              "asset_version",
+              "item_version",
+              "marking_rule_version",
+              "assessment_version",
+              "course_version"
+            ]
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Candidate-only or exact owner version target."
+        },
+        {
+          "name": "content_node_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Optional exact owner target version selected by target_kind.",
+          "references": "ContentNodeVersion",
+          "reference_scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+        },
+        {
+          "name": "activity_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Optional exact owner target version selected by target_kind.",
+          "references": "ActivityVersion",
+          "reference_scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+        },
+        {
+          "name": "asset_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Optional exact owner target version selected by target_kind.",
+          "references": "AssetVersion",
+          "reference_scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+        },
+        {
+          "name": "item_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Optional exact owner target version selected by target_kind.",
+          "references": "ItemVersion",
+          "reference_scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+        },
+        {
+          "name": "marking_rule_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Optional exact owner target version selected by target_kind.",
+          "references": "MarkingRuleVersion",
+          "reference_scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+        },
+        {
+          "name": "assessment_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Optional exact owner target version selected by target_kind.",
+          "references": "AssessmentVersion",
+          "reference_scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+        },
+        {
+          "name": "course_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Optional exact owner target version selected by target_kind.",
+          "references": "CourseVersion",
+          "reference_scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+        },
+        {
+          "name": "target_path",
+          "schema": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 500
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Canonical RFC 6901 JSON Pointer into the authorized target or candidate; use empty pointer for whole object."
+        },
+        {
+          "name": "classification",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "extracted",
+              "source_supported_paraphrase",
+              "derived",
+              "generated_instruction",
+              "human_supplied",
+              "unresolved"
+            ]
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Relationship of claim to source and author action."
+        },
+        {
+          "name": "link_fingerprint",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Canonical uniqueness key over target, region, claim type, candidate revision and derivation group."
+        },
+        {
+          "name": "derivation_group_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Groups independently indexed premise edges for the same claim."
+        },
+        {
+          "name": "verification_object_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Protected rule, computation result, human decision or verification report.",
+          "references": "StorageObject",
+          "reference_scope": "Same institution. Platform purpose evidence and exact owner CurriculumAuthoringRun. Resolve actual object version and digest before use."
+        },
+        {
+          "name": "disclosure",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "staff_only",
+              "approved_attribution"
+            ],
+            "default": "staff_only"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Default no raw source projection."
+        },
+        {
+          "name": "recorded_by_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Authorized source or owner receipt actor.",
+          "references": "Principal",
+          "reference_scope": "Must resolve to an authorized Principal in the owning institution."
+        },
+        {
+          "name": "created_at",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Append time."
+        }
+      ],
+      "unique_keys": [
+        [
+          "id"
+        ],
+        [
+          "authoring_run_id",
+          "link_fingerprint"
+        ]
+      ],
+      "indexes": [
+        {
+          "fields": [
+            "source_region_id",
+            "created_at"
+          ],
+          "purpose": "Reverse dependency and source-rights withdrawal impact."
+        },
+        {
+          "fields": [
+            "authoring_run_id",
+            "candidate_id",
+            "candidate_revision"
+          ],
+          "purpose": "Exact candidate traceability."
+        },
+        {
+          "fields": [
+            "content_node_version_id",
+            "created_at"
+          ],
+          "purpose": "Inspect authorized exact target lineage."
+        },
+        {
+          "fields": [
+            "activity_version_id",
+            "created_at"
+          ],
+          "purpose": "Inspect authorized exact target lineage."
+        },
+        {
+          "fields": [
+            "asset_version_id",
+            "created_at"
+          ],
+          "purpose": "Inspect authorized exact target lineage."
+        },
+        {
+          "fields": [
+            "item_version_id",
+            "created_at"
+          ],
+          "purpose": "Inspect authorized exact target lineage."
+        },
+        {
+          "fields": [
+            "marking_rule_version_id",
+            "created_at"
+          ],
+          "purpose": "Inspect authorized exact target lineage."
+        },
+        {
+          "fields": [
+            "assessment_version_id",
+            "created_at"
+          ],
+          "purpose": "Inspect authorized exact target lineage."
+        },
+        {
+          "fields": [
+            "course_version_id",
+            "created_at"
+          ],
+          "purpose": "Inspect authorized exact target lineage."
+        }
+      ],
+      "invariants": [
+        "Extracted, source-supported paraphrase and derived links require an accepted source region.",
+        "Derived links require a protected computation or review basis. One edge per accepted source premise; common derivation group binds premises.",
+        "Candidate-only target has no owner reference. An exact target must populate only the typed ID matching target kind.",
+        "No direct learner reads. Approved attribution is a separately filtered projection, with answer-key and source access enforced."
+      ],
+      "retention": "Retain protected decisions while needed for reviewed source derivation and retention policy or hold. Retain authorized academic lineage tombstone after eligible source disposition.",
+      "states": [],
+      "transitions": [],
+      "owner": "curriculum"
     }
   ],
   "commands": [
@@ -6793,6 +8281,2340 @@
           "state": "approved"
         }
       ]
+    },
+    {
+      "name": "ReserveCurriculumSource",
+      "method": "POST",
+      "path": "/v1/curriculum-sources/reservations",
+      "description": "Reserve protected authoring-source PDF bytes independently from a learner resource.",
+      "permission": "curriculum.source.ingest",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "object",
+            "properties": {
+              "institution_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "owner_unit_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "target_course_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "institution_id",
+              "owner_unit_id",
+              "target_course_id"
+            ],
+            "additionalProperties": false
+          },
+          "asset_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "expected_bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 52428800
+          },
+          "declared_media_type": {
+            "type": "string",
+            "enum": [
+              "application/pdf"
+            ]
+          }
+        },
+        "required": [
+          "scope",
+          "asset_id",
+          "filename",
+          "expected_bytes",
+          "declared_media_type"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "source_asset_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source_asset_version_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "storage_object_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "upload_uri": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "source_asset_id",
+          "source_asset_version_id",
+          "storage_object_id",
+          "upload_uri",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 201,
+      "idempotency": "required",
+      "concurrency": "One authoring-only version and one stable Platform reservation per idempotency key.",
+      "preconditions": [
+        "Scoped author and authorized institution, unit and intended course. Existing asset, when supplied, has compatible source purpose."
+      ],
+      "transaction": [
+        "Create pending managed AssetVersion with unreviewed source rights and ask Platform to reserve StorageObject for evidence purpose with exact asset owner ID.",
+        "Return scoped one-use upload only after reservation exists. Retry or recover a partial reservation by exact owner and effect key."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 422,
+          "code": "AUTHORING_INPUT_INVALID",
+          "condition": "Typed evidence, range, target, source digest or stage data does not validate.",
+          "recovery": "Correct exact returned field or reject the unresolved candidate."
+        }
+      ],
+      "events": [],
+      "request_examples": [
+        {
+          "scope": {
+            "institution_id": "00000000-0000-4000-8000-000000000001",
+            "owner_unit_id": "00000000-0000-4000-8000-000000000002",
+            "target_course_id": "00000000-0000-4000-8000-000000000003"
+          },
+          "asset_id": null,
+          "filename": "synthetic-measurement-notes.pdf",
+          "expected_bytes": 28000,
+          "declared_media_type": "application/pdf"
+        }
+      ],
+      "response_examples": [
+        {
+          "source_asset_id": "00000000-0000-4000-8000-000000000010",
+          "source_asset_version_id": "00000000-0000-4000-8000-000000000011",
+          "storage_object_id": "00000000-0000-4000-8000-000000000012",
+          "upload_uri": "https://upload.example.org/authoring-source",
+          "expires_at": "2026-11-10T08:15:00Z"
+        }
+      ]
+    },
+    {
+      "name": "AuthorizeCurriculumSourceUsage",
+      "method": "POST",
+      "path": "/v1/curriculum-source-versions/{source_asset_version_id}/usage-decisions",
+      "description": "Seal purpose-specific protected rights approval for an exact source PDF.",
+      "permission": "curriculum.source.rights.approve",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "expected_source_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "rights_policy_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "purposes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "private_extract",
+                "external_process",
+                "adapt",
+                "reuse_excerpt",
+                "reuse_figure",
+                "learner_download",
+                "external_export",
+                "publish_derived"
+              ]
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "provider_connection_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "export_profiles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+            },
+            "maxItems": 20,
+            "minItems": 0
+          },
+          "rights_basis_object_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "effective_to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recipient_scope_codes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+            },
+            "maxItems": 40,
+            "minItems": 0,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "expected_source_digest",
+          "rights_policy_revision",
+          "purposes",
+          "provider_connection_id",
+          "export_profiles",
+          "rights_basis_object_id",
+          "effective_to",
+          "recipient_scope_codes"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "rights_evidence_object_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "approval_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "effective_to": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "rights_evidence_object_id",
+          "approval_digest",
+          "effective_to"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 201,
+      "idempotency": "required",
+      "concurrency": "Compare current source digest, authorized rights policy revision and protected basis. Distinct approved scope creates separate attestation.",
+      "preconditions": [
+        "Verified source and human rights reviewer with applicable scope. Provider and export require express purpose and approved recipient constraints."
+      ],
+      "transaction": [
+        "Check source AssetVersion, purpose, current rights, basis and delegation.",
+        "Seal signed rights snapshot in protected StorageObject and append audit. No agent can issue approval on own authority."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 422,
+          "code": "AUTHORING_INPUT_INVALID",
+          "condition": "Typed evidence, range, target, source digest or stage data does not validate.",
+          "recovery": "Correct exact returned field or reject the unresolved candidate."
+        },
+        {
+          "status": 403,
+          "code": "SOURCE_RIGHTS_UNAVAILABLE",
+          "condition": "Requested use or provider is outside current source authority.",
+          "recovery": "Obtain a reviewed purpose-specific rights decision or remove the affected source."
+        }
+      ],
+      "events": []
+    },
+    {
+      "name": "StartSourceExtraction",
+      "method": "POST",
+      "path": "/v1/curriculum-source-versions/{source_asset_version_id}/extractions",
+      "description": "Queue a protected bounded extraction for pinned PDF and profile.",
+      "permission": "curriculum.source.ingest",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "target_course_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "rights_evidence_object_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "approval_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "profile_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+          },
+          "profile_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "page_ranges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from_page": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000
+                },
+                "to_page_inclusive": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000
+                }
+              },
+              "required": [
+                "from_page",
+                "to_page_inclusive"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 500,
+            "minItems": 1
+          },
+          "predecessor_run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "correction_manifest_object_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "target_course_id",
+          "source_digest",
+          "rights_evidence_object_id",
+          "approval_digest",
+          "profile_key",
+          "profile_digest",
+          "page_ranges",
+          "predecessor_run_id",
+          "correction_manifest_object_id"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "extraction_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "platform_job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued"
+            ]
+          }
+        },
+        "required": [
+          "extraction_run_id",
+          "platform_job_id",
+          "revision",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 201,
+      "idempotency": "required",
+      "concurrency": "Unique institution and canonical normalized source, profile, range, rights and correction fingerprint. Exact retry reuses run.",
+      "preconditions": [
+        "AssetVersion and Platform bytes are approved managed PDF evidence. Private extraction purpose is effective and covers exact source and processing authority."
+      ],
+      "transaction": [
+        "Validate pinned profile and normalize ranges with bounded total selection.",
+        "Create extraction row and course_import coordinator job scoped to exact source run."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 422,
+          "code": "AUTHORING_INPUT_INVALID",
+          "condition": "Typed evidence, range, target, source digest or stage data does not validate.",
+          "recovery": "Correct exact returned field or reject the unresolved candidate."
+        },
+        {
+          "status": 403,
+          "code": "SOURCE_RIGHTS_UNAVAILABLE",
+          "condition": "Requested use or provider is outside current source authority.",
+          "recovery": "Obtain a reviewed purpose-specific rights decision or remove the affected source."
+        }
+      ],
+      "events": [
+        "SourceExtractionStateChanged"
+      ],
+      "request_examples": [
+        {
+          "target_course_id": "00000000-0000-4000-8000-000000000003",
+          "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+          "rights_evidence_object_id": "00000000-0000-4000-8000-000000000015",
+          "approval_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+          "profile_key": "pdf-upright-local-v1",
+          "profile_digest": "3333333333333333333333333333333333333333333333333333333333333333",
+          "page_ranges": [
+            {
+              "from_page": 0,
+              "to_page_inclusive": 1
+            }
+          ],
+          "predecessor_run_id": null,
+          "correction_manifest_object_id": null
+        }
+      ],
+      "response_examples": [
+        {
+          "extraction_run_id": "00000000-0000-4000-8000-000000000016",
+          "platform_job_id": "00000000-0000-4000-8000-000000000017",
+          "revision": 1,
+          "state": "queued"
+        }
+      ]
+    },
+    {
+      "name": "CommitSourceExtractionPage",
+      "method": "POST",
+      "path": "/v1/source-extractions/{extraction_run_id}/page-receipts",
+      "description": "Accept one fenced private page evidence shard and normalized metadata.",
+      "permission": "curriculum.source.ingest",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "page_job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "lease_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "source_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "profile_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "page_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "physical_page_count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100001
+          },
+          "upright_width_mpt": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 28800000
+          },
+          "upright_height_mpt": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 28800000
+          },
+          "page_state": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "needs_review",
+              "unavailable",
+              "excluded"
+            ]
+          },
+          "evidence_object_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "evidence_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "regions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ordinal": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 200000
+                },
+                "bbox_mpt": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 28800000
+                    },
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 28800000
+                    },
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 28800000
+                    },
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 28800000
+                    }
+                  ],
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": false
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "text",
+                    "heading",
+                    "table",
+                    "table_cell",
+                    "form_field",
+                    "figure",
+                    "caption",
+                    "equation",
+                    "footnote",
+                    "artifact"
+                  ]
+                },
+                "method": {
+                  "type": "string",
+                  "enum": [
+                    "text_layer",
+                    "tagged_text",
+                    "ocr",
+                    "vector_geometry",
+                    "transcription",
+                    "math_recognition"
+                  ]
+                },
+                "review_state": {
+                  "type": "string",
+                  "enum": [
+                    "candidate",
+                    "needs_review",
+                    "excluded"
+                  ]
+                },
+                "confidence_permille": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 1000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "evidence_path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "payload_digest": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "sensitivity": {
+                  "type": "string",
+                  "enum": [
+                    "authoring_only",
+                    "answer_key",
+                    "restricted_rights",
+                    "personal_data"
+                  ]
+                }
+              },
+              "required": [
+                "ordinal",
+                "bbox_mpt",
+                "kind",
+                "method",
+                "review_state",
+                "confidence_permille",
+                "evidence_path",
+                "payload_digest",
+                "sensitivity"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 20000,
+            "minItems": 0
+          }
+        },
+        "required": [
+          "page_job_id",
+          "lease_id",
+          "fence",
+          "source_digest",
+          "profile_digest",
+          "page_index",
+          "physical_page_count",
+          "upright_width_mpt",
+          "upright_height_mpt",
+          "page_state",
+          "evidence_object_id",
+          "evidence_digest",
+          "regions"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "extraction_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "page_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "receipt_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "committed_page_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "extracting",
+              "needs_review",
+              "sealed",
+              "blocked",
+              "canceled"
+            ]
+          }
+        },
+        "required": [
+          "extraction_run_id",
+          "page_index",
+          "receipt_id",
+          "revision",
+          "committed_page_count",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 201,
+      "idempotency": "required",
+      "concurrency": "Compare active per-page lease and fence. Deduplicate exact extraction run and physical page. Compare/update parent counter without clobbering concurrent page commits.",
+      "preconditions": [
+        "Authenticated extraction worker, active rights and exact page task. Evidence shard owner and digest verified."
+      ],
+      "transaction": [
+        "Check page range and known physical count. Validate unique ordinals, geometry, shard pointers and canonical hashes.",
+        "Commit evidence receipt, region metadata and exact count once. Queue review when all requested pages have receipts."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 422,
+          "code": "AUTHORING_INPUT_INVALID",
+          "condition": "Typed evidence, range, target, source digest or stage data does not validate.",
+          "recovery": "Correct exact returned field or reject the unresolved candidate."
+        },
+        {
+          "status": 409,
+          "code": "AUTHORING_FENCE_EXPIRED",
+          "condition": "The page or stage worker lease is stale.",
+          "recovery": "Reconcile existing receipts and claim a fresh lease."
+        },
+        {
+          "status": 403,
+          "code": "SOURCE_RIGHTS_UNAVAILABLE",
+          "condition": "Requested use or provider is outside current source authority.",
+          "recovery": "Obtain a reviewed purpose-specific rights decision or remove the affected source."
+        }
+      ],
+      "events": [
+        "SourceExtractionStateChanged"
+      ]
+    },
+    {
+      "name": "SealSourceExtraction",
+      "method": "POST",
+      "path": "/v1/source-extractions/{extraction_run_id}/review-decisions",
+      "description": "Review and seal exact page evidence and accepted source regions.",
+      "permission": "curriculum.authoring.review",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "review_manifest_object_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "review_manifest_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "seal",
+              "block"
+            ]
+          },
+          "reason_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+          }
+        },
+        "required": [
+          "expected_revision",
+          "review_manifest_object_id",
+          "review_manifest_digest",
+          "decision",
+          "reason_code"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "extraction_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "sealed",
+              "blocked"
+            ]
+          },
+          "manifest_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "required": [
+          "extraction_run_id",
+          "revision",
+          "state",
+          "manifest_digest"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "required",
+      "concurrency": "Compare exact reviewable extraction revision and entire manifest checksum. Serialize with final page receipt and other reviews.",
+      "preconditions": [
+        "Authorized independent reviewer can inspect all selected material and exact rights."
+      ],
+      "transaction": [
+        "Validate page coverage and typed acceptance or exclusion decisions against each evidence shard.",
+        "Record region review states, pin exact manifest and approved scope. Preserve unresolved reports in blocked state."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 409,
+          "code": "AUTHORING_REVISION_CHANGED",
+          "condition": "Exact manifest, draft or run revision differs.",
+          "recovery": "Reload the scoped diff and explicitly rebase or review again."
+        },
+        {
+          "status": 422,
+          "code": "SOURCE_EVIDENCE_INCOMPLETE",
+          "condition": "A required source region or reviewed material assertion is unresolved.",
+          "recovery": "Correct, replace or exclude the affected candidate under review."
+        },
+        {
+          "status": 403,
+          "code": "SOURCE_RIGHTS_UNAVAILABLE",
+          "condition": "Requested use or provider is outside current source authority.",
+          "recovery": "Obtain a reviewed purpose-specific rights decision or remove the affected source."
+        }
+      ],
+      "events": [
+        "SourceExtractionStateChanged"
+      ]
+    },
+    {
+      "name": "GetSourceExtractionSummary",
+      "method": "GET",
+      "path": "/v1/source-extractions/{extraction_run_id}",
+      "description": "Read authorized extraction revision and safe coverage counts.",
+      "permission": "curriculum.source.inspect",
+      "request_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "extraction_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source_asset_version_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "extracting",
+              "needs_review",
+              "sealed",
+              "blocked",
+              "canceled"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "selected_page_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "committed_page_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "manifest_digest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "extraction_run_id",
+          "source_asset_version_id",
+          "state",
+          "revision",
+          "selected_page_count",
+          "committed_page_count",
+          "manifest_digest"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "none",
+      "concurrency": "Read scope, current rights and stable extraction state in one authorized snapshot.",
+      "preconditions": [
+        "Current source scope and right to read extraction."
+      ],
+      "transaction": [
+        "Project safe metadata only. Require independent authorized retrieval for protected manifest and page bytes."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 403,
+          "code": "SOURCE_RIGHTS_UNAVAILABLE",
+          "condition": "Requested use or provider is outside current source authority.",
+          "recovery": "Obtain a reviewed purpose-specific rights decision or remove the affected source."
+        }
+      ],
+      "events": []
+    },
+    {
+      "name": "ReadSourceRegion",
+      "method": "GET",
+      "path": "/v1/source-regions/{source_region_id}",
+      "description": "Read exact authorized region locator and safe metadata for source review.",
+      "permission": "curriculum.source.inspect",
+      "request_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "source_region_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "extraction_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "page_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "bbox_mpt": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 28800000
+              },
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 28800000
+              },
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 28800000
+              },
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 28800000
+              }
+            ],
+            "minItems": 4,
+            "maxItems": 4,
+            "items": false
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "text",
+              "heading",
+              "table",
+              "table_cell",
+              "form_field",
+              "figure",
+              "caption",
+              "equation",
+              "footnote",
+              "artifact"
+            ]
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "text_layer",
+              "tagged_text",
+              "ocr",
+              "vector_geometry",
+              "transcription",
+              "math_recognition"
+            ]
+          },
+          "confidence_permille": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "payload_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "evidence_object_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "evidence_path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "sensitivity": {
+            "type": "string",
+            "enum": [
+              "authoring_only",
+              "answer_key",
+              "restricted_rights",
+              "personal_data"
+            ]
+          }
+        },
+        "required": [
+          "source_region_id",
+          "extraction_run_id",
+          "page_index",
+          "bbox_mpt",
+          "kind",
+          "method",
+          "confidence_permille",
+          "payload_digest",
+          "evidence_object_id",
+          "evidence_path",
+          "sensitivity"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "none",
+      "concurrency": "Check source version, rights and parent extraction scope before existence disclosure.",
+      "preconditions": [
+        "Exact authorized staff or declared job source scope. Answer-key regions require independently scoped permission."
+      ],
+      "transaction": [
+        "Return metadata and protected object identity. Require separate short-lived access ticket for raw evidence.",
+        "Project original evidence object ID only when caller has access to the whole shard. Otherwise select authorized redacted crop or return hidden."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 403,
+          "code": "SOURCE_RIGHTS_UNAVAILABLE",
+          "condition": "Requested use or provider is outside current source authority.",
+          "recovery": "Obtain a reviewed purpose-specific rights decision or remove the affected source."
+        }
+      ],
+      "events": []
+    },
+    {
+      "name": "StartCurriculumAuthoringRun",
+      "method": "POST",
+      "path": "/v1/course-drafts/{course_draft_id}/authoring-runs",
+      "description": "Create a bounded source-grounded agent run for an exact curriculum draft.",
+      "permission": "curriculum.authoring.run",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "expected_draft_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "agent_principal_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source_extraction_run_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "brief_object_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "brief_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "required": [
+          "expected_draft_revision",
+          "agent_principal_id",
+          "source_extraction_run_ids",
+          "brief_object_id",
+          "brief_digest"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "authoring_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "platform_job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "coverage_plan"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "planned"
+            ]
+          }
+        },
+        "required": [
+          "authoring_run_id",
+          "platform_job_id",
+          "stage",
+          "revision",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 201,
+      "idempotency": "required",
+      "concurrency": "Compare target revision and scoped exact input fingerprint. Same canonical brief returns existing run.",
+      "preconditions": [
+        "Active scoped agent or author. Sources sealed, rights and approved adaptation purpose verified.",
+        "Input brief belongs to the exact target CourseDraft and has verified immutable bytes and digest."
+      ],
+      "transaction": [
+        "Check exact draft, source set, allowed provider, protected brief and limits.",
+        "Create run and scoped course_import job. Do not alter draft or learner records."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 409,
+          "code": "AUTHORING_REVISION_CHANGED",
+          "condition": "Exact manifest, draft or run revision differs.",
+          "recovery": "Reload the scoped diff and explicitly rebase or review again."
+        },
+        {
+          "status": 422,
+          "code": "AUTHORING_INPUT_INVALID",
+          "condition": "Typed evidence, range, target, source digest or stage data does not validate.",
+          "recovery": "Correct exact returned field or reject the unresolved candidate."
+        },
+        {
+          "status": 403,
+          "code": "SOURCE_RIGHTS_UNAVAILABLE",
+          "condition": "Requested use or provider is outside current source authority.",
+          "recovery": "Obtain a reviewed purpose-specific rights decision or remove the affected source."
+        }
+      ],
+      "events": [
+        "CurriculumAuthoringStateChanged"
+      ],
+      "request_examples": [
+        {
+          "expected_draft_revision": 7,
+          "agent_principal_id": "00000000-0000-4000-8000-000000000020",
+          "source_extraction_run_ids": [
+            "00000000-0000-4000-8000-000000000016"
+          ],
+          "brief_object_id": "00000000-0000-4000-8000-000000000021",
+          "brief_digest": "4444444444444444444444444444444444444444444444444444444444444444"
+        }
+      ],
+      "response_examples": [
+        {
+          "authoring_run_id": "00000000-0000-4000-8000-000000000022",
+          "platform_job_id": "00000000-0000-4000-8000-000000000023",
+          "stage": "coverage_plan",
+          "revision": 1,
+          "state": "planned"
+        }
+      ]
+    },
+    {
+      "name": "RecordCurriculumAuthoringStage",
+      "method": "POST",
+      "path": "/v1/authoring-runs/{authoring_run_id}/stage-receipts",
+      "description": "Record one fenced canonical stage receipt or reconciled owner apply result.",
+      "permission": "curriculum.authoring.run",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "effect": {
+            "type": "object",
+            "properties": {
+              "stage": {
+                "type": "string",
+                "enum": [
+                  "coverage_plan",
+                  "course_plan",
+                  "learning_blocks",
+                  "assessment_candidates",
+                  "verification",
+                  "apply_plan",
+                  "owner_apply"
+                ]
+              },
+              "owner_scope_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "effect_key": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "input_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "expected_run_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647
+              }
+            },
+            "required": [
+              "stage",
+              "owner_scope_id",
+              "effect_key",
+              "input_digest",
+              "expected_run_revision"
+            ],
+            "additionalProperties": false
+          },
+          "job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "lease_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "prior_manifest_digest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_manifest_object_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "result_manifest_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "result_state": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "blocked",
+              "retryable"
+            ]
+          },
+          "blocking_issue_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          }
+        },
+        "required": [
+          "effect",
+          "job_id",
+          "lease_id",
+          "fence",
+          "prior_manifest_digest",
+          "result_manifest_object_id",
+          "result_manifest_digest",
+          "result_state",
+          "blocking_issue_count"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": [
+              "coverage_plan",
+              "course_plan",
+              "learning_blocks",
+              "assessment_candidates",
+              "verification",
+              "apply_plan",
+              "owner_apply"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "generating",
+              "ready_for_review",
+              "changes_requested",
+              "approved",
+              "applying",
+              "applied",
+              "blocked",
+              "canceled"
+            ]
+          },
+          "result_manifest_digest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "stage",
+          "revision",
+          "state",
+          "result_manifest_digest"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 201,
+      "idempotency": "required",
+      "concurrency": "Compare current stage, expected run revision, exact prior digest and active job fence. Stable effect-key retry returns prior receipt.",
+      "preconditions": [
+        "Scoped worker and allowed stage sequence. Durable manifest and owner receipt coverage exist."
+      ],
+      "transaction": [
+        "Validate result manifest against typed task profile and current rights.",
+        "Bind prior immutable manifest, update phase projection and record exact effect. Owner apply completion requires every selected effect reconciled."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 409,
+          "code": "AUTHORING_REVISION_CHANGED",
+          "condition": "Exact manifest, draft or run revision differs.",
+          "recovery": "Reload the scoped diff and explicitly rebase or review again."
+        },
+        {
+          "status": 422,
+          "code": "AUTHORING_INPUT_INVALID",
+          "condition": "Typed evidence, range, target, source digest or stage data does not validate.",
+          "recovery": "Correct exact returned field or reject the unresolved candidate."
+        },
+        {
+          "status": 403,
+          "code": "SOURCE_RIGHTS_UNAVAILABLE",
+          "condition": "Requested use or provider is outside current source authority.",
+          "recovery": "Obtain a reviewed purpose-specific rights decision or remove the affected source."
+        },
+        {
+          "status": 409,
+          "code": "AUTHORING_FENCE_EXPIRED",
+          "condition": "The page or stage worker lease is stale.",
+          "recovery": "Reconcile existing receipts and claim a fresh lease."
+        }
+      ],
+      "events": [
+        "CurriculumAuthoringStateChanged"
+      ]
+    },
+    {
+      "name": "RecordSourceDerivationLinks",
+      "method": "POST",
+      "path": "/v1/authoring-runs/{authoring_run_id}/derivation-links",
+      "description": "Append protected candidate and exact committed learning version provenance edges.",
+      "permission": "curriculum.authoring.run",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "expected_run_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "manifest_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "owner_receipt_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "source_region_id": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "candidate_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "candidate_revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "candidate_digest": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "target_kind": {
+                  "type": "string",
+                  "enum": [
+                    "candidate",
+                    "content_node_version",
+                    "activity_version",
+                    "asset_version",
+                    "item_version",
+                    "marking_rule_version",
+                    "assessment_version",
+                    "course_version"
+                  ]
+                },
+                "target_id": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "target_path": {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 500
+                },
+                "classification": {
+                  "type": "string",
+                  "enum": [
+                    "extracted",
+                    "source_supported_paraphrase",
+                    "derived",
+                    "generated_instruction",
+                    "human_supplied",
+                    "unresolved"
+                  ]
+                },
+                "derivation_group_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "verification_object_id": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "disclosure": {
+                  "type": "string",
+                  "enum": [
+                    "staff_only",
+                    "approved_attribution"
+                  ]
+                }
+              },
+              "required": [
+                "source_region_id",
+                "candidate_id",
+                "candidate_revision",
+                "candidate_digest",
+                "target_kind",
+                "target_id",
+                "target_path",
+                "classification",
+                "derivation_group_id",
+                "verification_object_id",
+                "disclosure"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 200,
+            "minItems": 1
+          }
+        },
+        "required": [
+          "expected_run_revision",
+          "manifest_digest",
+          "owner_receipt_id",
+          "links"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "authoring_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "link_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 200,
+            "minItems": 1
+          },
+          "accepted": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "authoring_run_id",
+          "link_ids",
+          "accepted"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 201,
+      "idempotency": "required",
+      "concurrency": "Verify exact manifest and insert once per canonical link fingerprint. Reconcile owner receipt rather than trusting input identity.",
+      "preconditions": [
+        "Exact candidate is in authorized sealed stage manifest. Every source and target version is visible under caller scope and classified rights."
+      ],
+      "transaction": [
+        "Check target-kind exclusive scope and required source/verification evidence.",
+        "Append one edge per premise or explicit generated origin. Restrict all raw evidence to protected scope."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 409,
+          "code": "AUTHORING_REVISION_CHANGED",
+          "condition": "Exact manifest, draft or run revision differs.",
+          "recovery": "Reload the scoped diff and explicitly rebase or review again."
+        },
+        {
+          "status": 422,
+          "code": "AUTHORING_INPUT_INVALID",
+          "condition": "Typed evidence, range, target, source digest or stage data does not validate.",
+          "recovery": "Correct exact returned field or reject the unresolved candidate."
+        },
+        {
+          "status": 403,
+          "code": "SOURCE_RIGHTS_UNAVAILABLE",
+          "condition": "Requested use or provider is outside current source authority.",
+          "recovery": "Obtain a reviewed purpose-specific rights decision or remove the affected source."
+        }
+      ],
+      "events": [
+        "SourceDerivationRecorded"
+      ]
+    },
+    {
+      "name": "ReadAuthoringRun",
+      "method": "GET",
+      "path": "/v1/authoring-runs/{authoring_run_id}",
+      "description": "Read scoped authoring plan and safe stage status without answer or source leakage.",
+      "permission": "curriculum.source.inspect",
+      "request_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "authoring_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "course_draft_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "generating",
+              "ready_for_review",
+              "changes_requested",
+              "approved",
+              "applying",
+              "applied",
+              "blocked",
+              "canceled"
+            ]
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "coverage_plan",
+              "course_plan",
+              "learning_blocks",
+              "assessment_candidates",
+              "verification",
+              "apply_plan",
+              "owner_apply"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "stage_manifest_digest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "approved_plan_digest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "authoring_run_id",
+          "course_draft_id",
+          "state",
+          "stage",
+          "revision",
+          "stage_manifest_digest",
+          "approved_plan_digest"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "none",
+      "concurrency": "Read current authorized draft and stable run snapshot.",
+      "preconditions": [
+        "Caller has scoped run metadata access. Raw protected artifacts require independent current source and target authorization."
+      ],
+      "transaction": [
+        "Project identifiers, digests and states only. Raw staff marking data and extraction require separate object retrieval rights."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        }
+      ],
+      "events": []
+    },
+    {
+      "name": "ReviewCurriculumAuthoringRun",
+      "method": "POST",
+      "path": "/v1/authoring-runs/{authoring_run_id}/review-decisions",
+      "description": "Approve exact safe candidate selection or return it for changes.",
+      "permission": "curriculum.authoring.review",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "expected_run_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "expected_draft_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "manifest_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "request_changes"
+            ]
+          },
+          "selected_candidate_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 10000,
+            "minItems": 0,
+            "uniqueItems": true
+          },
+          "review_evidence_object_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+          }
+        },
+        "required": [
+          "expected_run_revision",
+          "expected_draft_revision",
+          "manifest_digest",
+          "decision",
+          "selected_candidate_ids",
+          "review_evidence_object_id",
+          "reason_code"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "authoring_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "changes_requested"
+            ]
+          },
+          "approved_plan_digest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "authoring_run_id",
+          "revision",
+          "state",
+          "approved_plan_digest"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "required",
+      "concurrency": "Compare exact staged manifest, current run and draft revision. Require renewed review after changed candidate or dependency.",
+      "preconditions": [
+        "Human approval independent from agent and applicable assessment/rights decisions verified."
+      ],
+      "transaction": [
+        "Validate selected dependency closure and review evidence.",
+        "Record approved exact selection digest or return changes without applying draft or publishing."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 409,
+          "code": "AUTHORING_REVISION_CHANGED",
+          "condition": "Exact manifest, draft or run revision differs.",
+          "recovery": "Reload the scoped diff and explicitly rebase or review again."
+        },
+        {
+          "status": 422,
+          "code": "SOURCE_EVIDENCE_INCOMPLETE",
+          "condition": "A required source region or reviewed material assertion is unresolved.",
+          "recovery": "Correct, replace or exclude the affected candidate under review."
+        },
+        {
+          "status": 403,
+          "code": "SOURCE_RIGHTS_UNAVAILABLE",
+          "condition": "Requested use or provider is outside current source authority.",
+          "recovery": "Obtain a reviewed purpose-specific rights decision or remove the affected source."
+        }
+      ],
+      "events": [
+        "CurriculumAuthoringStateChanged"
+      ],
+      "request_examples": [
+        {
+          "expected_run_revision": 6,
+          "expected_draft_revision": 7,
+          "manifest_digest": "5555555555555555555555555555555555555555555555555555555555555555",
+          "decision": "approve",
+          "selected_candidate_ids": [
+            "00000000-0000-4000-8000-000000000024"
+          ],
+          "review_evidence_object_id": "00000000-0000-4000-8000-000000000025",
+          "reason_code": "verified-complete-subset"
+        }
+      ],
+      "response_examples": [
+        {
+          "authoring_run_id": "00000000-0000-4000-8000-000000000022",
+          "revision": 7,
+          "state": "approved",
+          "approved_plan_digest": "6666666666666666666666666666666666666666666666666666666666666666"
+        }
+      ]
+    },
+    {
+      "name": "ApplyCurriculumAuthoringSelection",
+      "method": "POST",
+      "path": "/v1/authoring-runs/{authoring_run_id}/apply",
+      "description": "Schedule the exact approved selection through existing owner APIs.",
+      "permission": "curriculum.authoring.review",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "expected_run_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "expected_draft_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "approved_plan_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "required": [
+          "expected_run_revision",
+          "expected_draft_revision",
+          "approved_plan_digest"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "authoring_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "platform_job_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "applying"
+            ]
+          }
+        },
+        "required": [
+          "authoring_run_id",
+          "platform_job_id",
+          "revision",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 202,
+      "idempotency": "required",
+      "concurrency": "Compare current draft and run and exact reviewed dependency-closed plan. Each downstream owner effect uses stable idempotency and own expected revision.",
+      "preconditions": [
+        "Current source rights and human-reviewed selection. Owner command authority for each requested draft effect."
+      ],
+      "transaction": [
+        "Revalidate approval, rights, exact versions and target.",
+        "Queue ordered owner effects, keeping completed and pending stages inspectable. Never activate offering or publish from agent."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 409,
+          "code": "AUTHORING_REVISION_CHANGED",
+          "condition": "Exact manifest, draft or run revision differs.",
+          "recovery": "Reload the scoped diff and explicitly rebase or review again."
+        },
+        {
+          "status": 422,
+          "code": "SOURCE_EVIDENCE_INCOMPLETE",
+          "condition": "A required source region or reviewed material assertion is unresolved.",
+          "recovery": "Correct, replace or exclude the affected candidate under review."
+        },
+        {
+          "status": 403,
+          "code": "SOURCE_RIGHTS_UNAVAILABLE",
+          "condition": "Requested use or provider is outside current source authority.",
+          "recovery": "Obtain a reviewed purpose-specific rights decision or remove the affected source."
+        }
+      ],
+      "events": [
+        "CurriculumAuthoringStateChanged"
+      ]
+    },
+    {
+      "name": "CancelCurriculumAuthoringRun",
+      "method": "POST",
+      "path": "/v1/authoring-runs/{authoring_run_id}/cancel",
+      "description": "Fence future run effects while preserving accepted owner and review receipts.",
+      "permission": "curriculum.authoring.run",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "expected_run_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "reason_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+          }
+        },
+        "required": [
+          "expected_run_revision",
+          "reason_code"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "authoring_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "canceled"
+            ]
+          }
+        },
+        "required": [
+          "authoring_run_id",
+          "revision",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "required",
+      "concurrency": "Compare run revision, fence pending leased effects and reconcile already-committed owner outcomes.",
+      "preconditions": [
+        "Authorized actor and cancellable run state."
+      ],
+      "transaction": [
+        "Record cancel and suppress pending effect dispatch.",
+        "Retain committed objects, traceability and review receipts. Undo uses owning draft correction."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 409,
+          "code": "AUTHORING_REVISION_CHANGED",
+          "condition": "Exact manifest, draft or run revision differs.",
+          "recovery": "Reload the scoped diff and explicitly rebase or review again."
+        }
+      ],
+      "events": [
+        "CurriculumAuthoringStateChanged"
+      ]
+    },
+    {
+      "name": "ReadSourceDerivationTrace",
+      "method": "GET",
+      "path": "/v1/authoring-runs/{authoring_run_id}/derivation-links",
+      "description": "Read authorized exact candidate provenance, filtered before pagination.",
+      "permission": "curriculum.source.inspect",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "candidate_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "candidate_id",
+          "candidate_revision"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "authoring_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "link_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "source_region_id": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "classification": {
+                  "type": "string",
+                  "enum": [
+                    "extracted",
+                    "source_supported_paraphrase",
+                    "derived",
+                    "generated_instruction",
+                    "human_supplied",
+                    "unresolved"
+                  ]
+                },
+                "target_kind": {
+                  "type": "string",
+                  "enum": [
+                    "candidate",
+                    "content_node_version",
+                    "activity_version",
+                    "asset_version",
+                    "item_version",
+                    "marking_rule_version",
+                    "assessment_version",
+                    "course_version"
+                  ]
+                },
+                "target_path": {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 500
+                },
+                "disclosure": {
+                  "type": "string",
+                  "enum": [
+                    "staff_only",
+                    "approved_attribution"
+                  ]
+                }
+              },
+              "required": [
+                "link_id",
+                "source_region_id",
+                "classification",
+                "target_kind",
+                "target_path",
+                "disclosure"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 100,
+            "minItems": 0
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "authoring_run_id",
+          "links",
+          "next_cursor"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "none",
+      "concurrency": "Resolve exact candidate and apply all source and target authorization filters before pagination.",
+      "preconditions": [
+        "Caller can inspect current authorized source set and the target. Any staff answer-key path requires independent Assessment authority."
+      ],
+      "transaction": [
+        "Select exact revision links and redact restricted targets and evidence.",
+        "Return safe IDs and classifications only. Never include raw source, answer values or verification artifacts."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "SOURCE_SCOPE_UNAVAILABLE",
+          "condition": "Source, run or exact target is outside the authorized scope.",
+          "recovery": "Open an authorized source or draft workspace."
+        },
+        {
+          "status": 403,
+          "code": "SOURCE_RIGHTS_UNAVAILABLE",
+          "condition": "Requested use or provider is outside current source authority.",
+          "recovery": "Obtain a reviewed purpose-specific rights decision or remove the affected source."
+        }
+      ],
+      "events": []
     }
   ],
   "events": [
@@ -7083,6 +10905,150 @@
       "ordering": "Causal by exact course version.",
       "deduplication": "Course version, state and availability transition.",
       "privacy": "No learner information."
+    },
+    {
+      "producer": "curriculum",
+      "name": "SourceExtractionStateChanged",
+      "version": 1,
+      "description": "Protected exact extraction reached a new stage.",
+      "payload_schema": {
+        "type": "object",
+        "properties": {
+          "extraction_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "institution_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "extracting",
+              "needs_review",
+              "sealed",
+              "blocked",
+              "canceled"
+            ]
+          }
+        },
+        "required": [
+          "extraction_run_id",
+          "institution_id",
+          "revision",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "ordering": "Monotonic by extraction run revision.",
+      "deduplication": "Run ID and revision.",
+      "privacy": "Restricted stream. No file name, source text, coordinates, policy basis or storage locator."
+    },
+    {
+      "producer": "curriculum",
+      "name": "CurriculumAuthoringStateChanged",
+      "version": 1,
+      "description": "Protected authoring run stage or approval changed.",
+      "payload_schema": {
+        "type": "object",
+        "properties": {
+          "authoring_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "institution_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "coverage_plan",
+              "course_plan",
+              "learning_blocks",
+              "assessment_candidates",
+              "verification",
+              "apply_plan",
+              "owner_apply"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "generating",
+              "ready_for_review",
+              "changes_requested",
+              "approved",
+              "applying",
+              "applied",
+              "blocked",
+              "canceled"
+            ]
+          }
+        },
+        "required": [
+          "authoring_run_id",
+          "institution_id",
+          "revision",
+          "stage",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "ordering": "Monotonic by authoring run revision.",
+      "deduplication": "Run ID and revision.",
+      "privacy": "No prompts, draft bodies, learner IDs, answer keys or provider credentials."
+    },
+    {
+      "producer": "curriculum",
+      "name": "SourceDerivationRecorded",
+      "version": 1,
+      "description": "Protected exact lineage edges were linked to staged or approved owner versions.",
+      "payload_schema": {
+        "type": "object",
+        "properties": {
+          "authoring_run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "institution_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "effect_receipt_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "edge_count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "authoring_run_id",
+          "institution_id",
+          "effect_receipt_id",
+          "edge_count"
+        ],
+        "additionalProperties": false
+      },
+      "ordering": "By durable effect receipt sequence per run.",
+      "deduplication": "Authoring run and exact effect receipt.",
+      "privacy": "No source, target path, coordinates or answer key data."
     }
   ],
   "permissions": [
@@ -7223,6 +11189,87 @@
       ],
       "constraints": [
         "Record reason and affected dependency impact."
+      ]
+    },
+    {
+      "key": "curriculum.source.ingest",
+      "description": "Reserve and prepare an approved scoped authoring document.",
+      "scopes": [
+        "Institution",
+        "OrganizationUnit",
+        "Course"
+      ],
+      "default_roles": [
+        "author",
+        "curriculum_manager"
+      ],
+      "constraints": [
+        "Current upload and source scope. No independent rights grant or publication capability."
+      ]
+    },
+    {
+      "key": "curriculum.source.inspect",
+      "description": "Read authorized extraction and authoring-run metadata and protected derivation locators.",
+      "scopes": [
+        "Institution",
+        "OrganizationUnit",
+        "Course"
+      ],
+      "default_roles": [
+        "author",
+        "reviewer",
+        "curriculum_manager"
+      ],
+      "constraints": [
+        "Active source attestation and recipient authorization. Answer key paths require separate Assessment permission."
+      ]
+    },
+    {
+      "key": "curriculum.source.rights.approve",
+      "description": "Approve bounded authoring source purposes and disclosure under reviewed rights evidence.",
+      "scopes": [
+        "Institution",
+        "OrganizationUnit",
+        "Course"
+      ],
+      "default_roles": [
+        "curriculum_manager",
+        "publisher"
+      ],
+      "constraints": [
+        "Human authority and protected evidence. No self-grant to source worker or authoring agent."
+      ]
+    },
+    {
+      "key": "curriculum.authoring.run",
+      "description": "Stage source-grounded curriculum candidates and record verified job receipts.",
+      "scopes": [
+        "Institution",
+        "OrganizationUnit",
+        "Course"
+      ],
+      "default_roles": [
+        "author",
+        "curriculum_manager"
+      ],
+      "constraints": [
+        "Dedicated workers use explicit service-principal grant, current rights and lease. Scope excludes published or learner records."
+      ]
+    },
+    {
+      "key": "curriculum.authoring.review",
+      "description": "Review exact extraction and authoring plans and authorize a selected staged apply.",
+      "scopes": [
+        "Institution",
+        "OrganizationUnit",
+        "Course"
+      ],
+      "default_roles": [
+        "reviewer",
+        "publisher"
+      ],
+      "constraints": [
+        "Human independent reviewer by default. Item/marking and course publication authority remain separate."
       ]
     }
   ],
@@ -7579,6 +11626,188 @@
         "unacceptable_version": "latest",
         "approved_version": "media-v2-20261110",
         "storage_mode": "externally_hosted"
+      }
+    },
+    {
+      "id": "CUR-015",
+      "title": "Protected source intake remains distinct from learner PDF",
+      "covers": [
+        "ReserveCurriculumSource",
+        "AuthorizeCurriculumSourceUsage",
+        "StartSourceExtraction",
+        "SourceExtractionRun",
+        "AssetVersion"
+      ],
+      "given": [
+        "Scoped author uploads a 28000-byte PDF and Platform verifies a managed evidence-purpose StorageObject."
+      ],
+      "when": [
+        "Request private extraction and adaptation, with no learner download or remote provider permission. Queue physical pages 0 and 1. Attempt to bind the original AssetVersion in learner delivery."
+      ],
+      "then": [
+        "Authorized extraction accepted. Learner placement validation rejects evidence-purpose asset. Distribution requires a separate content-purpose version and rights."
+      ],
+      "fixtures": {
+        "expected_bytes": 28000,
+        "page_indices": [
+          0,
+          1
+        ],
+        "storage_purpose": "evidence",
+        "approved_purposes": [
+          "private_extract",
+          "adapt"
+        ],
+        "learner_bind_allowed": false
+      }
+    },
+    {
+      "id": "CUR-016",
+      "title": "Rotated PDF page evidence is exact and repeatable",
+      "covers": [
+        "CommitSourceExtractionPage",
+        "SealSourceExtraction",
+        "GetSourceExtractionSummary",
+        "ReadSourceRegion",
+        "SourceRegion",
+        "SourceExtractionRun"
+      ],
+      "given": [
+        "One selected page with crop [10,20,210,120], user unit 1 and clockwise rotation 90 degrees."
+      ],
+      "when": [
+        "Fenced page worker submits source box [30,50,70,70] twice with same digest. Independent reviewer accepts exact recognized region and seals. Staff read region then open authorized evidence."
+      ],
+      "then": [
+        "One accepted receipt and region set. Canonical upright bounds [30000,20000,50000,60000]. Safe summary excludes raw source. Unauthorized caller gets generic unavailable."
+      ],
+      "fixtures": {
+        "crop_pt": [
+          10,
+          20,
+          210,
+          120
+        ],
+        "rotation": 90,
+        "source_box_pt": [
+          30,
+          50,
+          70,
+          70
+        ],
+        "canonical_box_mpt": [
+          30000,
+          20000,
+          50000,
+          60000
+        ],
+        "unique_page_receipts": 1
+      }
+    },
+    {
+      "id": "CUR-017",
+      "title": "Sealed source correction preserves old lineage",
+      "covers": [
+        "StartSourceExtraction",
+        "CommitSourceExtractionPage",
+        "SealSourceExtraction",
+        "SourceExtractionRun",
+        "SourceRegion"
+      ],
+      "given": [
+        "Prior exact source evidence mistook − for a hyphen. A candidate points to prior sealed region."
+      ],
+      "when": [
+        "Start correction run with exact predecessor and revised review manifest. Commit corrected page and seal."
+      ],
+      "then": [
+        "New run and corrected region have new identities. Earlier source reference and affected candidate remain auditable. Changed claim requires renewed review."
+      ],
+      "fixtures": {
+        "prior_method": "ocr",
+        "correction_method": "transcription",
+        "prior_link_retained": true
+      }
+    },
+    {
+      "id": "CUR-018",
+      "title": "Authoring workflow applies a reviewed complete subset",
+      "covers": [
+        "StartCurriculumAuthoringRun",
+        "RecordCurriculumAuthoringStage",
+        "RecordSourceDerivationLinks",
+        "ReadAuthoringRun",
+        "ReviewCurriculumAuthoringRun",
+        "ApplyCurriculumAuthoringSelection",
+        "ReadSourceDerivationTrace",
+        "CurriculumAuthoringRun",
+        "SourceDerivationLink"
+      ],
+      "given": [
+        "Exact draft revision 7 and approved source state. One exercise contains enough input, another is missing its rate."
+      ],
+      "when": [
+        "Start run, seal staged candidates and exact protected lineage. Independent reviewer selects dependency-closed complete subset. Apply at expected revision 7 and reconcile owner receipts."
+      ],
+      "then": [
+        "The complete item and linked lesson become authorized draft changes. Missing-rate item remains blocked. Source answer metadata stays staff-only. No publication or offering activation."
+      ],
+      "fixtures": {
+        "initial_draft_revision": 7,
+        "available_inputs": [
+          "elapsed_time"
+        ],
+        "unresolved_input": "fill_rate",
+        "official_attempts_created": 0
+      }
+    },
+    {
+      "id": "CUR-019",
+      "title": "Stale stage and cancellation do not overwrite owner history",
+      "covers": [
+        "RecordCurriculumAuthoringStage",
+        "ApplyCurriculumAuthoringSelection",
+        "CancelCurriculumAuthoringRun",
+        "CurriculumAuthoringRun"
+      ],
+      "given": [
+        "Worker effect A committed a draft change, lost acknowledgement and lease expired. Later worker observes receipt."
+      ],
+      "when": [
+        "Retry A with old fence. Cancel future effects. Read current owner receipt and run history."
+      ],
+      "then": [
+        "Old worker fails AUTHORING_FENCE_EXPIRED. Existing effect reconciles once. Run canceled, prior authorized draft output preserved."
+      ],
+      "fixtures": {
+        "effect_commit": "before_timeout",
+        "old_fence": 3,
+        "current_fence": 4,
+        "duplicate_owner_writes": 0
+      }
+    },
+    {
+      "id": "CUR-020",
+      "title": "Provider rights are checked before page dispatch",
+      "covers": [
+        "AuthorizeCurriculumSourceUsage",
+        "StartSourceExtraction",
+        "ReadSourceRegion",
+        "SourceExtractionRun"
+      ],
+      "given": [
+        "Human approved private_extract for selected region and no external_process. A worker requests hosted OCR."
+      ],
+      "when": [
+        "Attempt hosted extraction then switch to approved local isolated profile."
+      ],
+      "then": [
+        "Hosted request denied before sending bytes. Local can proceed. A page with mixed answer and teaching regions is shown only to an authorized reviewer or redacted crop view."
+      ],
+      "fixtures": {
+        "requested_remote_ocr": true,
+        "bytes_disclosed_before_approval": 0,
+        "fallback": "local_isolated"
       }
     }
   ]

@@ -111,7 +111,7 @@ Required. Null is rejected.
 
 ### prompt
 
-Ordered rich content blocks with sanitized renderer format.
+Ordered public preorder forest of rich leaves, layout containers and stable interaction slots. Parent keys resolve earlier in this exact graph.
 
 Required. Null is rejected.
 
@@ -119,36 +119,166 @@ Required. Null is rejected.
 {
   "type": "array",
   "items": {
-    "type": "object",
-    "properties": {
-      "key": {
-        "type": "string",
-        "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+    "oneOf": [
+      {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "sanitized_html",
+              "text",
+              "asset",
+              "math"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50000
+          },
+          "asset_version_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "accessible_text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "parent_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          }
+        },
+        "required": [
+          "key",
+          "format",
+          "value"
+        ],
+        "additionalProperties": false
       },
-      "format": {
-        "type": "string",
-        "enum": [
-          "sanitized_html",
-          "text",
-          "asset",
-          "math"
-        ]
+      {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "interaction"
+            ]
+          },
+          "interaction_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "parent_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          }
+        },
+        "required": [
+          "key",
+          "format",
+          "interaction_key"
+        ],
+        "additionalProperties": false
       },
-      "value": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 50000
+      {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "container"
+            ]
+          },
+          "container_kind": {
+            "type": "string",
+            "enum": [
+              "flow",
+              "inline_flow",
+              "paragraph",
+              "ordered_list",
+              "unordered_list",
+              "list_item",
+              "table",
+              "table_caption",
+              "table_head",
+              "table_body",
+              "table_foot",
+              "table_row",
+              "table_header",
+              "table_cell"
+            ]
+          },
+          "parent_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "table_semantics": {
+            "type": "string",
+            "enum": [
+              "data",
+              "layout"
+            ]
+          },
+          "header_scope": {
+            "type": "string",
+            "enum": [
+              "row",
+              "col",
+              "rowgroup",
+              "colgroup"
+            ]
+          },
+          "header_keys": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "maxItems": 32,
+            "minItems": 0
+          },
+          "row_span": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 32
+          },
+          "column_span": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 32
+          },
+          "list_start": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          }
+        },
+        "required": [
+          "key",
+          "format",
+          "container_kind"
+        ],
+        "additionalProperties": false
       }
-    },
-    "required": [
-      "key",
-      "format",
-      "value"
-    ],
-    "additionalProperties": false
+    ]
   },
-  "minItems": 1,
-  "maxItems": 256
+  "maxItems": 2048,
+  "minItems": 1
 }
 ```
 
@@ -284,6 +414,8 @@ Optional. Nullable.
 - One editable draft per item by default.
 - Approval binds exact content digest.
 - Published content graph cannot change.
+- At most 64 interactions, 128 criteria and 2,048 prompt nodes at depth 16, with a 256 KiB cumulative normalized public content budget per item.
+- When prompt slots are used, every interaction has one exact slot. Container ancestry and preorder must be valid. Rich content leaves cannot contain executable control placeholders.
 
 ## Unique keys
 

@@ -4,11 +4,11 @@ This reference is generated from the authored catalogs in `specification/`. Edit
 
 | Domain | Records | Commands | Events | Permissions | Scenarios |
 | --- | --- | --- | --- | --- | --- |
-| assessment | 51 | 85 | 21 | 27 | 52 |
-| curriculum | 18 | 30 | 7 | 9 | 14 |
-| interoperability | 36 | 36 | 27 | 20 | 34 |
+| assessment | 53 | 86 | 21 | 27 | 59 |
+| curriculum | 22 | 45 | 10 | 14 | 20 |
+| interoperability | 37 | 41 | 29 | 21 | 38 |
 | participation | 36 | 55 | 18 | 19 | 28 |
-| platform | 41 | 85 | 16 | 33 | 42 |
+| platform | 43 | 89 | 17 | 35 | 47 |
 | records | 58 | 82 | 18 | 32 | 22 |
 
 ## Entity dictionary
@@ -66,6 +66,8 @@ This reference is generated from the authored catalogs in `specification/`. Edit
 - [MarkDraftRevision](entities/MarkDraftRevision.md)
 - [AssessmentAssemblyReview](entities/AssessmentAssemblyReview.md)
 - [SelfReviewRevision](entities/SelfReviewRevision.md)
+- [ItemFeedbackRule](entities/ItemFeedbackRule.md)
+- [AssessmentHintUse](entities/AssessmentHintUse.md)
 
 ### Curriculum
 
@@ -87,6 +89,10 @@ This reference is generated from the authored catalogs in `specification/`. Edit
 - [TemplateMergePlan](entities/TemplateMergePlan.md)
 - [Asset](entities/Asset.md)
 - [AssetVersion](entities/AssetVersion.md)
+- [SourceExtractionRun](entities/SourceExtractionRun.md)
+- [SourceRegion](entities/SourceRegion.md)
+- [CurriculumAuthoringRun](entities/CurriculumAuthoringRun.md)
+- [SourceDerivationLink](entities/SourceDerivationLink.md)
 
 ### Interoperability
 
@@ -94,6 +100,7 @@ This reference is generated from the authored catalogs in `specification/`. Edit
 - [TransferUploadPart](entities/TransferUploadPart.md)
 - [TransferJob](entities/TransferJob.md)
 - [TransferRecord](entities/TransferRecord.md)
+- [TransferEdge](entities/TransferEdge.md)
 - [TransferIssue](entities/TransferIssue.md)
 - [ExternalObjectMap](entities/ExternalObjectMap.md)
 - [TransferApproval](entities/TransferApproval.md)
@@ -209,6 +216,8 @@ This reference is generated from the authored catalogs in `specification/`. Edit
 - [SyncPageReceipt](entities/SyncPageReceipt.md)
 - [BackupSet](entities/BackupSet.md)
 - [PrivacyCaseStep](entities/PrivacyCaseStep.md)
+- [ContentReferenceSet](entities/ContentReferenceSet.md)
+- [ContentReference](entities/ContentReference.md)
 
 ### Records
 

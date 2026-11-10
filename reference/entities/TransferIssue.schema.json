@@ -16,6 +16,12 @@
       "x-entity-reference": "TransferJob",
       "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
     },
+    "plan_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exact plan for typed issue evidence. Absent only for pre-plan artifact diagnostics."
+    },
     "record_id": {
       "type": "string",
       "format": "uuid",
@@ -126,6 +132,7 @@
   ],
   "x-invariants": [
     "Blocking scoring loss cannot become an accepted difference without a verified replacement that changes the issue classification.",
-    "Safe summaries exclude responses, tokens and unredacted scripts."
+    "Safe summaries exclude responses, tokens and unredacted scripts.",
+    "A typed record or edge issue refers to the same job and plan revision. Keep superseded issues with original reviewed plan evidence."
   ]
 }

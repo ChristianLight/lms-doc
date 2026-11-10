@@ -1,0 +1,580 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContentReference",
+  "description": "Typed, rebuildable relation extracted from one captured native definition or resolved publication use.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Derived row identity. Never use it as an authored link or student progress identifier."
+    },
+    "set_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact parent set controlling institution, owner, context and visibility.",
+      "x-entity-reference": "ContentReferenceSet",
+      "x-reference-scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Parent generation this derived row belongs to."
+    },
+    "reference_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9._:/@-]+$",
+      "description": "Owner-local semantic key under the projection profile. Use an explicit typed local key where present; otherwise derive from locale, stable containing block or interaction key, relation role and canonical target plus anchor, with deterministic multiplicity suffix for identical edges. Array position or label alone is not identity."
+    },
+    "reference_key_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 of exact UTF-8 semantic key under the declared profile; compare full keys on collision."
+    },
+    "field_pointer": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^(?:/(?:[^~/]|~[01])*)*$",
+      "description": "RFC6901 pointer locating the reference in captured normalized owner payload. Diagnostic location, never identity."
+    },
+    "relation": {
+      "type": "string",
+      "enum": [
+        "asset",
+        "content_definition",
+        "activity_definition",
+        "assessment",
+        "package",
+        "external_resource",
+        "placement",
+        "placement_selector"
+      ],
+      "description": "Typed relation discriminator; exactly its corresponding target field is populated."
+    },
+    "required_for_publication": {
+      "type": "boolean",
+      "description": "Source owner policy classification; not chosen by the projection caller."
+    },
+    "anchor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Validated target-local fragment, retained independently of canonical target identity."
+    },
+    "asset_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+      "x-entity-reference": "AssetVersion",
+      "x-reference-scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+    },
+    "content_node_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+      "x-entity-reference": "ContentNodeVersion",
+      "x-reference-scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+    },
+    "activity_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+      "x-entity-reference": "ActivityVersion",
+      "x-reference-scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+    },
+    "assessment_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+      "x-entity-reference": "AssessmentVersion",
+      "x-reference-scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+    },
+    "package_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+      "x-entity-reference": "PackageVersion",
+      "x-reference-scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+    },
+    "external_resource_map_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+      "x-entity-reference": "ExternalResourceMap",
+      "x-reference-scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+    },
+    "target_placement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+    },
+    "target_selector": {
+      "type": "object",
+      "properties": {
+        "placement_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "context": {
+          "const": "same_course_version"
+        }
+      },
+      "required": [
+        "placement_key",
+        "context"
+      ],
+      "additionalProperties": false,
+      "description": "Deferred same-course stable placement selector in a definition set. It must be resolved in every required publication binding."
+    }
+  },
+  "required": [
+    "id",
+    "set_id",
+    "generation",
+    "reference_key",
+    "reference_key_digest",
+    "field_pointer",
+    "relation",
+    "required_for_publication"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "set_id",
+      "generation",
+      "reference_key_digest"
+    ]
+  ],
+  "x-invariants": [
+    "Exactly the target field selected by relation exists; absent alternatives are omitted rather than null.",
+    "Generation equals the ready parent set generation whenever this row is used as complete dependency evidence.",
+    "Derive semantic key and field pointer from schema-declared owner content. Reject duplicate keys, hash collision, unresolved typed target or source outside the institution.",
+    "Placement selectors are allowed only in definition sets. Placement sets resolve them to exact target placement in the same CourseVersion, with the original anchor. Cross-course links require a separately implemented capability and cannot be silently promoted.",
+    "Non-placement exact targets are reauthorized by their owner for every user read and export. Presence in a source or reverse relation list grants no access.",
+    "A target asset withdrawal can disable delivery while retention still protects the historical bytes. Dependency existence is not a license or a current publication permission.",
+    "Raw URLs, auth tokens, answer text and copied learner data are excluded. External targets use an approved ExternalResourceMap identity.",
+    "Native owner payloads remain the editing and rendering authority. Projection entries are regenerated by registered owner readers, not manually edited.",
+    "Anchor is stored only in the top-level anchor field. The target selector contains no second anchor location.",
+    "Direct approved HTTPS literals remain validated editorial link values. Only provider-managed dependencies with an actual ExternalResourceMap receive external_resource rows; never create a provider mapping solely to index an ordinary website link."
+  ],
+  "allOf": [
+    {
+      "oneOf": [
+        {
+          "properties": {
+            "relation": {
+              "const": "asset"
+            }
+          },
+          "required": [
+            "asset_version_id"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "content_node_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "activity_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "assessment_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "package_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "external_resource_map_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_placement_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_selector"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "relation": {
+              "const": "content_definition"
+            }
+          },
+          "required": [
+            "content_node_version_id"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "asset_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "activity_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "assessment_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "package_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "external_resource_map_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_placement_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_selector"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "relation": {
+              "const": "activity_definition"
+            }
+          },
+          "required": [
+            "activity_version_id"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "asset_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "content_node_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "assessment_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "package_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "external_resource_map_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_placement_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_selector"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "relation": {
+              "const": "assessment"
+            }
+          },
+          "required": [
+            "assessment_version_id"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "asset_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "content_node_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "activity_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "package_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "external_resource_map_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_placement_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_selector"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "relation": {
+              "const": "package"
+            }
+          },
+          "required": [
+            "package_version_id"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "asset_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "content_node_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "activity_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "assessment_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "external_resource_map_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_placement_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_selector"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "relation": {
+              "const": "external_resource"
+            }
+          },
+          "required": [
+            "external_resource_map_id"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "asset_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "content_node_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "activity_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "assessment_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "package_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_placement_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_selector"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "relation": {
+              "const": "placement"
+            }
+          },
+          "required": [
+            "target_placement_id"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "asset_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "content_node_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "activity_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "assessment_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "package_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "external_resource_map_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_selector"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "relation": {
+              "const": "placement_selector"
+            }
+          },
+          "required": [
+            "target_selector"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "asset_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "content_node_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "activity_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "assessment_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "package_version_id"
+                ]
+              },
+              {
+                "required": [
+                  "external_resource_map_id"
+                ]
+              },
+              {
+                "required": [
+                  "target_placement_id"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "examples": [
+    {
+      "id": "20000000-0000-4000-8000-000000000004",
+      "set_id": "20000000-0000-4000-8000-000000000001",
+      "generation": 1,
+      "reference_key": "en/block-a/illustration",
+      "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+      "field_pointer": "/blocks/0/asset",
+      "relation": "asset",
+      "required_for_publication": true,
+      "asset_version_id": "20000000-0000-4000-8000-000000000005"
+    }
+  ]
+}

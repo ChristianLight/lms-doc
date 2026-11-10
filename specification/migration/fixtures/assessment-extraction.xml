@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fixture_set>
+  <problem url_name="synthetic-garden-gauge" max_attempts="2" showanswer="after_all_attempts_or_correct" weight="0">
+    <p>Compare the two invented garden gauges.</p>
+    <table>
+      <thead><tr><th scope="col">Gauge</th><th scope="col">Response</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Mint</th><td>Read this row first.
+          <numericalresponse answer="8">
+            <label>Mint gauge reading</label>
+            <responseparam type="tolerance" default="0.1"/>
+            <additional_answer answer="11"/>
+            <formulaequationinput trailing_text="mm"/>
+          </numericalresponse>
+          Record one number.
+          <solution><p>Synthetic hidden reading solution.</p></solution>
+          Continue to the second gauge.
+        </td></tr>
+        <tr><th scope="row">Basil</th><td>
+          <multiplechoiceresponse>
+            <label>Basil gauge designation</label>
+            <choicegroup type="MultipleChoice" shuffle="true">
+              <choice correct="false"><em>Shared label</em></choice>
+              <choice correct="true" fixed="true">Shared label<choicehint>Synthetic private selected-choice feedback.</choicehint></choice>
+            </choicegroup>
+          </multiplechoiceresponse>
+        </td></tr>
+      </tbody>
+    </table>
+    <choiceresponse partial_credit="EDC">
+      <label>Select two invented irrigation signals.</label>
+      <checkboxgroup>
+        <choice correct="true">Sprout</choice><choice correct="true">Mist</choice>
+        <choice correct="false">Bench</choice><choice correct="false">Ladder</choice>
+        <choice correct="false">Drawer</choice><choice correct="false">Rope</choice>
+      </checkboxgroup>
+    </choiceresponse>
+    <demandhint><hint>Synthetic private first hint.</hint><hint>Synthetic private second hint.</hint></demandhint>
+  </problem>
+  <problem url_name="synthetic-expression-sampler">
+    <p>Enter an expression for the invented count.</p>
+    <formularesponse answer="x+1" samples="x@2:2#4" type="ci">
+      <responseparam type="tolerance" default="0.01"/>
+      <label>Invented expression</label>
+      <formulaequationinput/>
+    </formularesponse>
+  </problem>
+  <problem url_name="synthetic-invalid-sample-dimensions">
+    <formularesponse answer="x+y" samples="x,y@1:3,4#4" type="ci">
+      <label>Enter an invented expression.</label><formulaequationinput/>
+    </formularesponse>
+  </problem>
+  <problem url_name="synthetic-text-checks">
+    <stringresponse answer="straße" type="ci"><label>Enter the invented identifier.</label><textline/></stringresponse>
+    <stringresponse answer="sky|river" type="ci regexp"><label>Enter an invented term.</label><textline/></stringresponse>
+    <stringresponse answer="([a-z]+)\1" type="ci regexp"><label>Enter an invented repeated sequence.</label><textline/></stringresponse>
+  </problem>
+  <openassessment url_name="synthetic-repair-memo" text_response="required" file_upload_response="required" file_upload_type="pdf-and-image" allow_multiple_files="True" show_rubric_during_response="False">
+    <title>Invented repair memo</title>
+    <assessments><assessment name="self-assessment"/><assessment name="staff-assessment" required="True"/></assessments>
+    <prompts><prompt><description>Describe an imaginary repair and attach a drawing.</description></prompt></prompts>
+    <rubric>
+      <criterion feedback="required"><name>memo_clarity</name><label>Clarity</label>
+        <option points="0"><name>initial</name><label>Initial</label><explanation>Revisit the purpose.</explanation></option>
+        <option points="3"><name>complete</name><label>Complete</label><explanation>Explains the invented repair.</explanation></option>
+      </criterion>
+    </rubric>
+  </openassessment>
+  <openassessment url_name="synthetic-file-conference" file_upload_response="required" file_upload_type="pdf-and-image" allow_multiple_files="True" show_rubric_during_response="False">
+    <title>Invented sketch conference</title>
+    <assessments><assessment name="staff-assessment" required="True"/></assessments>
+    <prompts><prompt><description>Attach an imaginary floor plan.</description></prompt></prompts>
+    <rubric>
+      <criterion feedback="required"><name>consultation</name><label>Consultation</label>
+        <option points="0"><name>reviewed</name><label>Reviewed</label><explanation>Give a comment without points.</explanation></option>
+      </criterion>
+    </rubric>
+  </openassessment>
+  <drag-and-drop-v2 url_name="synthetic-unresolved-interaction"/>
+</fixture_set>

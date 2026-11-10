@@ -191,16 +191,86 @@ Required. Null is rejected.
           "rubric",
           "comments",
           "answer_key",
-          "model_solution"
+          "model_solution",
+          "correctness",
+          "hints",
+          "targeted_feedback"
         ]
       },
-      "minItems": 0,
-      "maxItems": 6
+      "maxItems": 9,
+      "minItems": 0
     },
     "delay_seconds": {
       "type": "integer",
       "minimum": 0,
       "maximum": 2592000
+    },
+    "field_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": [
+              "response",
+              "points",
+              "rubric",
+              "comments",
+              "answer_key",
+              "model_solution",
+              "correctness",
+              "hints",
+              "targeted_feedback"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "immediate",
+              "after_close",
+              "staff_release",
+              "never",
+              "on_demand",
+              "after_due",
+              "after_attempt",
+              "after_attempt_or_due",
+              "after_attempt_count",
+              "after_exhaustion",
+              "after_correct",
+              "after_exhaustion_or_correct",
+              "after_exhaustion_or_due",
+              "after_correct_or_due"
+            ]
+          },
+          "attempt_threshold": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "boundary": {
+            "type": "string",
+            "enum": [
+              "at_or_after",
+              "strictly_after"
+            ]
+          },
+          "deadline_basis": {
+            "type": "string",
+            "enum": [
+              "due_at",
+              "closes_at"
+            ]
+          }
+        },
+        "required": [
+          "field",
+          "mode"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 9,
+      "minItems": 0
     }
   },
   "required": [
@@ -321,6 +391,9 @@ Optional. Nullable.
     },
     "required": {
       "type": "boolean"
+    },
+    "allow_staff_bypass": {
+      "type": "boolean"
     }
   },
   "required": [
@@ -331,11 +404,75 @@ Optional. Nullable.
 }
 ```
 
+### submission_validation
+
+Configured candidate finalization precondition. Omission retains existing blank acknowledgement behavior.
+
+Optional. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "enum": [
+    "acknowledge_blanks",
+    "enforce_required",
+    "require_any"
+  ]
+}
+```
+
+### submission_wait_seconds
+
+Minimum delay between admitted scored submissions for the same candidate and delivery. Omission means no configured delay. Draft saving remains available during the wait.
+
+Optional. Null is rejected.
+
+```json
+{
+  "type": "integer",
+  "minimum": 0,
+  "maximum": 2592000
+}
+```
+
+### show_rubric_during_response
+
+Explicit reviewed visibility of permitted rubric descriptors before candidate submission. Omission withholds.
+
+Optional. Null is rejected.
+
+```json
+{
+  "type": "boolean"
+}
+```
+
+### retry_form_mode
+
+Preserve original immutable form for subsequent eligible attempts under the same compatible assessment version when configured. Omission draws a new form.
+
+Optional. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "enum": [
+    "new_form",
+    "retain_first_form"
+  ]
+}
+```
+
 ## Integrity
 
 - When both present due is on or before close.
 - Admission window is half-open.
 - Exam requires explicit close and bounded duration by default.
+- A field-specific disclosure mode applies only to its unique named field. Missing field-specific modes fall back to the published legacy review mode for authorized fields.
+- An attempt threshold is required only for after_attempt_count. A due rule declares its boundary semantics when a compatibility profile differs from the default.
+- Staff bypass of required self review is disabled by default. If enabled, an authorized explicit moderation disposition must record the reason and source policy.
+- A required or require-any submission must meet all named channel requirements before ordinary finalization. Expiry without qualifying evidence cannot fabricate a submission.
+- Retain-first-form requires compatible course placement and assessment version, authorized current dependencies and a new independent attempt/evidence identity.
 
 ## Unique keys
 

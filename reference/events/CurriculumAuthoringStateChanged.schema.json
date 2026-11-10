@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CurriculumAuthoringStateChanged",
+  "description": "Protected authoring run stage or approval changed.",
+  "type": "object",
+  "properties": {
+    "authoring_run_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "coverage_plan",
+        "course_plan",
+        "learning_blocks",
+        "assessment_candidates",
+        "verification",
+        "apply_plan",
+        "owner_apply"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "generating",
+        "ready_for_review",
+        "changes_requested",
+        "approved",
+        "applying",
+        "applied",
+        "blocked",
+        "canceled"
+      ]
+    }
+  },
+  "required": [
+    "authoring_run_id",
+    "institution_id",
+    "revision",
+    "stage",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "curriculum",
+  "x-ordering": "Monotonic by authoring run revision.",
+  "x-deduplication": "Run ID and revision.",
+  "x-privacy": "No prompts, draft bodies, learner IDs, answer keys or provider credentials."
+}

@@ -34,6 +34,20 @@ References [TransferJob](TransferJob.md). Reference must resolve inside the owni
 }
 ```
 
+### plan_revision
+
+Exact plan for typed issue evidence. Absent only for pre-plan artifact diagnostics.
+
+Optional. Null is rejected.
+
+```json
+{
+  "type": "integer",
+  "minimum": 1,
+  "maximum": 9007199254740991
+}
+```
+
 ### record_id
 
 Affected staged object when applicable.
@@ -218,6 +232,7 @@ Required. Null is rejected.
 
 - Blocking scoring loss cannot become an accepted difference without a verified replacement that changes the issue classification.
 - Safe summaries exclude responses, tokens and unredacted scripts.
+- A typed record or edge issue refers to the same job and plan revision. Keep superseded issues with original reviewed plan evidence.
 
 ## Unique keys
 

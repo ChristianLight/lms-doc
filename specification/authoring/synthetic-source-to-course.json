@@ -1,0 +1,560 @@
+{
+  "fixture_version": "1.0.0",
+  "classification": "wholly_synthetic",
+  "scope": "Designed solely to demonstrate source-to-native authoring lineage and two export decisions. No customer material or real repository source is present.",
+  "source_byte_note": "The fixture uses canonical JSON for a synthetic source transcript, not PDF bytes. Runtime intake would require the separately measured actual PDF digest.",
+  "source_payload_digest_sha256": "d4ba3e0dd7e10c2fa40b82d188ec588e5975c125a3a2bb5eafbf464112089f32",
+  "source_payload": [
+    {
+      "page_index": 0,
+      "ordinal": 0,
+      "bbox_mpt": [
+        45000,
+        45000,
+        350000,
+        75000
+      ],
+      "text": "One minute is 60 seconds."
+    },
+    {
+      "page_index": 0,
+      "ordinal": 1,
+      "bbox_mpt": [
+        45000,
+        120000,
+        450000,
+        150000
+      ],
+      "text": "To multiply a sum, multiply each addend by the same factor. In symbols, a(b + c) = ab + ac."
+    },
+    {
+      "page_index": 1,
+      "ordinal": 0,
+      "bbox_mpt": [
+        45000,
+        65000,
+        390000,
+        95000
+      ],
+      "text": "A tank is filled for four minutes. How many litres enter the tank?"
+    }
+  ],
+  "rights": {
+    "allowed_purposes": [
+      "private_extract",
+      "adapt",
+      "publish_derived"
+    ],
+    "learner_download": false,
+    "raw_source_export": false,
+    "derived_content_distribution": "Independent teaching release allows the selected synthetic derivatives. No original PDF or verbatim source distribution."
+  },
+  "accepted_regions": [
+    {
+      "region_id": "00000000-0000-4000-8000-000000000031",
+      "page_index": 0,
+      "ordinal": 0,
+      "bbox_mpt": [
+        45000,
+        45000,
+        350000,
+        75000
+      ],
+      "method": "text_layer",
+      "payload_digest_sha256": "93fdc2720538c3dbd12d033619f38427825d73fec36034e00e7273463fbe193c"
+    },
+    {
+      "region_id": "00000000-0000-4000-8000-000000000032",
+      "page_index": 0,
+      "ordinal": 1,
+      "bbox_mpt": [
+        45000,
+        120000,
+        450000,
+        150000
+      ],
+      "method": "text_layer",
+      "payload_digest_sha256": "80e3ee475bda1d98fb3ec3e7635fc190c97b84571badc640108c5530775416d3"
+    },
+    {
+      "region_id": "00000000-0000-4000-8000-000000000033",
+      "page_index": 1,
+      "ordinal": 0,
+      "bbox_mpt": [
+        45000,
+        65000,
+        390000,
+        95000
+      ],
+      "method": "text_layer",
+      "payload_digest_sha256": "9df1fb90007595b515ab292c9092e9312111e0b278608a39eb60828ebbd477fa"
+    }
+  ],
+  "contract_examples": [
+    {
+      "record_type": "teaching_brief",
+      "contract_version": "1.0.0",
+      "institution_id": "00000000-0000-4000-8000-000000000001",
+      "target_course_draft_id": "00000000-0000-4000-8000-000000000003",
+      "audience": "Beginning secondary learners using an exact numeric and a simple algebraic response.",
+      "locale": "en-NA",
+      "band_code": "introductory",
+      "delivery_mode": "teacher_led",
+      "target_duration_minutes": 20,
+      "objective_seeds": [
+        "Convert whole minutes to seconds.",
+        "Expand a constant times a two-term sum."
+      ],
+      "allowed_interactions": [
+        "single-choice",
+        "symbolic-expression"
+      ],
+      "include_source_quotations": false,
+      "allow_generated_instruction": true,
+      "assessment_use": "formative",
+      "native_package_requested": true,
+      "secondary_export_profiles": [
+        "scorm-2004-4-content-only"
+      ],
+      "authorized_provider_connection_id": null
+    },
+    {
+      "record_type": "stage_request",
+      "contract_version": "1.0.0",
+      "authoring_run_id": "00000000-0000-4000-8000-000000000022",
+      "institution_id": "00000000-0000-4000-8000-000000000001",
+      "target_course_draft_id": "00000000-0000-4000-8000-000000000003",
+      "expected_run_revision": 1,
+      "expected_draft_revision": 7,
+      "stage": "coverage_plan",
+      "effect_key": "synthetic-run-22-coverage-v1",
+      "input_digest": "dfccea1bea1c433c5fe709bb364c92e5b7beb3204c2474e76904064dcc6e9eaa",
+      "prior_manifest_digest": null,
+      "tool_profile_key": "pdf-upright-local-v1",
+      "lease": {
+        "platform_job_id": "00000000-0000-4000-8000-000000000023",
+        "lease_id": "00000000-0000-4000-8000-000000000024",
+        "fence": 1
+      },
+      "source_set": [
+        {
+          "source_asset_version_id": "00000000-0000-4000-8000-000000000011",
+          "source_extraction_run_id": "00000000-0000-4000-8000-000000000016",
+          "source_digest": "d4ba3e0dd7e10c2fa40b82d188ec588e5975c125a3a2bb5eafbf464112089f32",
+          "rights_attestation": {
+            "storage_object_id": "00000000-0000-4000-8000-000000000015",
+            "content_sha256": "000000000000000000000000000000000000000000000000000000000000000f",
+            "purpose": "evidence"
+          },
+          "page_ranges": [
+            {
+              "from_page": 0,
+              "to_page_inclusive": 1
+            }
+          ]
+        }
+      ],
+      "brief": {
+        "storage_object_id": "00000000-0000-4000-8000-000000000021",
+        "content_sha256": "0000000000000000000000000000000000000000000000000000000000000015",
+        "purpose": "evidence"
+      },
+      "required_output_schema": "1.0.0"
+    },
+    {
+      "record_type": "stage_manifest",
+      "contract_version": "1.0.0",
+      "authoring_run_id": "00000000-0000-4000-8000-000000000022",
+      "stage": "coverage_plan",
+      "stage_revision": 1,
+      "parent_manifest_digest": null,
+      "body": {
+        "topics": [
+          {
+            "topic_code": "time-conversion",
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000031"
+            ],
+            "state": "covered",
+            "safe_summary": "Source establishes the conversion factor.",
+            "issues": []
+          },
+          {
+            "topic_code": "distribution",
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000032"
+            ],
+            "state": "covered",
+            "safe_summary": "Source establishes the distributive relationship.",
+            "issues": []
+          },
+          {
+            "topic_code": "volume-from-rate",
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000033"
+            ],
+            "state": "unresolved",
+            "safe_summary": "Required input missing.",
+            "issues": [
+              {
+                "code": "MISSING_RATE",
+                "path": "/items/tank/expected_response",
+                "severity": "blocking",
+                "review_scope": "assessment",
+                "safe_message": "The source specifies duration but gives no filling rate or total.",
+                "source_region_ids": [
+                  "00000000-0000-4000-8000-000000000033"
+                ]
+              }
+            ]
+          }
+        ],
+        "issues": [
+          {
+            "code": "MISSING_RATE",
+            "path": "/items/tank/expected_response",
+            "severity": "blocking",
+            "review_scope": "assessment",
+            "safe_message": "The source specifies duration but gives no filling rate or total.",
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000033"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "record_type": "stage_receipt",
+      "contract_version": "1.0.0",
+      "authoring_run_id": "00000000-0000-4000-8000-000000000022",
+      "stage": "coverage_plan",
+      "effect_key": "synthetic-run-22-coverage-v1",
+      "input_digest": "dfccea1bea1c433c5fe709bb364c92e5b7beb3204c2474e76904064dcc6e9eaa",
+      "fence": 1,
+      "receipt_id": "00000000-0000-4000-8000-000000000029",
+      "result": "accepted",
+      "output_manifest": {
+        "storage_object_id": "00000000-0000-4000-8000-000000000028",
+        "content_sha256": "222786b3fbd19cf8247acf371fa92eb42f95f45a9cac401e593a781a659fba02",
+        "purpose": "evidence"
+      },
+      "issue_count": 1,
+      "recorded_at": "2026-11-10T08:10:00Z"
+    },
+    {
+      "record_type": "stage_manifest",
+      "contract_version": "1.0.0",
+      "authoring_run_id": "00000000-0000-4000-8000-000000000022",
+      "stage": "course_plan",
+      "stage_revision": 2,
+      "parent_manifest_digest": "222786b3fbd19cf8247acf371fa92eb42f95f45a9cac401e593a781a659fba02",
+      "body": {
+        "objectives": [
+          {
+            "objective_id": "00000000-0000-4000-8000-000000000041",
+            "learner_action": "Convert whole minutes to seconds",
+            "condition": "Given a whole number of minutes",
+            "criterion": "Return the exact integer number of seconds.",
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000031"
+            ],
+            "prerequisite_objective_ids": [],
+            "evaluation_mode": "assessed"
+          },
+          {
+            "objective_id": "00000000-0000-4000-8000-000000000042",
+            "learner_action": "Expand a constant times a two-term sum",
+            "condition": "Given a polynomial expression over real x",
+            "criterion": "Return an expanded equivalent expression.",
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000032"
+            ],
+            "prerequisite_objective_ids": [],
+            "evaluation_mode": "assessed"
+          }
+        ],
+        "outline": [
+          {
+            "placement_key": "00000000-0000-4000-8000-000000000050",
+            "parent_key": null,
+            "position": 0,
+            "kind": "module",
+            "title": "Measurement and algebra examples",
+            "estimated_minutes": 20,
+            "required": true,
+            "objective_ids": [
+              "00000000-0000-4000-8000-000000000041",
+              "00000000-0000-4000-8000-000000000042"
+            ],
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000031",
+              "00000000-0000-4000-8000-000000000032"
+            ]
+          },
+          {
+            "placement_key": "00000000-0000-4000-8000-000000000051",
+            "parent_key": "00000000-0000-4000-8000-000000000050",
+            "position": 0,
+            "kind": "lesson",
+            "title": "Convert minutes to seconds",
+            "estimated_minutes": 8,
+            "required": true,
+            "objective_ids": [
+              "00000000-0000-4000-8000-000000000041"
+            ],
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000031"
+            ]
+          },
+          {
+            "placement_key": "00000000-0000-4000-8000-000000000052",
+            "parent_key": "00000000-0000-4000-8000-000000000050",
+            "position": 1,
+            "kind": "lesson",
+            "title": "Distribute a constant",
+            "estimated_minutes": 12,
+            "required": true,
+            "objective_ids": [
+              "00000000-0000-4000-8000-000000000042"
+            ],
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000032"
+            ]
+          }
+        ],
+        "issues": [
+          {
+            "code": "MISSING_RATE",
+            "path": "/items/tank/expected_response",
+            "severity": "blocking",
+            "review_scope": "assessment",
+            "safe_message": "The source specifies duration but gives no filling rate or total.",
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000033"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "learning_candidates": [
+    {
+      "candidate_id": "00000000-0000-4000-8000-000000000061",
+      "placement_key": "00000000-0000-4000-8000-000000000051",
+      "role": "lesson_explanation",
+      "classification": "source_supported_paraphrase",
+      "source_region_ids": [
+        "00000000-0000-4000-8000-000000000031"
+      ],
+      "generated_text": "Multiply the minutes by 60 to express the duration in seconds."
+    },
+    {
+      "candidate_id": "00000000-0000-4000-8000-000000000062",
+      "placement_key": "00000000-0000-4000-8000-000000000052",
+      "role": "worked_example",
+      "classification": "derived",
+      "source_region_ids": [
+        "00000000-0000-4000-8000-000000000032"
+      ],
+      "generated_text": "For 2(x + 5), multiply both terms by 2. The result is 2x + 10.",
+      "independent_derivation": "Coefficient pair (1, 5) multiplied by 2 gives (2, 10)."
+    }
+  ],
+  "assessment_candidates": [
+    {
+      "candidate_id": "00000000-0000-4000-8000-000000000071",
+      "objective_id": "00000000-0000-4000-8000-000000000041",
+      "placement_key": "00000000-0000-4000-8000-000000000051",
+      "status": "ready_for_independent_review",
+      "prompt": {
+        "classification": "generated_instruction",
+        "source_region_ids": [
+          "00000000-0000-4000-8000-000000000031"
+        ],
+        "text": "How many seconds are in three minutes?"
+      },
+      "interaction": "single_choice",
+      "options": [
+        {
+          "id": "c_120",
+          "visible_text": "120 seconds",
+          "classification": "generated_instruction",
+          "rationale": "Uses two minutes."
+        },
+        {
+          "id": "c_180",
+          "visible_text": "180 seconds",
+          "classification": "derived",
+          "rationale": "Uses the complete conversion."
+        },
+        {
+          "id": "c_240",
+          "visible_text": "240 seconds",
+          "classification": "generated_instruction",
+          "rationale": "Uses four minutes."
+        }
+      ],
+      "staff_only_key": {
+        "expected_option_id": "c_180",
+        "source_region_ids": [
+          "00000000-0000-4000-8000-000000000031"
+        ],
+        "derivation": "3 × 60 = 180",
+        "maximum_points": "1"
+      },
+      "vectors": [
+        {
+          "response": [
+            "c_180"
+          ],
+          "score": "1",
+          "state": "correct"
+        },
+        {
+          "response": [
+            "c_120"
+          ],
+          "score": "0",
+          "state": "incorrect"
+        },
+        {
+          "response": [
+            "c_240"
+          ],
+          "score": "0",
+          "state": "incorrect"
+        },
+        {
+          "response": [],
+          "score": "0",
+          "state": "blank"
+        },
+        {
+          "response": [
+            "c_invalid"
+          ],
+          "score": null,
+          "state": "invalid"
+        }
+      ]
+    },
+    {
+      "candidate_id": "00000000-0000-4000-8000-000000000072",
+      "objective_id": "00000000-0000-4000-8000-000000000042",
+      "placement_key": "00000000-0000-4000-8000-000000000052",
+      "status": "ready_for_independent_review",
+      "prompt": {
+        "classification": "generated_instruction",
+        "source_region_ids": [
+          "00000000-0000-4000-8000-000000000032"
+        ],
+        "text": "Expand 3(x + 2). Enter a sum with no parentheses."
+      },
+      "interaction": "symbolic_expression",
+      "staff_only_key": {
+        "expected_expression": "3*x+6",
+        "domain": "real x",
+        "mode": "expanded_polynomial_form",
+        "normalized_coefficients_high_to_low": [
+          "3",
+          "6"
+        ],
+        "source_region_ids": [
+          "00000000-0000-4000-8000-000000000032"
+        ],
+        "derivation": "3 times x is 3x and 3 times 2 is 6.",
+        "maximum_points": "1"
+      },
+      "vectors": [
+        {
+          "response": "3*x+6",
+          "score": "1",
+          "state": "correct"
+        },
+        {
+          "response": "6+3*x",
+          "score": "1",
+          "state": "correct"
+        },
+        {
+          "response": "3*(x+2)",
+          "score": "0",
+          "state": "incorrect_form"
+        },
+        {
+          "response": "3*x+2",
+          "score": "0",
+          "state": "incorrect"
+        },
+        {
+          "response": "3/x+6",
+          "score": null,
+          "state": "invalid_domain_or_grammar"
+        }
+      ]
+    },
+    {
+      "candidate_id": "00000000-0000-4000-8000-000000000073",
+      "status": "blocked",
+      "prompt": {
+        "classification": "extracted",
+        "source_region_ids": [
+          "00000000-0000-4000-8000-000000000033"
+        ],
+        "text": "A tank is filled for four minutes. How many litres enter the tank?"
+      },
+      "staff_only_key": null,
+      "vectors": [],
+      "blocking_issue": {
+        "code": "MISSING_RATE",
+        "path": "/items/tank/expected_response",
+        "severity": "blocking",
+        "review_scope": "assessment",
+        "safe_message": "The source specifies duration but gives no filling rate or total.",
+        "source_region_ids": [
+          "00000000-0000-4000-8000-000000000033"
+        ]
+      }
+    }
+  ],
+  "approved_selection": {
+    "selected_candidate_ids": [
+      "00000000-0000-4000-8000-000000000061",
+      "00000000-0000-4000-8000-000000000062",
+      "00000000-0000-4000-8000-000000000071",
+      "00000000-0000-4000-8000-000000000072"
+    ],
+    "excluded_candidate_ids": [
+      "00000000-0000-4000-8000-000000000073"
+    ],
+    "required_approvals": [
+      "source_review",
+      "item_and_grading_review",
+      "curriculum_draft_review",
+      "publication_approval"
+    ],
+    "no_offering_activation": true
+  },
+  "portability_cases": [
+    {
+      "profile": "native_editable_authorized",
+      "status": "ready_after_exact_publication",
+      "preserves_supported_native_items": true,
+      "includes_protected_source_bytes": false,
+      "includes_staff_key": "only in explicitly authorized administrative assessment projection"
+    },
+    {
+      "profile": "scorm_2004_fourth_edition_content_only",
+      "status": "independently_verifiable_delivery_variant",
+      "preserves_supported_native_items": false,
+      "includes_protected_source_bytes": false,
+      "includes_staff_key": false,
+      "degradation": "Carries reviewed lesson and completion behavior only. Native symbolic assessment remains in native course."
+    },
+    {
+      "profile": "scorm_2004_fourth_edition_required_native_grading",
+      "status": "blocked",
+      "reason": "Required server-side evaluator and protected answers have no approved equivalent in this standalone browser package."
+    }
+  ]
+}

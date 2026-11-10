@@ -27,6 +27,13 @@
       "pattern": "^[0-9a-f]{64}$",
       "description": "Exact graph and baseline digest approved."
     },
+    "plan_manifest_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected immutable manifest reviewed by this approval. Must match the approved digest and exact plan revision.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Exact clean StorageObject owned by this transfer plan and Institution."
+    },
     "reviewer_principal_id": {
       "type": "string",
       "format": "uuid",
@@ -40,7 +47,8 @@
         "curriculum",
         "assessment",
         "privacy",
-        "publication"
+        "publication",
+        "export_projection"
       ],
       "description": "Which owner gate the decision satisfies."
     },
@@ -73,6 +81,7 @@
     "job_id",
     "plan_revision",
     "plan_digest",
+    "plan_manifest_id",
     "reviewer_principal_id",
     "approval_kind",
     "reason",
@@ -94,6 +103,7 @@
   ],
   "x-invariants": [
     "Approvals cannot be edited or moved to a new plan revision.",
-    "Reviewer authority is revalidated before activation."
+    "Reviewer authority is revalidated before activation.",
+    "An export projection approval pins both the frozen selection and the exact capability and loss report digest. Required losses cannot be approved into a successful output."
   ]
 }

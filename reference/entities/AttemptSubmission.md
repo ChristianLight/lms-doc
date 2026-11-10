@@ -89,7 +89,7 @@ Required. Null is rejected.
     "additionalProperties": false
   },
   "minItems": 0,
-  "maxItems": 16000
+  "maxItems": 32000
 }
 ```
 
@@ -165,6 +165,7 @@ Required. Null is rejected.
 - One authoritative submission per attempt.
 - Manifest and referenced versions are immutable.
 - Processed time is not before effective time.
+- A complete form contains at most 32,000 interaction entries. Enforce cumulative response, manifest and protected attachment byte budgets before sealing.
 
 ## Unique keys
 

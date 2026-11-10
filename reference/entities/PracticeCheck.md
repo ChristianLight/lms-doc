@@ -76,7 +76,7 @@ Required. Null is rejected.
     "additionalProperties": false
   },
   "minItems": 1,
-  "maxItems": 32
+  "maxItems": 64
 }
 ```
 

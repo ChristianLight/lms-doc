@@ -1627,3 +1627,223 @@ Covers `StartAssessmentAttempt`, `GetAssessmentAvailability`, `AttemptLease`, `T
   "exact_replay_same_receipt": true
 }
 ```
+
+## ASM-053 — Imported public layout retains rich choices and an explicit interleaved control anchor
+
+Covers `ItemVersion`, `ItemTranslation`, `InteractionDefinition`, `SaveItemDraft`, `SaveItemTranslation`, `GetAssessmentAttemptForm`.
+
+### Given
+
+- A synthetic prompt table places one choice control between two distinct text leaves. Two choices have the same display words and different stable keys.
+
+### When
+
+- Save typed layout and rich choice bodies, then publish an approved locale overlay with changed visual order.
+
+### Then
+
+- Each locale retains exact control position and identities. The candidate projection contains no grading rules or hidden solution.
+
+### Fixture values
+
+```json
+{
+  "interaction_key": "selector",
+  "source_order": [
+    "lead",
+    "slot_selector",
+    "trail"
+  ],
+  "option_keys": [
+    "first",
+    "second"
+  ],
+  "same_visible_label": true,
+  "protected_fields_exposed": false
+}
+```
+
+## ASM-054 — On-demand hint uses exact visible rule order and preserves private solution
+
+Covers `ItemFeedbackRule`, `AssessmentHintUse`, `RequestAssessmentHint`, `GetAssessmentFeedback`.
+
+### Given
+
+- An active learner has two allowed hints and a withheld model solution.
+
+### When
+
+- Request first hint, replay same key, then request with expected count one. Try the same command after close.
+
+### Then
+
+- Exactly two durable hint uses exist and both expose only the selected body. Replay creates no duplicate. The model solution remains withheld.
+
+### Fixture values
+
+```json
+{
+  "ordinals": [
+    1,
+    2
+  ],
+  "duplicate_hint_receipts": 0,
+  "model_solution_visible": false,
+  "post_close_allowed": false
+}
+```
+
+## ASM-055 — Zero contribution preserves raw learner marks without grade evidence
+
+Covers `AssessmentDelivery`, `ItemMarkRevision`, `AcceptItemMark`, `GradeEvidence`.
+
+### Given
+
+- A synthetic four-point item has explicit zero contribution with none grade mode and accessible feedback.
+
+### When
+
+- Seal an attempt and accept three raw points.
+
+### Then
+
+- The accepted raw mark remains 3 of 4. No GradeEvidence is written. No counting denominator changes.
+
+### Fixture values
+
+```json
+{
+  "raw_earned": "3",
+  "raw_possible": "4",
+  "grade_contribution": "none",
+  "evidence_count": 0
+}
+```
+
+## ASM-056 — Decision-count rewards omitted distractors and guards explicit blank
+
+Covers `MarkingRuleVersion`, `CompleteEvaluationRun`, `ItemMarkRevision`.
+
+### Given
+
+- A six-choice synthetic compatibility rule has accepted keys A and B, one point and declared decision-count mode.
+
+### When
+
+- Score selections A and C, the complete accepted set and an explicit empty set.
+
+### Then
+
+- Apply one response-level two-decimal midpoint-away rounding. Return 0.67, 1 and 0 respectively under the verified empty guard.
+
+### Fixture values
+
+```json
+{
+  "universe": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+  ],
+  "correct": [
+    "A",
+    "B"
+  ],
+  "partial": [
+    "A",
+    "C"
+  ],
+  "expected_points": [
+    "0.67",
+    "1",
+    "0"
+  ]
+}
+```
+
+## ASM-057 — Required written and file channels cannot be silently sealed as blank
+
+Covers `DeliveryPolicyVersion`, `SubmitAssessmentAttempt`, `ExpireAssessmentAttempt`, `AttemptSubmission`.
+
+### Given
+
+- A synthetic constructed response requires both a written answer and an approved file.
+
+### When
+
+- Submit valid text with pending file, then let the deadline arrive before the scan finishes.
+
+### Then
+
+- Finalization returns REQUIRED_RESPONSE_MISSING. Expiry preserves drafts and produces no successful sealed manifest.
+
+### Fixture values
+
+```json
+{
+  "text_ready": true,
+  "file_state": "quarantined",
+  "submit_error": "REQUIRED_RESPONSE_MISSING",
+  "terminal_state": "expired"
+}
+```
+
+## ASM-058 — Comment-only rubric can complete required staff workflow at zero maximum
+
+Covers `RubricCriterion`, `RubricVersion`, `PublishRubricVersion`, `SubmitItemMark`, `ModerateItemMark`.
+
+### Given
+
+- The only synthetic rubric criterion has one optional zero level and a required reviewer comment. Self review is enabled and staff bypass is explicitly approved.
+
+### When
+
+- Publish the rubric. Reject an empty required comment. Accept authorized comment and an independently approved bypass decision.
+
+### Then
+
+- Feedback-only maximum stays zero. The mark and bypass are auditable and no earned numeric evidence is fabricated.
+
+### Fixture values
+
+```json
+{
+  "maximum": "0",
+  "feedback_mode": "required",
+  "bypass_authorized": true,
+  "numeric_evidence": false
+}
+```
+
+## ASM-059 — Scored submission wait preserves draft access and retry form identity
+
+Covers `DeliveryPolicyVersion`, `StartAssessmentAttempt`, `GetAssessmentAttemptForm`, `SaveAssessmentResponses`, `SubmitAssessmentAttempt`.
+
+### Given
+
+- An eligible learner submitted the first attempt at 09:00. A thirty-second wait and retain-first-form policy apply.
+
+### When
+
+- The learner starts a separate attempt at 09:00:10, saves a draft, tries submitting at 09:00:20 and retries with a fresh command key at 09:00:30.
+
+### Then
+
+- The new attempt has independent response evidence and the same compatible realized option order.
+- Draft saving succeeds during the wait. The early scored submission is rejected, while the submission at the inclusive boundary is admitted.
+
+### Fixture values
+
+```json
+{
+  "last_submission": "09:00:00",
+  "draft_saved": "09:00:10",
+  "first_submit": "09:00:20",
+  "next_submission_at": "09:00:30",
+  "error": "ASSESSMENT_WAIT_ACTIVE",
+  "same_choice_order": true
+}
+```

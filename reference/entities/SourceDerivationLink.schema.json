@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceDerivationLink",
+  "description": "Immutable protected claim-level provenance edge from a source region or approved generated origin to a candidate and optionally exact learning target.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "authoring_run_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact authoring run scope.",
+      "x-entity-reference": "CurriculumAuthoringRun",
+      "x-reference-scope": "Must resolve to an authorized CurriculumAuthoringRun in the owning institution."
+    },
+    "source_region_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact accepted source region when the classification requires one.",
+      "x-entity-reference": "SourceRegion",
+      "x-reference-scope": "Must be a sealed accepted region in the run exact source set and still readable under the source rights and scope."
+    },
+    "candidate_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable candidate identity inside the run."
+    },
+    "candidate_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000,
+      "description": "Exact immutable candidate revision."
+    },
+    "candidate_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical candidate revision checksum."
+    },
+    "target_kind": {
+      "type": "string",
+      "enum": [
+        "candidate",
+        "content_node_version",
+        "activity_version",
+        "asset_version",
+        "item_version",
+        "marking_rule_version",
+        "assessment_version",
+        "course_version"
+      ],
+      "description": "Candidate-only or exact owner version target."
+    },
+    "content_node_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exact owner target version selected by target_kind.",
+      "x-entity-reference": "ContentNodeVersion",
+      "x-reference-scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+    },
+    "activity_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exact owner target version selected by target_kind.",
+      "x-entity-reference": "ActivityVersion",
+      "x-reference-scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+    },
+    "asset_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exact owner target version selected by target_kind.",
+      "x-entity-reference": "AssetVersion",
+      "x-reference-scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+    },
+    "item_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exact owner target version selected by target_kind.",
+      "x-entity-reference": "ItemVersion",
+      "x-reference-scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+    },
+    "marking_rule_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exact owner target version selected by target_kind.",
+      "x-entity-reference": "MarkingRuleVersion",
+      "x-reference-scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+    },
+    "assessment_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exact owner target version selected by target_kind.",
+      "x-entity-reference": "AssessmentVersion",
+      "x-reference-scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+    },
+    "course_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exact owner target version selected by target_kind.",
+      "x-entity-reference": "CourseVersion",
+      "x-reference-scope": "Same institution and authorized target ancestry. Exact revision must match the authenticated owner receipt."
+    },
+    "target_path": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 500,
+      "description": "Canonical RFC 6901 JSON Pointer into the authorized target or candidate; use empty pointer for whole object."
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "extracted",
+        "source_supported_paraphrase",
+        "derived",
+        "generated_instruction",
+        "human_supplied",
+        "unresolved"
+      ],
+      "description": "Relationship of claim to source and author action."
+    },
+    "link_fingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical uniqueness key over target, region, claim type, candidate revision and derivation group."
+    },
+    "derivation_group_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Groups independently indexed premise edges for the same claim."
+    },
+    "verification_object_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Protected rule, computation result, human decision or verification report.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Same institution. Platform purpose evidence and exact owner CurriculumAuthoringRun. Resolve actual object version and digest before use."
+    },
+    "disclosure": {
+      "type": "string",
+      "enum": [
+        "staff_only",
+        "approved_attribution"
+      ],
+      "default": "staff_only",
+      "description": "Default no raw source projection."
+    },
+    "recorded_by_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized source or owner receipt actor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Append time."
+    }
+  },
+  "required": [
+    "id",
+    "authoring_run_id",
+    "candidate_id",
+    "candidate_revision",
+    "candidate_digest",
+    "target_kind",
+    "target_path",
+    "classification",
+    "link_fingerprint",
+    "derivation_group_id",
+    "disclosure",
+    "recorded_by_id",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "authoring_run_id",
+      "link_fingerprint"
+    ]
+  ],
+  "x-invariants": [
+    "Extracted, source-supported paraphrase and derived links require an accepted source region.",
+    "Derived links require a protected computation or review basis. One edge per accepted source premise; common derivation group binds premises.",
+    "Candidate-only target has no owner reference. An exact target must populate only the typed ID matching target kind.",
+    "No direct learner reads. Approved attribution is a separately filtered projection, with answer-key and source access enforced."
+  ]
+}

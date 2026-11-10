@@ -130,6 +130,18 @@ Required. Null is rejected.
 }
 ```
 
+### bypassed_required_self_review
+
+Recorded authorized exception allowing staff decision before a required self review. Omission means no exception.
+
+Optional. Null is rejected.
+
+```json
+{
+  "type": "boolean"
+}
+```
+
 ## Integrity
 
 - Independent review capabilities and score bounds enforced.

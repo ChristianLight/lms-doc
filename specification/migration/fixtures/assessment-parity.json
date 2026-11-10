@@ -1,0 +1,66 @@
+{
+  "fixture_version": "1.0.0",
+  "structure": {
+    "component_count": 7,
+    "composite_interactions": ["math", "single_choice", "multiple_choice"],
+    "composite_control_context": ["td", "td", "problem"],
+    "choices": [
+      {"key": "choice_01", "label": "Shared label", "fixed": false},
+      {"key": "choice_02", "label": "Shared label", "fixed": true}
+    ],
+    "numeric_trailing_text": "mm",
+    "public_private_partition": {
+      "public_after_control": "Record one number.",
+      "public_after_solution": "Continue to the second gauge.",
+      "private_rule_counts": {"model_solution": 1, "choice_selected": 1, "on_demand": 2}
+    },
+    "rubric_projections": [
+      {"text": "required", "files": "required", "score_maximum": "3", "steps": ["self-assessment", "staff-assessment"], "rubric_visible_during_response": false},
+      {"text": "disabled", "files": "required", "score_maximum": "0", "steps": ["staff-assessment"], "rubric_visible_during_response": false}
+    ],
+    "missing_dependency_count": 1
+  },
+  "decision_count": [
+    {"selected": ["choice_01", "choice_03"], "points": "0.67", "status": "partial"},
+    {"selected": ["choice_01", "choice_02"], "points": "1", "status": "correct"},
+    {"selected": [], "points": "0", "status": "incorrect"},
+    {"selected": ["choice_03", "choice_04", "choice_05", "choice_06"], "points": "0", "status": "incorrect"}
+  ],
+  "numeric": [
+    {"candidate": "8.1", "accepted": true, "match": "primary"},
+    {"candidate": "8.1001", "accepted": false, "match": "none"},
+    {"candidate": "11", "accepted": true, "match": "alternate"},
+    {"candidate": "11.05", "accepted": false, "match": "none"}
+  ],
+  "explicit_percentage": [
+    {"expected": "50", "candidate": "51", "tolerance": "2", "accepted": true},
+    {"expected": "50", "candidate": "51.0001", "tolerance": "2", "accepted": false},
+    {"expected": "0", "candidate": "0.0001", "tolerance": "2", "accepted": false}
+  ],
+  "formula_samples": {
+    "fixed_valid_points": [{"x": "2"}, {"x": "2"}, {"x": "2"}, {"x": "2"}],
+    "constant_candidate": "3",
+    "accepted_at_fixed_points": true,
+    "matches_different_point": false,
+    "bad_dimensions_disposition": "blocked"
+  },
+  "text": {
+    "literal_witnesses": [
+      {"candidate": "  STRAẞE  ", "source_match": true},
+      {"candidate": "STRASSE", "source_match": false}
+    ],
+    "legacy_alternation_witness": {"candidate": "skyward", "source_match": true, "whole_string_match": false},
+    "backreference_disposition": "blocked"
+  },
+  "contributions": [
+    {"raw_earned": "3", "raw_maximum": "4", "explicit_weight": "6", "earned": "4.5", "possible": "6", "counted": true},
+    {"raw_earned": "3", "raw_maximum": "4", "explicit_weight": null, "earned": "3", "possible": "4", "counted": true},
+    {"raw_earned": "3", "raw_maximum": "4", "explicit_weight": "0", "earned": "0", "possible": "0", "counted": false}
+  ],
+  "release": [
+    {"admitted_attempts": 0, "correct": false, "reveal": false},
+    {"admitted_attempts": 1, "correct": true, "reveal": true},
+    {"admitted_attempts": 1, "correct": false, "reveal": false},
+    {"admitted_attempts": 2, "correct": false, "reveal": true}
+  ]
+}

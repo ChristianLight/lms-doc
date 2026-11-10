@@ -177,6 +177,25 @@ Optional. Null is rejected.
 }
 ```
 
+### detected_container
+
+Outer verified container independently of the source format and profile.
+
+Optional. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "enum": [
+    "zip",
+    "tar_gzip",
+    "xml",
+    "csv",
+    "json"
+  ]
+}
+```
+
 ### signature_evidence
 
 Safe evidence for matching manifest signature and version.
@@ -274,11 +293,12 @@ Required. Null is rejected.
 - Raw archive reads need explicit artifact authority and permission to every included data class.
 - Detect and retain profile evidence before import approval.
 - Release eligibility requires an accepted StorageObject version with matching hash and exact byte length. Quarantine may read it only through the storage owner. Storage deduplication never shares domain authorization.
+- A verified blob may be physically deduplicated within approved storage custody. Separate source namespaces or protected artifact authorities still require distinct TransferArtifact identity.
 
 ## Unique keys
 
 - `id`
-- `institution_id, storage_scope, sha256`
+- `institution_id, source_namespace, storage_scope, sha256`
 
 ## Query indexes
 

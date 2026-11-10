@@ -999,3 +999,119 @@ Covers `BeginToolLaunch`, `AuthorizeToolOidcLaunch`, `ToolLoginInitiated`, `Tool
   "tokens_signed": 1
 }
 ```
+
+## INT-035 — Root selection and typed edges remain scoped to the selected graph
+
+Covers `InspectTransferArtifact`, `BuildTransferPlan`, `ReadTransferPlan`, `ReadTransferEdges`, `TransferJob`, `TransferRecord`, `TransferEdge`.
+
+### Given
+
+- One synthetic ZIP has two root candidates with shared body bytes and separate policy scopes.
+- The chosen root contains two placements of one reusable definition and a valid inline extension with no same-type directory. A detached pointer is missing.
+
+### When
+
+- Inspect the container and profile. Explicitly select one frozen root key. Build the plan and page the outgoing edges by exact plan revision.
+
+### Then
+
+- The verified container and decoder profile are recorded independently. Shared body does not merge root policy.
+- The placements and context-sensitive links have distinct occurrence keys. The inline definition resolves. The detached problem remains restricted inventory.
+
+### Fixture values
+
+```json
+{
+  "candidate_roots": 2,
+  "selected_roots": 1,
+  "shared_definitions": 1,
+  "distinct_placements": 2,
+  "detached_missing_pointers": 1
+}
+```
+
+## INT-036 — Required selected edges block dry-run application and expose no generation
+
+Covers `BuildTransferPlan`, `ApplyTransferPlan`, `ApproveTransferPlan`, `TransferEdge`, `ExternalObjectMap`.
+
+### Given
+
+- The selected published graph has a missing required dependency. A dry-run plan includes a detached warning as well.
+
+### When
+
+- Read reconciliation, attempt approval and application, then restore the dependency and approve a separate editable plan. Apply keep_private twice with one logical key.
+
+### Then
+
+- No dry-run owner-visible drafts or active crosswalks exist. An unresolved required edge cannot be promoted.
+- Once reviewed and repaired, the exact private generation and scoped map commit once. No EnrollmentRelease or learner publication changes.
+
+### Fixture values
+
+```json
+{
+  "dry_run_writes": 0,
+  "required_unresolved": 1,
+  "detached_warnings": 1,
+  "private_generations": 1,
+  "learner_publications": 0
+}
+```
+
+## INT-037 — Completed portable export pins approval, exact bytes and revocable collection
+
+Covers `QueueCurriculumExport`, `RecordCurriculumExportProjection`, `ApproveTransferPlan`, `CompleteCurriculumExport`, `ReadCurriculumExport`, `AuthorizeCurriculumExportDownload`.
+
+### Given
+
+- A synthetic published course is eligible for a tested fourth-edition generator. Its portable projection intentionally excludes one optional private editorial note.
+
+### When
+
+- Queue the exact profile, record protected reports, independently approve the plan, complete verified bytes, replay the completion, read the safe projection and request a ticket.
+- Revoke the actor's export authority before ticket redemption.
+
+### Then
+
+- One completed exact edition and output digest are recorded. The optional omission is reported. Identical retry creates no second result or event.
+- Revoked authority blocks redemption even before the collection window ends.
+
+### Fixture values
+
+```json
+{
+  "format": "scorm_2004_4",
+  "required_losses": 0,
+  "optional_differences": 1,
+  "completed_results": 1,
+  "bytes_after_revocation": 0
+}
+```
+
+## INT-038 — Prohibited solution disclosure and unverified output never fall back
+
+Covers `QueueCurriculumExport`, `RecordCurriculumExportProjection`, `ApproveTransferPlan`, `CompleteCurriculumExport`, `ReadCurriculumExport`.
+
+### Given
+
+- The target edition is disabled on one profile. A second approved profile could render a required assessment only by embedding confidential solutions.
+
+### When
+
+- Try the disabled output and the recognized-but-unverified input edition. Attempt portable projection under the second profile with answer disclosure off.
+
+### Then
+
+- The unsupported directions are rejected without fallback. The scorer is a blocking required loss. No approval can make an output available or relabel another edition.
+
+### Fixture values
+
+```json
+{
+  "input_only_format": "scorm_2004_unverified",
+  "embedded_disclosure_allowed": false,
+  "required_losses": 1,
+  "available_results": 0
+}
+```

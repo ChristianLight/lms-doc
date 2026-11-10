@@ -58,6 +58,34 @@
       ],
       "description": "Exact approved format profile."
     },
+    "source_container": {
+      "type": "string",
+      "enum": [
+        "zip",
+        "tar_gzip",
+        "xml",
+        "csv",
+        "json"
+      ],
+      "description": "Exact verified outer container of the selected input. Absent on exports and before verified inspection."
+    },
+    "source_profile": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.-]{0,55}/[0-9a-z][0-9a-z_.-]{0,31}$",
+      "description": "Pinned case-sensitive source decoding profile, independent of archive extension and target format."
+    },
+    "inspection_manifest_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable restricted index of scanned input, candidate roots, rejected entries and adapter evidence.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+    },
+    "inspection_manifest_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Canonical fingerprint of protected verified inspection inventory."
+    },
     "adapter_build": {
       "type": "string",
       "minLength": 1,
@@ -89,6 +117,104 @@
       "maxLength": 512,
       "description": "Typed scope identifier and optional owner key, interpreted under format profile."
     },
+    "selected_source_roots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "root_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "course",
+              "library",
+              "package",
+              "assessment",
+              "historic_scope"
+            ]
+          },
+          "source_scope": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "layer": {
+            "type": "string",
+            "enum": [
+              "published",
+              "draft",
+              "shared"
+            ]
+          },
+          "dependency_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "root_record_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "root_key",
+          "kind",
+          "source_scope",
+          "layer",
+          "dependency_digest",
+          "root_record_id"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 1000,
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Exact approved artifact roots, logical source scopes, layers and dependency fingerprints. Persist when the import plan is built. Mutually exclusive with an outbound selection."
+    },
+    "root_commit_policy": {
+      "type": "string",
+      "const": "atomic_selected_closure",
+      "description": "One selected required dependency closure commits atomically. Required when several roots are selected. Independent promotions require separately approved jobs."
+    },
+    "dependency_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "source_profile": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.-]{0,55}/[0-9a-z][0-9a-z_.-]{0,31}$"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "sha256",
+          "source_profile"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 200,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Immutable authorized input artifact IDs and verified digests, distinct by artifact."
+    },
+    "plan_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Revision of frozen selection, graph and owner baselines. Changes on plan rebuild or repair only. Approval or heartbeat increments job revision without changing this field."
+    },
     "selection_digest": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$",
@@ -98,6 +224,167 @@
       "type": "string",
       "pattern": "^[0-9a-f]{64}$",
       "description": "Fingerprint of staged owner commands and target baseline."
+    },
+    "plan_manifest_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact immutable current plan manifest. Its protected predecessor reference preserves inspectable prior plan revisions, owner baselines, edges or export reports.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Exact clean StorageObject owned by this transfer plan and Institution."
+    },
+    "generation_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "One target generation for the applying or applied import. Allocated before any staged owner command and stable during retries."
+    },
+    "generation_visibility": {
+      "type": "string",
+      "enum": [
+        "private",
+        "activated"
+      ],
+      "description": "Authoritative visibility of committed imported generation. Absent until commit. Private permits only authorized editor workflows."
+    },
+    "generation_receipt_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Fingerprint of exact committed generation, plan revision, owner receipts, crosswalk result and visibility."
+    },
+    "generation_committed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC time visibility and mapping receipt committed."
+    },
+    "owner_stage_receipts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "baseline_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "stage_receipt_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stage_receipt_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "owner",
+          "baseline_digest",
+          "stage_receipt_id",
+          "stage_receipt_digest"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 32,
+      "minItems": 1,
+      "uniqueItems": false,
+      "description": "One protected, independently verified receipt per required owner. No owner draft may surface before the generation visibility decision."
+    },
+    "selection_manifest_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable protected archive-export selection, including exact source revisions, option choices, rights snapshots and receiving profile. Validate the stored representation with export-projection.schema.json and its owning command.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+    },
+    "export_profile_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Pinned approved egress profile revision. Review is repeated if target format or profile changes."
+    },
+    "export_edition": {
+      "type": "string",
+      "enum": [
+        "native_1",
+        "olx_course_1",
+        "olx_legacy_library_1",
+        "olx_library_archive_1",
+        "scorm_1_2",
+        "scorm_2004_2",
+        "scorm_2004_3",
+        "scorm_2004_4",
+        "qti_2_1",
+        "qti_2_2",
+        "qti_3_0_1",
+        "common_cartridge_1_3"
+      ],
+      "description": "Exact output edition validated independently from inbound format detection."
+    },
+    "capability_report_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected immutable capability projection keyed to exact source selection, generator and destination. Validate the stored representation with export-projection.schema.json and its owning command.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+    },
+    "capability_report_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Verified digest of exact capability decisions."
+    },
+    "loss_report_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected immutable loss report for that projection. A zero-loss report is still required. Validate the stored representation with export-projection.schema.json and its owning command.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+    },
+    "loss_report_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Verified digest of exact loss decisions and required feature blockers."
+    },
+    "export_validation_report_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable protected artifact validation and independent profile test evidence. Validate the stored representation with export-projection.schema.json and its owning command.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+    },
+    "export_validation_report_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Verified validation report digest for exact output bytes and selected profile."
+    },
+    "export_result_storage_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected clean immutable output owned by this completed export job. Absent while queued or under review.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Reference must resolve within the same Institution and exact approved job or resource generation as described."
+    },
+    "export_result_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the generated output bytes."
+    },
+    "export_result_bytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Measured positive byte length of the verified output."
+    },
+    "export_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive authorized output collection expiry. Does not dispose underlying academic records."
+    },
+    "export_completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative UTC instant result validation and availability were committed."
     },
     "fence_epoch": {
       "type": "integer",
@@ -180,6 +467,13 @@
   "x-invariants": [
     "Import requires an artifact and export requires an immutable selection.",
     "Only the active fence can checkpoint or alter the plan.",
-    "A changed plan digest invalidates all previous approvals."
+    "A changed plan digest invalidates all previous approvals.",
+    "Every import after inspection pins source container, source profile and immutable inspection manifest. A staged import pins selected roots, dependency artifact digests and plan revision.",
+    "Import dry run does not create owner-visible drafts, active crosswalks, generation commitments or learner effects.",
+    "A generation can commit once. Require all exact owner receipts and active approvals, then publish private editor visibility or an explicitly authorized activation barrier with crosswalk receipts. No partial root is visible.",
+    "Export uses a direction-enabled exact format, edition and profile revision. The selection is immutable. Required losses and missing disclosure or rights approvals block result availability.",
+    "An applied export has one protected output, validation receipt and collection expiry. Retrying completion returns the same result. A generated or expired output cannot be redownloaded solely by knowing its UUID.",
+    "The current plan manifest pins its exact graph or export reports and predecessor manifest. A replaced private generation remains closed and cannot be resumed under a successor plan.",
+    "Every selected root names its exact same-plan TransferRecord, so dependent reachability is reproducible for each selected root."
   ]
 }

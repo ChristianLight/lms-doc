@@ -140,10 +140,28 @@ Required. Null is rejected.
 }
 ```
 
+### grade_contribution
+
+Counted or noncounting grade line binding, or locally marked activity without academic grade evidence. Omission follows the established grade item binding.
+
+Optional. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "enum": [
+    "counted",
+    "formative",
+    "none"
+  ]
+}
+```
+
 ## Integrity
 
 - An in-progress attempt keeps captured version after change.
 - Grade item must be authorized by academic records.
+- Counted or formative contribution requires an approved matching GradeItemVersion. A none contribution publishes local marks and feedback without GradeEvidence. Source zero weight never changes a nonzero scorer maximum.
 
 ## Unique keys
 

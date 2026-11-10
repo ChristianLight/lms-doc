@@ -85,11 +85,14 @@ Required. Null is rejected.
       "rubric",
       "comments",
       "answer_key",
-      "model_solution"
+      "model_solution",
+      "correctness",
+      "hints",
+      "targeted_feedback"
     ]
   },
-  "minItems": 0,
-  "maxItems": 6
+  "maxItems": 9,
+  "minItems": 0
 }
 ```
 

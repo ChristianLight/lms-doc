@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SourceRegion",
+  "description": "Exact occurrence and evidence locator within one immutable extraction revision.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "extraction_run_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected parent extraction.",
+      "x-entity-reference": "SourceExtractionRun",
+      "x-reference-scope": "Must resolve to an authorized SourceExtractionRun in the owning institution."
+    },
+    "page_index": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000,
+      "description": "Zero-based physical PDF page index."
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 200000,
+      "description": "Stable region order within accepted page receipt."
+    },
+    "bbox_mpt": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 28800000
+        },
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 28800000
+        },
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 28800000
+        },
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 28800000
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4,
+      "items": false,
+      "description": "Upright cropped page rectangle x0, y0, x1, y1 in integer milli-points."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "heading",
+        "table",
+        "table_cell",
+        "form_field",
+        "figure",
+        "caption",
+        "equation",
+        "footnote",
+        "artifact"
+      ],
+      "description": "Semantic region kind."
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "text_layer",
+        "tagged_text",
+        "ocr",
+        "vector_geometry",
+        "transcription",
+        "math_recognition"
+      ],
+      "description": "Accepted extraction or transcription method."
+    },
+    "review_state": {
+      "type": "string",
+      "enum": [
+        "candidate",
+        "needs_review",
+        "accepted",
+        "excluded"
+      ],
+      "description": "Region decision pinned in the extraction revision."
+    },
+    "confidence_permille": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional OCR engine signal, not a correctness guarantee."
+    },
+    "evidence_object_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected page evidence shard with raw and normalized representations.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Same institution. Platform purpose evidence and exact owner SourceExtractionRun. Resolve actual object version and digest before use."
+    },
+    "evidence_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "RFC 6901 JSON Pointer into exact evidence shard."
+    },
+    "payload_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical accepted region content and geometry digest."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Accepted extraction write instant."
+    },
+    "sensitivity": {
+      "type": "string",
+      "enum": [
+        "authoring_only",
+        "answer_key",
+        "restricted_rights",
+        "personal_data"
+      ],
+      "default": "authoring_only",
+      "description": "Minimum protected retrieval and crop restriction."
+    }
+  },
+  "required": [
+    "id",
+    "extraction_run_id",
+    "page_index",
+    "ordinal",
+    "bbox_mpt",
+    "kind",
+    "method",
+    "review_state",
+    "evidence_object_id",
+    "evidence_path",
+    "payload_digest",
+    "created_at",
+    "sensitivity"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "extraction_run_id",
+      "page_index",
+      "ordinal"
+    ]
+  ],
+  "x-invariants": [
+    "Rectangle positive area and fully inside reviewed upright page extent.",
+    "Review never discloses protected region bytes through metadata or event payload.",
+    "Regions are referenced only when accepted by a sealed extraction.",
+    "If a page shard contains a restricted region, full shard retrieval requires the strongest applicable authority. A weaker scope receives only an independently approved redacted rendition, never its underlying object ID."
+  ]
+}

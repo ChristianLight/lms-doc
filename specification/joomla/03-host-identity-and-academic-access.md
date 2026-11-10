@@ -8,6 +8,8 @@ Account linking requires an authenticated provider subject or an approved admini
 
 ## Access decision
 
+Configure ordinary form, attached-field and Admin View permissions through JCB. Let generated Joomla actions, asset checks and navigation enforce those settings; do not rebuild a parallel generic ACL or menu system. Multiple workspaces inside a cohesive component can have different view and field permissions. An authorized teacher can therefore see the course administration they need without seeing institutional identity administration or protected marking criteria. The [generated permissions and selector contract](08-guid-relationships-selectors-and-acl.md) records the inspected JCB settings and the separate checks required for row scope and academic state.
+
 The application first checks the applicable Joomla action permission and then the domain's academic scope and state. For a teacher editing an offering schedule, the decision includes the authenticated principal, institution, requested action, active teaching assignment, offering or section scope, policy and expected revision. A teacher's membership in a general Teachers group does not identify which class they teach.
 
 Joomla's asset rules provide inherited allow/deny actions, and extensions must call the authorization API. Site-wide Super Users have unrestricted host privileges. That role is a trusted operational boundary with access to the installation and its data. Academic separation governs ordinary application roles and audited operational procedures, and cannot provide secrecy from an administrator controlling the host or database. [Joomla permissions](https://manual.joomla.org/docs/next/general-concepts/acl/acl-permissions/)

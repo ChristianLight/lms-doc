@@ -23,12 +23,12 @@ Generated files can be inspected to diagnose behavior. A lasting correction is a
 ## Build steps
 
 1. Validate the domain catalogs and generated API/entity references. Resolve cross-domain naming and invariants before creating fields.
-2. Prepare the component allocation and verify that every attached Admin View fits the budget. Specify which workspaces are visible and which schema/evidence views are internal.
+2. Prepare the component allocation around cohesive concepts, workflows and authority. Account for every attached Admin View and any useful Custom Admin Views without a view-count threshold. Specify the visible workspaces, internal schema/evidence views, GUID owner relationships, mandatory service dependencies and optional feature requirements.
 3. Acquire the selected reusable definitions and inspect the persisted JCB records. Record imported definition revisions and all required supporting models.
-4. Author the domain-specific fields, relations, queries, forms and task entry points. Include permissions, localization strings, routing and allowed API fields.
+4. Author the domain-specific fields, relations, queries, forms and task entry points. Configure JCB's native attached-field permissions, Admin View permissions, menu visibility and GUID selector metadata. Verify owner modal return values as well as consumer fields. Include localization strings, routing and allowed API fields; add only the academic scope and lifecycle guards the generated machinery does not express. See [selectors and ACL](08-guid-relationships-selectors-and-acl.md).
 5. Implement the owner command services and connect actual callers. Use the core framework and reusable Powers where they satisfy the contract.
 6. Compile with the selected JCB target. Inspect emitted PHP, autoloading, SQL, XML manifests, assets and entry-point registration.
-7. Install on a clean disposable Joomla instance and run the selected end-to-end scenarios. Exercise both administrator and site workflows where supplied.
+7. Install on a clean disposable Joomla instance and run the selected end-to-end scenarios. Exercise both administrator and site workflows where supplied. Verify the [dependency readiness and activation barriers](09-component-dependencies-and-lifecycle.md), including missing mandatory services, an unavailable optional provider, denied direct routes and cross-component GUID selection.
 8. Upgrade from the prior supported package with representative stored data. Verify GUIDs, immutable versions, receipts, grants and academic record lineage.
 9. Rebuild from the maintained sources and repeat the critical acceptance slice. Compare dependency closure and artifact manifests.
 10. Produce the installable package, maintained editable blueprint, supporting source references and verification report for review.

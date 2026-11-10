@@ -11,6 +11,8 @@
 
 New application relationships use GUIDs while preserving numeric primary keys for Joomla's normal row handling. Relationship selectors, filters, query joins and input validation treat these values as strings. A supplied UUID must resolve in the correct typed table and institution. It cannot be accepted because the same string exists in an unrelated table. The JCB identity workflow requires checking the actual generated uniqueness constraints and save lifecycle. [Application identities](https://github.com/joomengine/skills/blob/main/packages/workflows/application-identities.md)
 
+The [GUID relationship and ACL chapter](08-guid-relationships-selectors-and-acl.md) specifies the actual JCB field metadata, owner table/title/key mapping, selection and New/Edit modal behavior, save-time checks and the host-account-to-attempt linkage. Component regrouping changes proposed table ownership and routes; it does not change the canonical academic GUID or authorize remapping an existing learner to another identity.
+
 ## GUID creation and import
 
 A new interactive row allocates its application GUID once before any dependent child is created. A retried command binds to the same staged GUID through its receipt. An authorized import may preserve a valid incoming GUID if the source ownership and collision rules permit. Otherwise the importer allocates a destination GUID and writes an ExternalObjectMap record before resolving references.

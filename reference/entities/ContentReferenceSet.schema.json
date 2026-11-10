@@ -1,0 +1,283 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContentReferenceSet",
+  "description": "Complete, owner-fenced derived relationship coverage for one exact definition and optional publication placement context.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Platform-assigned application identity; remains stable while this logical reference set is refreshed."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution containing the source and its private relation index.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+    },
+    "source_kind": {
+      "type": "string",
+      "enum": [
+        "ContentNodeVersion",
+        "ActivityVersion",
+        "ItemVersion",
+        "ItemTranslation",
+        "ItemStimulusVersion",
+        "MarkingRuleVersion",
+        "RubricVersion",
+        "LearningRuleVersion",
+        "InteractionDefinition",
+        "ItemFeedbackRule"
+      ],
+      "description": "Allowlisted source owner record kind; select a fixed resolver, never a client-provided SQL table."
+    },
+    "source_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact source row or revision ID for source_kind. Verify through the registered typed resolver; content equality is not identity."
+    },
+    "context_kind": {
+      "type": "string",
+      "enum": [
+        "definition",
+        "placement"
+      ],
+      "description": "Definition extraction or binding of that definition in one exact course placement."
+    },
+    "context_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 48,
+      "description": "Non-null unique context: literal definition, or lower-case canonical UUID of source_placement_id. It is not an ordinal or URL."
+    },
+    "course_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Required only for placement binding; exact frozen or staged target course graph.",
+      "x-entity-reference": "CourseVersion",
+      "x-reference-scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+    },
+    "source_placement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Required only for placement binding; its transitive dependency closure must pin the named source version.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+    },
+    "definition_set_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Required only for placement binding; corresponding current definition set for exactly the same source owner and version.",
+      "x-entity-reference": "ContentReferenceSet",
+      "x-reference-scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+    },
+    "definition_generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Definition generation used for this binding. A newer definition generation invalidates it."
+    },
+    "source_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical owner payload and reference-bearing metadata digest captured for this generation."
+    },
+    "graph_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Required for placement binding; exact publication graph and stable placement-key mapping digest."
+    },
+    "projection_profile": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Versioned reference extraction rules and canonical key encoding profile."
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Owner-fenced generation. Entries and completion receipt must agree with it."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Optimistic token for operational refresh and invalidation."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "ready",
+        "stale",
+        "failed"
+      ],
+      "description": "Ready means complete coverage including a validated zero-reference result; it does not grant reader authority."
+    },
+    "entry_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000,
+      "description": "Exact active generation entry count; zero is meaningful only with ready state."
+    },
+    "entries_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical sorted semantic references digest, including the empty collection when appropriate."
+    },
+    "validated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server time when captured source, graph and complete entry generation were checked."
+    },
+    "last_error_code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Fixed non-content-bearing reconciliation code. No raw source text or locators."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "source_kind",
+    "source_version_id",
+    "context_kind",
+    "context_key",
+    "source_digest",
+    "projection_profile",
+    "generation",
+    "revision",
+    "state",
+    "entry_count"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "source_kind",
+      "source_version_id",
+      "context_key"
+    ]
+  ],
+  "x-invariants": [
+    "Resolve source_kind through a fixed owner registry and verify source_version_id, its institution and current owner digest. No index row authenticates or authorizes source access.",
+    "A definition context has no placement fields. A placement context has all placement fields, context_key equals the exact source placement UUID, and its dependency closure pins this exact source version.",
+    "Ready means every schema-declared reference is extracted, target checked and represented, including an exact empty set. Published placement sets contain no unresolved required target selectors.",
+    "A source or graph mutation must mark this set and affected bindings stale in the same authoritative transaction, or refresh them there. Independent remote transactions require a publication barrier and fail-closed destructive operations.",
+    "Do not infer global coverage from the existing rows. Before target deletion, the owner-defined census of all retained reference-bearing source versions must match ready sets or be replaced by an equivalent authoritative locked scan.",
+    "Complete generation replacement, row count, entries digest, source token check and ready transition commit atomically. A partial build never advances the ready receipt.",
+    "Reference creation and target deletion acquire the same target retention fence. The fence prevents a concurrent new reference from appearing after the deletion census.",
+    "Source retirement may remove the set only after authoritative source retention ends. Index rows are rebuildable and cannot remove historic source or target evidence.",
+    "A placement refresh verifies the corresponding definition set is ready with matching source digest and projection profile, and pins its generation under the same lock/recheck barrier. Source digest equality alone does not prove definition generation equality.",
+    "Definition sets contain placement_selector rows when a stable same-course link remains context-dependent. Exact target_placement_id rows belong only to a placement context; a required placement selector cannot survive as unresolved in that context.",
+    "The complete source census includes registered LearningRuleVersion selectors and InteractionDefinition configuration references as well as visible prose. Protected marking/feedback and teacher-only references remain under their source owner disclosure policy."
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "context_kind": {
+            "const": "definition"
+          }
+        },
+        "required": [
+          "context_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "context_key": {
+            "const": "definition"
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "course_version_id"
+              ]
+            },
+            {
+              "required": [
+                "source_placement_id"
+              ]
+            },
+            {
+              "required": [
+                "definition_set_id"
+              ]
+            },
+            {
+              "required": [
+                "definition_generation"
+              ]
+            },
+            {
+              "required": [
+                "graph_digest"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "course_version_id",
+          "source_placement_id",
+          "definition_set_id",
+          "definition_generation",
+          "graph_digest"
+        ],
+        "properties": {
+          "context_key": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "ready"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "required": [
+          "entries_digest",
+          "validated_at"
+        ]
+      }
+    }
+  ],
+  "examples": [
+    {
+      "id": "20000000-0000-4000-8000-000000000001",
+      "institution_id": "20000000-0000-4000-8000-000000000002",
+      "source_kind": "ContentNodeVersion",
+      "source_version_id": "20000000-0000-4000-8000-000000000003",
+      "context_kind": "definition",
+      "context_key": "definition",
+      "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "projection_profile": "reference-projection/1",
+      "generation": 1,
+      "revision": 1,
+      "state": "ready",
+      "entry_count": 0,
+      "entries_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "validated_at": "2030-01-01T00:00:00Z"
+    }
+  ]
+}

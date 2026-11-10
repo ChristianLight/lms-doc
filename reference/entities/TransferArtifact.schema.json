@@ -87,6 +87,17 @@
       ],
       "description": "Detected input shape independently of installation support."
     },
+    "detected_container": {
+      "type": "string",
+      "enum": [
+        "zip",
+        "tar_gzip",
+        "xml",
+        "csv",
+        "json"
+      ],
+      "description": "Outer verified container independently of the source format and profile."
+    },
     "signature_evidence": {
       "type": "string",
       "minLength": 1,
@@ -155,6 +166,7 @@
     ],
     [
       "institution_id",
+      "source_namespace",
       "storage_scope",
       "sha256"
     ]
@@ -163,6 +175,7 @@
     "The verified digest is immutable after quarantine.",
     "Raw archive reads need explicit artifact authority and permission to every included data class.",
     "Detect and retain profile evidence before import approval.",
-    "Release eligibility requires an accepted StorageObject version with matching hash and exact byte length. Quarantine may read it only through the storage owner. Storage deduplication never shares domain authorization."
+    "Release eligibility requires an accepted StorageObject version with matching hash and exact byte length. Quarantine may read it only through the storage owner. Storage deduplication never shares domain authorization.",
+    "A verified blob may be physically deduplicated within approved storage custody. Separate source namespaces or protected artifact authorities still require distinct TransferArtifact identity."
   ]
 }

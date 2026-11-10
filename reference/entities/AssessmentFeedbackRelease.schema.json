@@ -44,11 +44,14 @@
           "rubric",
           "comments",
           "answer_key",
-          "model_solution"
+          "model_solution",
+          "correctness",
+          "hints",
+          "targeted_feedback"
         ]
       },
+      "maxItems": 9,
       "minItems": 0,
-      "maxItems": 6,
       "description": "Authorized candidate-visible content categories."
     },
     "released_by": {

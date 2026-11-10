@@ -92,6 +92,30 @@
         }
       ],
       "description": "Available stable level keys and point values."
+    },
+    "scoring_mode": {
+      "type": "string",
+      "enum": [
+        "levels",
+        "free_points",
+        "feedback_only"
+      ],
+      "description": "Explicit scoring mode. Without it, infer levels or free points from the existing payload."
+    },
+    "feedback_mode": {
+      "type": "string",
+      "enum": [
+        "none",
+        "optional",
+        "required"
+      ],
+      "description": "Configured marker comment requirement for this criterion. Omission uses existing workflow."
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Optional reviewed display heading separate from the detailed criterion description."
     }
   },
   "required": [
@@ -119,6 +143,7 @@
   ],
   "x-invariants": [
     "Exactly one of level mode and free-point step applies.",
-    "Score and level must agree within published bounds."
+    "Score and level must agree within published bounds.",
+    "Feedback-only criterion has maximum zero, no free-point step and at most one explicit zero level. A required comment must be present when marked."
   ]
 }

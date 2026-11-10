@@ -426,6 +426,65 @@ Optional. Nullable.
         "points"
       ],
       "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "long_text"
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 256,
+          "minItems": 1
+        }
+      },
+      "required": [
+        "kind",
+        "blocks"
+      ],
+      "additionalProperties": false
     }
   ]
 }
@@ -502,6 +561,7 @@ Optional. Nullable.
 - Value and response state agree.
 - Only admitted responses can become sealed evidence.
 - Revisions are immutable.
+- A long_text value contains only the approved plain text or bounded sanitized structured blocks shape declared by its exact interaction. Media in written responses uses authorized immutable evidence references.
 
 ## Unique keys
 

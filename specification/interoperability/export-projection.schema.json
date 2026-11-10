@@ -1,0 +1,1137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Protected curriculum export artifacts",
+  "description": "Internal versioned control artifacts. Do not bundle these protected manifests in a standard learner package. Domain owner also verifies exact scope, edition, digests, capability completeness and authority.",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "job_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "institution_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "document_type": {
+          "const": "selection"
+        },
+        "selection": {
+          "type": "object",
+          "properties": {
+            "format": {
+              "type": "string",
+              "enum": [
+                "native_curriculum",
+                "olx_course",
+                "olx_legacy_library",
+                "olx_versioned_library",
+                "scorm_12",
+                "scorm_2004_2",
+                "scorm_2004_3",
+                "scorm_2004_4",
+                "qti_21",
+                "qti_22",
+                "qti_301",
+                "common_cartridge"
+              ]
+            },
+            "root_version_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "maxItems": 1000,
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "include_answers": {
+              "type": "boolean"
+            },
+            "include_drafts": {
+              "type": "boolean"
+            },
+            "destination_scope": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "projection_profile": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "edition": {
+              "type": "string",
+              "enum": [
+                "native_1",
+                "olx_course_1",
+                "olx_legacy_library_1",
+                "olx_library_archive_1",
+                "scorm_1_2",
+                "scorm_2004_2",
+                "scorm_2004_3",
+                "scorm_2004_4",
+                "qti_2_1",
+                "qti_2_2",
+                "qti_3_0_1",
+                "common_cartridge_1_3"
+              ]
+            },
+            "profile_revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "delivery_mode": {
+              "type": "string",
+              "enum": [
+                "editable",
+                "portable",
+                "approved_hosted"
+              ]
+            },
+            "solution_disclosure": {
+              "type": "string",
+              "enum": [
+                "none",
+                "approved_embedded_practice",
+                "protected_authoring"
+              ]
+            },
+            "roots": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1000,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "owner_kind": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "revision_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "projection_digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                },
+                "required": [
+                  "owner_kind",
+                  "revision_id",
+                  "projection_digest"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "dependencies": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 100000,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "owner_kind": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "revision_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "projection_digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                },
+                "required": [
+                  "owner_kind",
+                  "revision_id",
+                  "projection_digest"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "rights_decision_refs": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 100000,
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "policy_snapshot_refs": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 10000,
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "generator_build": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          "required": [
+            "format",
+            "root_version_ids",
+            "include_answers",
+            "include_drafts",
+            "destination_scope",
+            "projection_profile",
+            "edition",
+            "profile_revision",
+            "delivery_mode",
+            "solution_disclosure",
+            "roots",
+            "dependencies",
+            "rights_decision_refs",
+            "policy_snapshot_refs",
+            "generator_build"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "native_curriculum"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "edition": {
+                    "const": "native_1"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "olx_course"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "edition": {
+                    "const": "olx_course_1"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "olx_legacy_library"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "edition": {
+                    "const": "olx_legacy_library_1"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "olx_versioned_library"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "edition": {
+                    "const": "olx_library_archive_1"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "scorm_12"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "edition": {
+                    "const": "scorm_1_2"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "scorm_2004_2"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "edition": {
+                    "const": "scorm_2004_2"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "scorm_2004_3"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "edition": {
+                    "const": "scorm_2004_3"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "scorm_2004_4"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "edition": {
+                    "const": "scorm_2004_4"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "qti_21"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "edition": {
+                    "const": "qti_2_1"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "qti_22"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "edition": {
+                    "const": "qti_2_2"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "qti_301"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "edition": {
+                    "const": "qti_3_0_1"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "const": "common_cartridge"
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "edition": {
+                    "const": "common_cartridge_1_3"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "solution_disclosure": {
+                    "enum": [
+                      "approved_embedded_practice",
+                      "protected_authoring"
+                    ]
+                  }
+                },
+                "required": [
+                  "solution_disclosure"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "include_answers": {
+                    "const": true
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "solution_disclosure": {
+                    "const": "protected_authoring"
+                  }
+                },
+                "required": [
+                  "solution_disclosure"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "delivery_mode": {
+                    "const": "editable"
+                  },
+                  "format": {
+                    "enum": [
+                      "native_curriculum",
+                      "olx_course",
+                      "olx_legacy_library",
+                      "olx_versioned_library",
+                      "qti_21",
+                      "qti_22",
+                      "qti_301",
+                      "common_cartridge"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "include_drafts": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "include_drafts"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "delivery_mode": {
+                    "const": "editable"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "format": {
+                    "enum": [
+                      "scorm_12",
+                      "scorm_2004_2",
+                      "scorm_2004_3",
+                      "scorm_2004_4"
+                    ]
+                  }
+                },
+                "required": [
+                  "format"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "delivery_mode": {
+                    "enum": [
+                      "portable",
+                      "approved_hosted"
+                    ]
+                  },
+                  "include_drafts": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "include_answers": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "include_answers"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "solution_disclosure": {
+                    "enum": [
+                      "approved_embedded_practice",
+                      "protected_authoring"
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "job_id",
+        "institution_id",
+        "document_type",
+        "selection"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "job_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "institution_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "document_type": {
+          "const": "capability_report"
+        },
+        "selection_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "profile_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "generator_build": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "coverage": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "capability_key": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "root_revision_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "preserved",
+                  "equivalent_projection",
+                  "delivery_only",
+                  "approved_optional_difference",
+                  "redacted_by_policy",
+                  "blocked"
+                ]
+              },
+              "review_evidence_ref": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "remedy_code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            },
+            "required": [
+              "capability_key",
+              "root_revision_id",
+              "required",
+              "status"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "job_id",
+        "institution_id",
+        "document_type",
+        "selection_digest",
+        "profile_revision",
+        "generator_build",
+        "coverage"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "job_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "institution_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "document_type": {
+          "const": "loss_report"
+        },
+        "selection_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "capability_report_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "losses": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 100000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "issue_code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "capability_key": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "root_revision_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "information",
+                  "warning",
+                  "blocking"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "preserved",
+                  "equivalent_projection",
+                  "delivery_only",
+                  "approved_optional_difference",
+                  "redacted_by_policy",
+                  "blocked"
+                ]
+              },
+              "safe_reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "protected_locator_ref": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "required": [
+              "issue_code",
+              "capability_key",
+              "root_revision_id",
+              "required",
+              "severity",
+              "status",
+              "safe_reason"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "job_id",
+        "institution_id",
+        "document_type",
+        "selection_digest",
+        "capability_report_digest",
+        "losses"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "job_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "institution_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "document_type": {
+          "const": "output_validation"
+        },
+        "selection_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "profile_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "generator_build": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "native_curriculum",
+            "olx_course",
+            "olx_legacy_library",
+            "olx_versioned_library",
+            "scorm_12",
+            "scorm_2004_2",
+            "scorm_2004_3",
+            "scorm_2004_4",
+            "qti_21",
+            "qti_22",
+            "qti_301",
+            "common_cartridge"
+          ]
+        },
+        "edition": {
+          "type": "string",
+          "enum": [
+            "native_1",
+            "olx_course_1",
+            "olx_legacy_library_1",
+            "olx_library_archive_1",
+            "scorm_1_2",
+            "scorm_2004_2",
+            "scorm_2004_3",
+            "scorm_2004_4",
+            "qti_2_1",
+            "qti_2_2",
+            "qti_3_0_1",
+            "common_cartridge_1_3"
+          ]
+        },
+        "output_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "output_byte_length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "checked_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 512,
+          "items": {
+            "type": "object",
+            "properties": {
+              "check_key": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "runner_build": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "passed",
+                  "failed",
+                  "unsupported"
+                ]
+              },
+              "evidence_ref": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "required": [
+              "check_key",
+              "runner_build",
+              "status",
+              "evidence_ref"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "job_id",
+        "institution_id",
+        "document_type",
+        "selection_digest",
+        "profile_revision",
+        "generator_build",
+        "format",
+        "edition",
+        "output_sha256",
+        "output_byte_length",
+        "checked_at",
+        "checks"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "native_curriculum"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "edition": {
+                "const": "native_1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "olx_course"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "edition": {
+                "const": "olx_course_1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "olx_legacy_library"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "edition": {
+                "const": "olx_legacy_library_1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "olx_versioned_library"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "edition": {
+                "const": "olx_library_archive_1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "scorm_12"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "edition": {
+                "const": "scorm_1_2"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "scorm_2004_2"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "edition": {
+                "const": "scorm_2004_2"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "scorm_2004_3"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "edition": {
+                "const": "scorm_2004_3"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "scorm_2004_4"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "edition": {
+                "const": "scorm_2004_4"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "qti_21"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "edition": {
+                "const": "qti_2_1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "qti_22"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "edition": {
+                "const": "qti_2_2"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "qti_301"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "edition": {
+                "const": "qti_3_0_1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "common_cartridge"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "edition": {
+                "const": "common_cartridge_1_3"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

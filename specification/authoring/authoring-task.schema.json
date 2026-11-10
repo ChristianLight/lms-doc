@@ -1,0 +1,3375 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Portable PDF-to-curriculum authoring task and protected manifest contract",
+  "description": "Stage and evidence contracts validated separately from repository catalog request envelopes. Scope, rights, source lineage, cross-field constraints, canonical digests and fencing require owner validation.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/stage_request"
+    },
+    {
+      "$ref": "#/$defs/stage_receipt"
+    },
+    {
+      "$ref": "#/$defs/source_page_task"
+    },
+    {
+      "$ref": "#/$defs/rights_attestation"
+    },
+    {
+      "$ref": "#/$defs/source_page_evidence"
+    },
+    {
+      "$ref": "#/$defs/source_review_manifest"
+    },
+    {
+      "$ref": "#/$defs/teaching_brief"
+    },
+    {
+      "$ref": "#/$defs/coverage_plan_manifest"
+    },
+    {
+      "$ref": "#/$defs/course_plan_manifest"
+    },
+    {
+      "$ref": "#/$defs/learning_blocks_manifest"
+    },
+    {
+      "$ref": "#/$defs/assessment_candidates_manifest"
+    },
+    {
+      "$ref": "#/$defs/verification_manifest"
+    },
+    {
+      "$ref": "#/$defs/apply_plan_manifest"
+    },
+    {
+      "$ref": "#/$defs/owner_apply_manifest"
+    }
+  ],
+  "$defs": {
+    "stage_request": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "stage_request"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "authoring_run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "institution_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "target_course_draft_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_run_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "expected_draft_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "stage": {
+          "type": "string",
+          "enum": [
+            "coverage_plan",
+            "course_plan",
+            "learning_blocks",
+            "assessment_candidates",
+            "verification",
+            "apply_plan",
+            "owner_apply"
+          ]
+        },
+        "effect_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "input_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "prior_manifest_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tool_profile_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+        },
+        "lease": {
+          "type": "object",
+          "properties": {
+            "platform_job_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "lease_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "fence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "platform_job_id",
+            "lease_id",
+            "fence"
+          ],
+          "additionalProperties": false
+        },
+        "source_set": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source_asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "source_extraction_run_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "source_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "rights_attestation": {
+                "type": "object",
+                "properties": {
+                  "storage_object_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "content_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "enum": [
+                      "evidence"
+                    ]
+                  }
+                },
+                "required": [
+                  "storage_object_id",
+                  "content_sha256",
+                  "purpose"
+                ],
+                "additionalProperties": false
+              },
+              "page_ranges": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "from_page": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000
+                    },
+                    "to_page_inclusive": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000
+                    }
+                  },
+                  "required": [
+                    "from_page",
+                    "to_page_inclusive"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 500,
+                "minItems": 1
+              }
+            },
+            "required": [
+              "source_asset_version_id",
+              "source_extraction_run_id",
+              "source_digest",
+              "rights_attestation",
+              "page_ranges"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 20,
+          "minItems": 1
+        },
+        "brief": {
+          "type": "object",
+          "properties": {
+            "storage_object_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "content_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "evidence"
+              ]
+            }
+          },
+          "required": [
+            "storage_object_id",
+            "content_sha256",
+            "purpose"
+          ],
+          "additionalProperties": false
+        },
+        "required_output_schema": {
+          "type": "string",
+          "enum": [
+            "1.0.0"
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "authoring_run_id",
+        "institution_id",
+        "target_course_draft_id",
+        "expected_run_revision",
+        "expected_draft_revision",
+        "stage",
+        "effect_key",
+        "input_digest",
+        "prior_manifest_digest",
+        "tool_profile_key",
+        "lease",
+        "source_set",
+        "brief",
+        "required_output_schema"
+      ],
+      "additionalProperties": false
+    },
+    "stage_receipt": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "stage_receipt"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "authoring_run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "stage": {
+          "type": "string",
+          "enum": [
+            "coverage_plan",
+            "course_plan",
+            "learning_blocks",
+            "assessment_candidates",
+            "verification",
+            "apply_plan",
+            "owner_apply"
+          ]
+        },
+        "effect_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "input_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "fence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "receipt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "blocked",
+            "retryable"
+          ]
+        },
+        "output_manifest": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "storage_object_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "content_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "purpose": {
+                  "type": "string",
+                  "enum": [
+                    "evidence"
+                  ]
+                }
+              },
+              "required": [
+                "storage_object_id",
+                "content_sha256",
+                "purpose"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "issue_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "authoring_run_id",
+        "stage",
+        "effect_key",
+        "input_digest",
+        "fence",
+        "receipt_id",
+        "result",
+        "output_manifest",
+        "issue_count",
+        "recorded_at"
+      ],
+      "additionalProperties": false
+    },
+    "source_page_task": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "source_page_task"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "extraction_run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "institution_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_asset_version_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source": {
+          "type": "object",
+          "properties": {
+            "storage_object_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "content_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "evidence"
+              ]
+            }
+          },
+          "required": [
+            "storage_object_id",
+            "content_sha256",
+            "purpose"
+          ],
+          "additionalProperties": false
+        },
+        "rights_attestation": {
+          "type": "object",
+          "properties": {
+            "storage_object_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "content_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "evidence"
+              ]
+            }
+          },
+          "required": [
+            "storage_object_id",
+            "content_sha256",
+            "purpose"
+          ],
+          "additionalProperties": false
+        },
+        "profile_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+        },
+        "profile_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "page_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "effect_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "lease": {
+          "type": "object",
+          "properties": {
+            "platform_job_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "lease_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "fence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "platform_job_id",
+            "lease_id",
+            "fence"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "extraction_run_id",
+        "institution_id",
+        "source_asset_version_id",
+        "source",
+        "rights_attestation",
+        "profile_key",
+        "profile_digest",
+        "page_index",
+        "effect_key",
+        "lease"
+      ],
+      "additionalProperties": false
+    },
+    "rights_attestation": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "rights_attestation"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "institution_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_asset_version_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "rights_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+        },
+        "policy_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "purposes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "private_extract",
+              "external_process",
+              "adapt",
+              "reuse_excerpt",
+              "reuse_figure",
+              "learner_download",
+              "external_export",
+              "publish_derived"
+            ]
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "approved_by_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "export_profiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+          },
+          "maxItems": 20,
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "provider_connection_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recipient_scope_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+          },
+          "maxItems": 40,
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "basis_object_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "approval_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "institution_id",
+        "source_asset_version_id",
+        "source_digest",
+        "rights_key",
+        "policy_revision",
+        "purposes",
+        "approved_by_id",
+        "effective_from",
+        "effective_to",
+        "export_profiles",
+        "provider_connection_id",
+        "recipient_scope_codes",
+        "basis_object_id",
+        "approval_digest"
+      ],
+      "additionalProperties": false
+    },
+    "source_page_evidence": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "source_page_evidence"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "extraction_run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "profile_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "transform": {
+          "type": "object",
+          "properties": {
+            "physical_page_index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000
+            },
+            "physical_page_count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100001
+            },
+            "printed_page_label": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "pdf_crop_box_mpt": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "integer",
+                  "minimum": -1000000000,
+                  "maximum": 1000000000
+                },
+                {
+                  "type": "integer",
+                  "minimum": -1000000000,
+                  "maximum": 1000000000
+                },
+                {
+                  "type": "integer",
+                  "minimum": -1000000000,
+                  "maximum": 1000000000
+                },
+                {
+                  "type": "integer",
+                  "minimum": -1000000000,
+                  "maximum": 1000000000
+                }
+              ],
+              "items": false,
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "pdf_clockwise_rotation": {
+              "type": "integer",
+              "enum": [
+                0,
+                90,
+                180,
+                270
+              ]
+            },
+            "user_unit_decimal": {
+              "type": "string",
+              "pattern": "^[0-9]{1,8}(\\.[0-9]{1,8})?$"
+            },
+            "upright_extent_mpt": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 28800000
+                },
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 28800000
+                }
+              ],
+              "items": false,
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "raster_extent_px": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 24000000
+                },
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 24000000
+                }
+              ],
+              "items": false,
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "raster_to_upright_coefficients": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^-?[0-9]{1,16}(\\.[0-9]{1,12})?$"
+              },
+              "maxItems": 6,
+              "minItems": 6
+            }
+          },
+          "required": [
+            "physical_page_index",
+            "physical_page_count",
+            "printed_page_label",
+            "pdf_crop_box_mpt",
+            "pdf_clockwise_rotation",
+            "user_unit_decimal",
+            "upright_extent_mpt",
+            "raster_extent_px",
+            "raster_to_upright_coefficients"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "needs_review",
+            "unavailable",
+            "excluded"
+          ]
+        },
+        "evidence_object": {
+          "type": "object",
+          "properties": {
+            "storage_object_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "content_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "evidence"
+              ]
+            }
+          },
+          "required": [
+            "storage_object_id",
+            "content_sha256",
+            "purpose"
+          ],
+          "additionalProperties": false
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ordinal": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 200000
+              },
+              "bbox_mpt": {
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 28800000
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 28800000
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 28800000
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 28800000
+                  }
+                ],
+                "items": false,
+                "minItems": 4,
+                "maxItems": 4
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "heading",
+                  "table",
+                  "table_cell",
+                  "form_field",
+                  "figure",
+                  "caption",
+                  "equation",
+                  "footnote",
+                  "artifact"
+                ]
+              },
+              "method": {
+                "type": "string",
+                "enum": [
+                  "text_layer",
+                  "tagged_text",
+                  "ocr",
+                  "vector_geometry",
+                  "transcription",
+                  "math_recognition"
+                ]
+              },
+              "confidence_permille": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "sensitivity": {
+                "type": "string",
+                "enum": [
+                  "authoring_only",
+                  "answer_key",
+                  "restricted_rights",
+                  "personal_data"
+                ]
+              },
+              "review_state": {
+                "type": "string",
+                "enum": [
+                  "candidate",
+                  "needs_review",
+                  "excluded"
+                ]
+              },
+              "payload_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "evidence_path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "required": [
+              "ordinal",
+              "bbox_mpt",
+              "kind",
+              "method",
+              "confidence_permille",
+              "sensitivity",
+              "review_state",
+              "payload_digest",
+              "evidence_path"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 20000,
+          "minItems": 0
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+              },
+              "path": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 500
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "advisory",
+                  "blocking"
+                ]
+              },
+              "review_scope": {
+                "type": "string",
+                "enum": [
+                  "source",
+                  "rights",
+                  "content",
+                  "assessment",
+                  "accessibility",
+                  "export"
+                ]
+              },
+              "safe_message": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "source_region_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "maxItems": 100,
+                "minItems": 0,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "code",
+              "path",
+              "severity",
+              "review_scope",
+              "safe_message",
+              "source_region_ids"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 10000,
+          "minItems": 0
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "extraction_run_id",
+        "source_digest",
+        "profile_digest",
+        "transform",
+        "state",
+        "evidence_object",
+        "regions",
+        "issues"
+      ],
+      "additionalProperties": false
+    },
+    "source_review_manifest": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "source_review_manifest"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "extraction_run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "profile_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "rights_attestation": {
+          "type": "object",
+          "properties": {
+            "storage_object_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "content_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "purpose": {
+              "type": "string",
+              "enum": [
+                "evidence"
+              ]
+            }
+          },
+          "required": [
+            "storage_object_id",
+            "content_sha256",
+            "purpose"
+          ],
+          "additionalProperties": false
+        },
+        "reviewed_by_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "page_receipt_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "maxItems": 500,
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "region_decisions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source_region_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "expected_payload_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accept",
+                  "exclude"
+                ]
+              },
+              "reason_code": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+              },
+              "approved_usage_codes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "private_extract",
+                    "external_process",
+                    "adapt",
+                    "reuse_excerpt",
+                    "reuse_figure",
+                    "learner_download",
+                    "external_export",
+                    "publish_derived"
+                  ]
+                },
+                "maxItems": 8,
+                "minItems": 0,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "source_region_id",
+              "expected_payload_digest",
+              "decision",
+              "reason_code",
+              "approved_usage_codes"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 200000,
+          "minItems": 0
+        },
+        "excluded_page_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "maxItems": 500,
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "seal",
+            "block"
+          ]
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+              },
+              "path": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 500
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "advisory",
+                  "blocking"
+                ]
+              },
+              "review_scope": {
+                "type": "string",
+                "enum": [
+                  "source",
+                  "rights",
+                  "content",
+                  "assessment",
+                  "accessibility",
+                  "export"
+                ]
+              },
+              "safe_message": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "source_region_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "maxItems": 100,
+                "minItems": 0,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "code",
+              "path",
+              "severity",
+              "review_scope",
+              "safe_message",
+              "source_region_ids"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 10000,
+          "minItems": 0
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "extraction_run_id",
+        "source_digest",
+        "profile_digest",
+        "rights_attestation",
+        "reviewed_by_id",
+        "page_receipt_ids",
+        "region_decisions",
+        "excluded_page_indices",
+        "reviewed_at",
+        "decision",
+        "issues"
+      ],
+      "additionalProperties": false
+    },
+    "teaching_brief": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "teaching_brief"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "institution_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "target_course_draft_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "audience": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "locale": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 35,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$"
+        },
+        "band_code": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+        },
+        "delivery_mode": {
+          "type": "string",
+          "enum": [
+            "self_paced",
+            "teacher_led",
+            "blended"
+          ]
+        },
+        "target_duration_minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60000
+        },
+        "objective_seeds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "maxItems": 100,
+          "minItems": 0
+        },
+        "allowed_interactions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+          },
+          "maxItems": 40,
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "include_source_quotations": {
+          "type": "boolean"
+        },
+        "allow_generated_instruction": {
+          "type": "boolean"
+        },
+        "assessment_use": {
+          "type": "string",
+          "enum": [
+            "formative",
+            "summative",
+            "both",
+            "none"
+          ]
+        },
+        "native_package_requested": {
+          "type": "boolean"
+        },
+        "secondary_export_profiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+          },
+          "maxItems": 20,
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "authorized_provider_connection_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "institution_id",
+        "target_course_draft_id",
+        "audience",
+        "locale",
+        "band_code",
+        "delivery_mode",
+        "target_duration_minutes",
+        "objective_seeds",
+        "allowed_interactions",
+        "include_source_quotations",
+        "allow_generated_instruction",
+        "assessment_use",
+        "native_package_requested",
+        "secondary_export_profiles",
+        "authorized_provider_connection_id"
+      ],
+      "additionalProperties": false
+    },
+    "coverage_plan_manifest": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "stage_manifest"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "authoring_run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "stage": {
+          "const": "coverage_plan"
+        },
+        "stage_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "parent_manifest_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "topics": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "topic_code": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                  },
+                  "source_region_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 200,
+                    "minItems": 1,
+                    "uniqueItems": true
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "covered",
+                      "partial",
+                      "unresolved",
+                      "excluded"
+                    ]
+                  },
+                  "safe_summary": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "issues": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                        },
+                        "path": {
+                          "type": "string",
+                          "minLength": 0,
+                          "maxLength": 500
+                        },
+                        "severity": {
+                          "type": "string",
+                          "enum": [
+                            "advisory",
+                            "blocking"
+                          ]
+                        },
+                        "review_scope": {
+                          "type": "string",
+                          "enum": [
+                            "source",
+                            "rights",
+                            "content",
+                            "assessment",
+                            "accessibility",
+                            "export"
+                          ]
+                        },
+                        "safe_message": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        },
+                        "source_region_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "maxItems": 100,
+                          "minItems": 0,
+                          "uniqueItems": true
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "path",
+                        "severity",
+                        "review_scope",
+                        "safe_message",
+                        "source_region_ids"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 200,
+                    "minItems": 0
+                  }
+                },
+                "required": [
+                  "topic_code",
+                  "source_region_ids",
+                  "state",
+                  "safe_summary",
+                  "issues"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1000,
+              "minItems": 0
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 500
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "advisory",
+                      "blocking"
+                    ]
+                  },
+                  "review_scope": {
+                    "type": "string",
+                    "enum": [
+                      "source",
+                      "rights",
+                      "content",
+                      "assessment",
+                      "accessibility",
+                      "export"
+                    ]
+                  },
+                  "safe_message": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "source_region_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 100,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "code",
+                  "path",
+                  "severity",
+                  "review_scope",
+                  "safe_message",
+                  "source_region_ids"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 10000,
+              "minItems": 0
+            }
+          },
+          "required": [
+            "topics",
+            "issues"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "authoring_run_id",
+        "stage",
+        "stage_revision",
+        "parent_manifest_digest",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "course_plan_manifest": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "stage_manifest"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "authoring_run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "stage": {
+          "const": "course_plan"
+        },
+        "stage_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "parent_manifest_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "objectives": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "objective_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "learner_action": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "condition": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "criterion": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "source_region_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 100,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  },
+                  "prerequisite_objective_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 100,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  },
+                  "evaluation_mode": {
+                    "type": "string",
+                    "enum": [
+                      "practice",
+                      "assessed",
+                      "reviewed_exclusion"
+                    ]
+                  }
+                },
+                "required": [
+                  "objective_id",
+                  "learner_action",
+                  "condition",
+                  "criterion",
+                  "source_region_ids",
+                  "prerequisite_objective_ids",
+                  "evaluation_mode"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1000,
+              "minItems": 1
+            },
+            "outline": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "placement_key": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "parent_key": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "position": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 511
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "module",
+                      "topic",
+                      "lesson",
+                      "resource",
+                      "activity"
+                    ]
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  },
+                  "estimated_minutes": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 6000
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "objective_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 100,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  },
+                  "source_region_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 100,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "placement_key",
+                  "parent_key",
+                  "position",
+                  "kind",
+                  "title",
+                  "estimated_minutes",
+                  "required",
+                  "objective_ids",
+                  "source_region_ids"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 20000,
+              "minItems": 1
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 500
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "advisory",
+                      "blocking"
+                    ]
+                  },
+                  "review_scope": {
+                    "type": "string",
+                    "enum": [
+                      "source",
+                      "rights",
+                      "content",
+                      "assessment",
+                      "accessibility",
+                      "export"
+                    ]
+                  },
+                  "safe_message": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "source_region_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 100,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "code",
+                  "path",
+                  "severity",
+                  "review_scope",
+                  "safe_message",
+                  "source_region_ids"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 10000,
+              "minItems": 0
+            }
+          },
+          "required": [
+            "objectives",
+            "outline",
+            "issues"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "authoring_run_id",
+        "stage",
+        "stage_revision",
+        "parent_manifest_digest",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "learning_blocks_manifest": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "stage_manifest"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "authoring_run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "stage": {
+          "const": "learning_blocks"
+        },
+        "stage_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "parent_manifest_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "candidate_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "content_node",
+                      "activity",
+                      "asset",
+                      "item",
+                      "marking_rule",
+                      "assessment",
+                      "placement",
+                      "policy"
+                    ]
+                  },
+                  "safe_label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  },
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "storage_object_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "content_sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "purpose": {
+                        "type": "string",
+                        "enum": [
+                          "evidence"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "storage_object_id",
+                      "content_sha256",
+                      "purpose"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "dependency_candidate_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 200,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  },
+                  "claims": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "claim_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "target_path": {
+                          "type": "string",
+                          "minLength": 0,
+                          "maxLength": 500
+                        },
+                        "classification": {
+                          "type": "string",
+                          "enum": [
+                            "extracted",
+                            "source_supported_paraphrase",
+                            "derived",
+                            "generated_instruction",
+                            "human_supplied",
+                            "unresolved"
+                          ]
+                        },
+                        "source_region_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "maxItems": 100,
+                          "minItems": 0,
+                          "uniqueItems": true
+                        },
+                        "verification_evidence": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "storage_object_id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "content_sha256": {
+                                  "type": "string",
+                                  "pattern": "^[0-9a-f]{64}$"
+                                },
+                                "purpose": {
+                                  "type": "string",
+                                  "enum": [
+                                    "evidence"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "storage_object_id",
+                                "content_sha256",
+                                "purpose"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "disclosure": {
+                          "type": "string",
+                          "enum": [
+                            "staff_only",
+                            "approved_attribution"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "claim_id",
+                        "target_path",
+                        "classification",
+                        "source_region_ids",
+                        "verification_evidence",
+                        "disclosure"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 500,
+                    "minItems": 0
+                  },
+                  "issues": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                        },
+                        "path": {
+                          "type": "string",
+                          "minLength": 0,
+                          "maxLength": 500
+                        },
+                        "severity": {
+                          "type": "string",
+                          "enum": [
+                            "advisory",
+                            "blocking"
+                          ]
+                        },
+                        "review_scope": {
+                          "type": "string",
+                          "enum": [
+                            "source",
+                            "rights",
+                            "content",
+                            "assessment",
+                            "accessibility",
+                            "export"
+                          ]
+                        },
+                        "safe_message": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        },
+                        "source_region_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "maxItems": 100,
+                          "minItems": 0,
+                          "uniqueItems": true
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "path",
+                        "severity",
+                        "review_scope",
+                        "safe_message",
+                        "source_region_ids"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 500,
+                    "minItems": 0
+                  }
+                },
+                "required": [
+                  "candidate_id",
+                  "revision",
+                  "digest",
+                  "kind",
+                  "safe_label",
+                  "payload",
+                  "dependency_candidate_ids",
+                  "claims",
+                  "issues"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 20000,
+              "minItems": 0
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 500
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "advisory",
+                      "blocking"
+                    ]
+                  },
+                  "review_scope": {
+                    "type": "string",
+                    "enum": [
+                      "source",
+                      "rights",
+                      "content",
+                      "assessment",
+                      "accessibility",
+                      "export"
+                    ]
+                  },
+                  "safe_message": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "source_region_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 100,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "code",
+                  "path",
+                  "severity",
+                  "review_scope",
+                  "safe_message",
+                  "source_region_ids"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 10000,
+              "minItems": 0
+            }
+          },
+          "required": [
+            "candidates",
+            "issues"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "authoring_run_id",
+        "stage",
+        "stage_revision",
+        "parent_manifest_digest",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "assessment_candidates_manifest": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "stage_manifest"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "authoring_run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "stage": {
+          "const": "assessment_candidates"
+        },
+        "stage_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "parent_manifest_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "candidate_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "content_node",
+                      "activity",
+                      "asset",
+                      "item",
+                      "marking_rule",
+                      "assessment",
+                      "placement",
+                      "policy"
+                    ]
+                  },
+                  "safe_label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  },
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "storage_object_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "content_sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "purpose": {
+                        "type": "string",
+                        "enum": [
+                          "evidence"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "storage_object_id",
+                      "content_sha256",
+                      "purpose"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "dependency_candidate_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 200,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  },
+                  "claims": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "claim_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "target_path": {
+                          "type": "string",
+                          "minLength": 0,
+                          "maxLength": 500
+                        },
+                        "classification": {
+                          "type": "string",
+                          "enum": [
+                            "extracted",
+                            "source_supported_paraphrase",
+                            "derived",
+                            "generated_instruction",
+                            "human_supplied",
+                            "unresolved"
+                          ]
+                        },
+                        "source_region_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "maxItems": 100,
+                          "minItems": 0,
+                          "uniqueItems": true
+                        },
+                        "verification_evidence": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "storage_object_id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "content_sha256": {
+                                  "type": "string",
+                                  "pattern": "^[0-9a-f]{64}$"
+                                },
+                                "purpose": {
+                                  "type": "string",
+                                  "enum": [
+                                    "evidence"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "storage_object_id",
+                                "content_sha256",
+                                "purpose"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "disclosure": {
+                          "type": "string",
+                          "enum": [
+                            "staff_only",
+                            "approved_attribution"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "claim_id",
+                        "target_path",
+                        "classification",
+                        "source_region_ids",
+                        "verification_evidence",
+                        "disclosure"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 500,
+                    "minItems": 0
+                  },
+                  "issues": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                        },
+                        "path": {
+                          "type": "string",
+                          "minLength": 0,
+                          "maxLength": 500
+                        },
+                        "severity": {
+                          "type": "string",
+                          "enum": [
+                            "advisory",
+                            "blocking"
+                          ]
+                        },
+                        "review_scope": {
+                          "type": "string",
+                          "enum": [
+                            "source",
+                            "rights",
+                            "content",
+                            "assessment",
+                            "accessibility",
+                            "export"
+                          ]
+                        },
+                        "safe_message": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        },
+                        "source_region_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "maxItems": 100,
+                          "minItems": 0,
+                          "uniqueItems": true
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "path",
+                        "severity",
+                        "review_scope",
+                        "safe_message",
+                        "source_region_ids"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 500,
+                    "minItems": 0
+                  }
+                },
+                "required": [
+                  "candidate_id",
+                  "revision",
+                  "digest",
+                  "kind",
+                  "safe_label",
+                  "payload",
+                  "dependency_candidate_ids",
+                  "claims",
+                  "issues"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 20000,
+              "minItems": 0
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 500
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "advisory",
+                      "blocking"
+                    ]
+                  },
+                  "review_scope": {
+                    "type": "string",
+                    "enum": [
+                      "source",
+                      "rights",
+                      "content",
+                      "assessment",
+                      "accessibility",
+                      "export"
+                    ]
+                  },
+                  "safe_message": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "source_region_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 100,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "code",
+                  "path",
+                  "severity",
+                  "review_scope",
+                  "safe_message",
+                  "source_region_ids"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 10000,
+              "minItems": 0
+            }
+          },
+          "required": [
+            "candidates",
+            "issues"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "authoring_run_id",
+        "stage",
+        "stage_revision",
+        "parent_manifest_digest",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "verification_manifest": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "stage_manifest"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "authoring_run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "stage": {
+          "const": "verification"
+        },
+        "stage_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "parent_manifest_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "validation_profile_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+            },
+            "evaluations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "candidate_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "candidate_revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "rule_digest": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "evaluator_release_id": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "test_count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  },
+                  "failed_count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  },
+                  "verification_object": {
+                    "type": "object",
+                    "properties": {
+                      "storage_object_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "content_sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "purpose": {
+                        "type": "string",
+                        "enum": [
+                          "evidence"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "storage_object_id",
+                      "content_sha256",
+                      "purpose"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "candidate_id",
+                  "candidate_revision",
+                  "rule_digest",
+                  "evaluator_release_id",
+                  "test_count",
+                  "failed_count",
+                  "verification_object"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 10000,
+              "minItems": 0
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 500
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "advisory",
+                      "blocking"
+                    ]
+                  },
+                  "review_scope": {
+                    "type": "string",
+                    "enum": [
+                      "source",
+                      "rights",
+                      "content",
+                      "assessment",
+                      "accessibility",
+                      "export"
+                    ]
+                  },
+                  "safe_message": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "source_region_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 100,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "code",
+                  "path",
+                  "severity",
+                  "review_scope",
+                  "safe_message",
+                  "source_region_ids"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 10000,
+              "minItems": 0
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "blocked"
+              ]
+            }
+          },
+          "required": [
+            "validation_profile_key",
+            "evaluations",
+            "issues",
+            "status"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "authoring_run_id",
+        "stage",
+        "stage_revision",
+        "parent_manifest_digest",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "apply_plan_manifest": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "stage_manifest"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "authoring_run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "stage": {
+          "const": "apply_plan"
+        },
+        "stage_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "parent_manifest_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "expected_draft_revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "candidate_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "maxItems": 20000,
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "effects": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "effect_key": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  },
+                  "candidate_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "owner_command": {
+                    "type": "string",
+                    "enum": [
+                      "CreateContentNode",
+                      "SealContentNodeVersion",
+                      "CreateActivity",
+                      "SealActivityVersion",
+                      "SealLearningRuleVersion",
+                      "MutateDraftOutline",
+                      "CreateItemDraft",
+                      "SaveItemDraft",
+                      "SaveItemTranslation",
+                      "CreateAssessmentDraft",
+                      "SaveAssessmentDraft"
+                    ]
+                  },
+                  "owner_scope_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "expected_owner_revision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2147483647
+                  },
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "storage_object_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "content_sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "purpose": {
+                        "type": "string",
+                        "enum": [
+                          "evidence"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "storage_object_id",
+                      "content_sha256",
+                      "purpose"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "requires_effect_keys": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "maxItems": 200,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "effect_key",
+                  "candidate_id",
+                  "owner_command",
+                  "owner_scope_id",
+                  "expected_owner_revision",
+                  "payload",
+                  "requires_effect_keys"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 20000,
+              "minItems": 1
+            },
+            "rights_snapshot_digests": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "maxItems": 20,
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 500
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "advisory",
+                      "blocking"
+                    ]
+                  },
+                  "review_scope": {
+                    "type": "string",
+                    "enum": [
+                      "source",
+                      "rights",
+                      "content",
+                      "assessment",
+                      "accessibility",
+                      "export"
+                    ]
+                  },
+                  "safe_message": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "source_region_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 100,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "code",
+                  "path",
+                  "severity",
+                  "review_scope",
+                  "safe_message",
+                  "source_region_ids"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 10000,
+              "minItems": 0
+            }
+          },
+          "required": [
+            "expected_draft_revision",
+            "candidate_ids",
+            "effects",
+            "rights_snapshot_digests",
+            "issues"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "authoring_run_id",
+        "stage",
+        "stage_revision",
+        "parent_manifest_digest",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "owner_apply_manifest": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "stage_manifest"
+        },
+        "contract_version": {
+          "const": "1.0.0"
+        },
+        "authoring_run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "stage": {
+          "const": "owner_apply"
+        },
+        "stage_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "parent_manifest_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "approved_plan_digest": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "observed_draft_revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "receipts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "effect_key": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  },
+                  "owner_command": {
+                    "type": "string",
+                    "enum": [
+                      "CreateContentNode",
+                      "SealContentNodeVersion",
+                      "CreateActivity",
+                      "SealActivityVersion",
+                      "SealLearningRuleVersion",
+                      "MutateDraftOutline",
+                      "CreateItemDraft",
+                      "SaveItemDraft",
+                      "SaveItemTranslation",
+                      "CreateAssessmentDraft",
+                      "SaveAssessmentDraft"
+                    ]
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "committed",
+                      "pending",
+                      "retryable",
+                      "blocked",
+                      "not_attempted"
+                    ]
+                  },
+                  "owner_receipt_id": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "exact_result_version_id": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "result_digest": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "safe_reason_code": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "effect_key",
+                  "owner_command",
+                  "state",
+                  "owner_receipt_id",
+                  "exact_result_version_id",
+                  "result_digest",
+                  "safe_reason_code"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 20000,
+              "minItems": 1
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "applied",
+                "partial",
+                "blocked"
+              ]
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 500
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "advisory",
+                      "blocking"
+                    ]
+                  },
+                  "review_scope": {
+                    "type": "string",
+                    "enum": [
+                      "source",
+                      "rights",
+                      "content",
+                      "assessment",
+                      "accessibility",
+                      "export"
+                    ]
+                  },
+                  "safe_message": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "source_region_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 100,
+                    "minItems": 0,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "code",
+                  "path",
+                  "severity",
+                  "review_scope",
+                  "safe_message",
+                  "source_region_ids"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 10000,
+              "minItems": 0
+            }
+          },
+          "required": [
+            "approved_plan_digest",
+            "observed_draft_revision",
+            "receipts",
+            "status",
+            "issues"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "record_type",
+        "contract_version",
+        "authoring_run_id",
+        "stage",
+        "stage_revision",
+        "parent_manifest_digest",
+        "body"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "examples": [
+    {
+      "record_type": "teaching_brief",
+      "contract_version": "1.0.0",
+      "institution_id": "00000000-0000-4000-8000-000000000001",
+      "target_course_draft_id": "00000000-0000-4000-8000-000000000003",
+      "audience": "Beginning secondary learners using an exact numeric and a simple algebraic response.",
+      "locale": "en-NA",
+      "band_code": "introductory",
+      "delivery_mode": "teacher_led",
+      "target_duration_minutes": 20,
+      "objective_seeds": [
+        "Convert whole minutes to seconds.",
+        "Expand a constant times a two-term sum."
+      ],
+      "allowed_interactions": [
+        "single-choice",
+        "symbolic-expression"
+      ],
+      "include_source_quotations": false,
+      "allow_generated_instruction": true,
+      "assessment_use": "formative",
+      "native_package_requested": true,
+      "secondary_export_profiles": [
+        "scorm-2004-4-content-only"
+      ],
+      "authorized_provider_connection_id": null
+    },
+    {
+      "record_type": "stage_request",
+      "contract_version": "1.0.0",
+      "authoring_run_id": "00000000-0000-4000-8000-000000000022",
+      "institution_id": "00000000-0000-4000-8000-000000000001",
+      "target_course_draft_id": "00000000-0000-4000-8000-000000000003",
+      "expected_run_revision": 1,
+      "expected_draft_revision": 7,
+      "stage": "coverage_plan",
+      "effect_key": "synthetic-run-22-coverage-v1",
+      "input_digest": "dfccea1bea1c433c5fe709bb364c92e5b7beb3204c2474e76904064dcc6e9eaa",
+      "prior_manifest_digest": null,
+      "tool_profile_key": "pdf-upright-local-v1",
+      "lease": {
+        "platform_job_id": "00000000-0000-4000-8000-000000000023",
+        "lease_id": "00000000-0000-4000-8000-000000000024",
+        "fence": 1
+      },
+      "source_set": [
+        {
+          "source_asset_version_id": "00000000-0000-4000-8000-000000000011",
+          "source_extraction_run_id": "00000000-0000-4000-8000-000000000016",
+          "source_digest": "d4ba3e0dd7e10c2fa40b82d188ec588e5975c125a3a2bb5eafbf464112089f32",
+          "rights_attestation": {
+            "storage_object_id": "00000000-0000-4000-8000-000000000015",
+            "content_sha256": "000000000000000000000000000000000000000000000000000000000000000f",
+            "purpose": "evidence"
+          },
+          "page_ranges": [
+            {
+              "from_page": 0,
+              "to_page_inclusive": 1
+            }
+          ]
+        }
+      ],
+      "brief": {
+        "storage_object_id": "00000000-0000-4000-8000-000000000021",
+        "content_sha256": "0000000000000000000000000000000000000000000000000000000000000015",
+        "purpose": "evidence"
+      },
+      "required_output_schema": "1.0.0"
+    },
+    {
+      "record_type": "stage_manifest",
+      "contract_version": "1.0.0",
+      "authoring_run_id": "00000000-0000-4000-8000-000000000022",
+      "stage": "coverage_plan",
+      "stage_revision": 1,
+      "parent_manifest_digest": null,
+      "body": {
+        "topics": [
+          {
+            "topic_code": "time-conversion",
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000031"
+            ],
+            "state": "covered",
+            "safe_summary": "Source establishes the conversion factor.",
+            "issues": []
+          },
+          {
+            "topic_code": "distribution",
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000032"
+            ],
+            "state": "covered",
+            "safe_summary": "Source establishes the distributive relationship.",
+            "issues": []
+          },
+          {
+            "topic_code": "volume-from-rate",
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000033"
+            ],
+            "state": "unresolved",
+            "safe_summary": "Required input missing.",
+            "issues": [
+              {
+                "code": "MISSING_RATE",
+                "path": "/items/tank/expected_response",
+                "severity": "blocking",
+                "review_scope": "assessment",
+                "safe_message": "The source specifies duration but gives no filling rate or total.",
+                "source_region_ids": [
+                  "00000000-0000-4000-8000-000000000033"
+                ]
+              }
+            ]
+          }
+        ],
+        "issues": [
+          {
+            "code": "MISSING_RATE",
+            "path": "/items/tank/expected_response",
+            "severity": "blocking",
+            "review_scope": "assessment",
+            "safe_message": "The source specifies duration but gives no filling rate or total.",
+            "source_region_ids": [
+              "00000000-0000-4000-8000-000000000033"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "record_type": "stage_receipt",
+      "contract_version": "1.0.0",
+      "authoring_run_id": "00000000-0000-4000-8000-000000000022",
+      "stage": "coverage_plan",
+      "effect_key": "synthetic-run-22-coverage-v1",
+      "input_digest": "dfccea1bea1c433c5fe709bb364c92e5b7beb3204c2474e76904064dcc6e9eaa",
+      "fence": 1,
+      "receipt_id": "00000000-0000-4000-8000-000000000029",
+      "result": "accepted",
+      "output_manifest": {
+        "storage_object_id": "00000000-0000-4000-8000-000000000028",
+        "content_sha256": "222786b3fbd19cf8247acf371fa92eb42f95f45a9cac401e593a781a659fba02",
+        "purpose": "evidence"
+      },
+      "issue_count": 1,
+      "recorded_at": "2026-11-10T08:10:00Z"
+    }
+  ]
+}

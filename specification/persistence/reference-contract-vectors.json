@@ -1,0 +1,535 @@
+{
+  "profile": "reference-projection/1",
+  "origin": "Entirely invented contract fixtures; no curriculum source content.",
+  "cases": [
+    {
+      "name": "empty-ready-coverage",
+      "valid": true,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": "definition",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 0,
+        "entries_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": []
+    },
+    {
+      "name": "exact-asset-version",
+      "valid": true,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": "definition",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 1,
+        "entries_digest": "9d71eb2e0f67cd62030668da7ca9bd63cc3fcbba4ae34ff26656105e63c9d2fd",
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "asset",
+          "required_for_publication": true,
+          "asset_version_id": "20000000-0000-4000-8000-000000000005"
+        }
+      ]
+    },
+    {
+      "name": "mixed-target-families",
+      "valid": false,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": "definition",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 1,
+        "entries_digest": "9d71eb2e0f67cd62030668da7ca9bd63cc3fcbba4ae34ff26656105e63c9d2fd",
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "asset",
+          "required_for_publication": true,
+          "asset_version_id": "20000000-0000-4000-8000-000000000005",
+          "package_version_id": "20000000-0000-4000-8000-000000000006"
+        }
+      ]
+    },
+    {
+      "name": "stale-entry-generation",
+      "valid": false,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": "definition",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 1,
+        "entries_digest": "9d71eb2e0f67cd62030668da7ca9bd63cc3fcbba4ae34ff26656105e63c9d2fd",
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 2,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "asset",
+          "required_for_publication": true,
+          "asset_version_id": "20000000-0000-4000-8000-000000000005"
+        }
+      ]
+    },
+    {
+      "name": "invalid-json-pointer-escape",
+      "valid": false,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": "definition",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 1,
+        "entries_digest": "9d71eb2e0f67cd62030668da7ca9bd63cc3fcbba4ae34ff26656105e63c9d2fd",
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/~9",
+          "relation": "asset",
+          "required_for_publication": true,
+          "asset_version_id": "20000000-0000-4000-8000-000000000005"
+        }
+      ]
+    },
+    {
+      "name": "wrong-semantic-key-digest",
+      "valid": false,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": "definition",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 1,
+        "entries_digest": "9d71eb2e0f67cd62030668da7ca9bd63cc3fcbba4ae34ff26656105e63c9d2fd",
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "asset",
+          "required_for_publication": true,
+          "asset_version_id": "20000000-0000-4000-8000-000000000005"
+        }
+      ]
+    },
+    {
+      "name": "partial-generation",
+      "valid": false,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": "definition",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 2,
+        "entries_digest": "9d71eb2e0f67cd62030668da7ca9bd63cc3fcbba4ae34ff26656105e63c9d2fd",
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "asset",
+          "required_for_publication": true,
+          "asset_version_id": "20000000-0000-4000-8000-000000000005"
+        }
+      ]
+    },
+    {
+      "name": "unproven-empty-coverage",
+      "valid": false,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": "definition",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 0,
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": []
+    },
+    {
+      "name": "null-context-key",
+      "valid": false,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": null,
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 0,
+        "entries_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": []
+    },
+    {
+      "name": "stale-parent-set",
+      "valid": false,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": "definition",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "stale",
+        "entry_count": 1,
+        "entries_digest": "9d71eb2e0f67cd62030668da7ca9bd63cc3fcbba4ae34ff26656105e63c9d2fd",
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "asset",
+          "required_for_publication": true,
+          "asset_version_id": "20000000-0000-4000-8000-000000000005"
+        }
+      ]
+    },
+    {
+      "name": "reusable-placement-selector",
+      "valid": true,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": "definition",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 1,
+        "entries_digest": "ea449ec4eb16448b29611096eb534f7c01d22d420a6a35b6ca285ecda362a44b",
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "placement_selector",
+          "required_for_publication": true,
+          "target_selector": {
+            "placement_key": "20000000-0000-4000-8000-000000000007",
+            "context": "same_course_version"
+          },
+          "anchor": "worked-example"
+        }
+      ]
+    },
+    {
+      "name": "resolved-publication-binding",
+      "valid": true,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "placement",
+        "context_key": "20000000-0000-4000-8000-000000000009",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 1,
+        "entries_digest": "36ee8f5bb180fcea1d35e16b043269af96684d5f6c90db385dec503b1864e24b",
+        "validated_at": "2030-01-01T00:00:00Z",
+        "source_placement_id": "20000000-0000-4000-8000-000000000009",
+        "course_version_id": "20000000-0000-4000-8000-000000000010",
+        "definition_set_id": "20000000-0000-4000-8000-000000000011",
+        "definition_generation": 1,
+        "graph_digest": "2222222222222222222222222222222222222222222222222222222222222222"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "placement",
+          "required_for_publication": true,
+          "anchor": "worked-example",
+          "target_placement_id": "20000000-0000-4000-8000-000000000008"
+        }
+      ]
+    },
+    {
+      "name": "unresolved-publication-selector",
+      "valid": false,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "placement",
+        "context_key": "20000000-0000-4000-8000-000000000009",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 1,
+        "entries_digest": "ea449ec4eb16448b29611096eb534f7c01d22d420a6a35b6ca285ecda362a44b",
+        "validated_at": "2030-01-01T00:00:00Z",
+        "source_placement_id": "20000000-0000-4000-8000-000000000009",
+        "course_version_id": "20000000-0000-4000-8000-000000000010",
+        "definition_set_id": "20000000-0000-4000-8000-000000000011",
+        "definition_generation": 1,
+        "graph_digest": "2222222222222222222222222222222222222222222222222222222222222222"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "placement_selector",
+          "required_for_publication": true,
+          "target_selector": {
+            "placement_key": "20000000-0000-4000-8000-000000000007",
+            "context": "same_course_version"
+          },
+          "anchor": "worked-example"
+        }
+      ]
+    },
+    {
+      "name": "definition-pins-arbitrary-placement",
+      "valid": false,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": "definition",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 1,
+        "entries_digest": "36ee8f5bb180fcea1d35e16b043269af96684d5f6c90db385dec503b1864e24b",
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "placement",
+          "required_for_publication": true,
+          "anchor": "worked-example",
+          "target_placement_id": "20000000-0000-4000-8000-000000000008"
+        }
+      ]
+    },
+    {
+      "name": "binding-context-mismatch",
+      "valid": false,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "placement",
+        "context_key": "20000000-0000-4000-8000-000000000012",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 1,
+        "entries_digest": "36ee8f5bb180fcea1d35e16b043269af96684d5f6c90db385dec503b1864e24b",
+        "validated_at": "2030-01-01T00:00:00Z",
+        "source_placement_id": "20000000-0000-4000-8000-000000000009",
+        "course_version_id": "20000000-0000-4000-8000-000000000010",
+        "definition_set_id": "20000000-0000-4000-8000-000000000011",
+        "definition_generation": 1,
+        "graph_digest": "2222222222222222222222222222222222222222222222222222222222222222"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "placement",
+          "required_for_publication": true,
+          "anchor": "worked-example",
+          "target_placement_id": "20000000-0000-4000-8000-000000000008"
+        }
+      ]
+    },
+    {
+      "name": "duplicate-semantic-edge",
+      "valid": false,
+      "set": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "institution_id": "20000000-0000-4000-8000-000000000002",
+        "source_kind": "ContentNodeVersion",
+        "source_version_id": "20000000-0000-4000-8000-000000000003",
+        "context_kind": "definition",
+        "context_key": "definition",
+        "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "projection_profile": "reference-projection/1",
+        "generation": 1,
+        "revision": 1,
+        "state": "ready",
+        "entry_count": 2,
+        "entries_digest": "4f7ec08c32d42cb0ddb4a6083944f5901d8bbd921dbea7a36c8ef53f002245f6",
+        "validated_at": "2030-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "asset",
+          "required_for_publication": true,
+          "asset_version_id": "20000000-0000-4000-8000-000000000005"
+        },
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "asset",
+          "required_for_publication": true,
+          "asset_version_id": "20000000-0000-4000-8000-000000000005"
+        }
+      ]
+    }
+  ]
+}

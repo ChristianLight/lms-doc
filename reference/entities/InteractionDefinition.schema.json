@@ -88,6 +88,49 @@
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 100
+                  },
+                  "display_content": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                        },
+                        "format": {
+                          "type": "string",
+                          "enum": [
+                            "sanitized_html",
+                            "text",
+                            "asset",
+                            "math"
+                          ]
+                        },
+                        "value": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 50000
+                        },
+                        "asset_version_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "accessible_text": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 4000
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "format",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 16,
+                    "minItems": 1
                   }
                 },
                 "required": [
@@ -108,6 +151,113 @@
             },
             "clear_allowed": {
               "type": "boolean"
+            },
+            "control_flow": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "block"
+              ]
+            },
+            "accessible_description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "label_reference_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "leading_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "trailing_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "width_columns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
             }
           },
           "required": [
@@ -147,6 +297,49 @@
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 100
+                  },
+                  "display_content": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                        },
+                        "format": {
+                          "type": "string",
+                          "enum": [
+                            "sanitized_html",
+                            "text",
+                            "asset",
+                            "math"
+                          ]
+                        },
+                        "value": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 50000
+                        },
+                        "asset_version_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "accessible_text": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 4000
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "format",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 16,
+                    "minItems": 1
                   }
                 },
                 "required": [
@@ -174,6 +367,113 @@
                 "list",
                 "select"
               ]
+            },
+            "control_flow": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "block"
+              ]
+            },
+            "accessible_description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "label_reference_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "leading_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "trailing_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "width_columns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
             }
           },
           "required": [
@@ -204,6 +504,113 @@
             },
             "multiline": {
               "type": "boolean"
+            },
+            "control_flow": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "block"
+              ]
+            },
+            "accessible_description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "label_reference_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "leading_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "trailing_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "width_columns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
             }
           },
           "required": [
@@ -243,8 +650,119 @@
             "format": {
               "type": "string",
               "enum": [
-                "text"
+                "text",
+                "structured_rich_text"
               ]
+            },
+            "control_flow": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "block"
+              ]
+            },
+            "accessible_description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "label_reference_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "leading_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "trailing_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "width_columns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
+            },
+            "allow_math": {
+              "type": "boolean"
             }
           },
           "required": [
@@ -350,6 +868,113 @@
               "enum": [
                 "pair_selectors"
               ]
+            },
+            "control_flow": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "block"
+              ]
+            },
+            "accessible_description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "label_reference_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "leading_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "trailing_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "width_columns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
             }
           },
           "required": [
@@ -423,6 +1048,113 @@
               "enum": [
                 "ordered_list_controls"
               ]
+            },
+            "control_flow": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "block"
+              ]
+            },
+            "accessible_description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "label_reference_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "leading_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "trailing_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "width_columns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
             }
           },
           "required": [
@@ -520,6 +1252,113 @@
               "enum": [
                 "category_selectors"
               ]
+            },
+            "control_flow": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "block"
+              ]
+            },
+            "accessible_description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "label_reference_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "leading_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "trailing_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "width_columns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
             }
           },
           "required": [
@@ -579,6 +1418,113 @@
               },
               "minItems": 0,
               "maxItems": 64
+            },
+            "control_flow": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "block"
+              ]
+            },
+            "accessible_description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "label_reference_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "leading_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "trailing_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "width_columns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
             }
           },
           "required": [
@@ -630,6 +1576,113 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 1000
+            },
+            "control_flow": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "block"
+              ]
+            },
+            "accessible_description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "label_reference_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "leading_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "trailing_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "width_columns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
             }
           },
           "required": [
@@ -677,6 +1730,113 @@
             },
             "required_declaration": {
               "type": "boolean"
+            },
+            "control_flow": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "block"
+              ]
+            },
+            "accessible_description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "label_reference_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "leading_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "trailing_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "width_columns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
             }
           },
           "required": [
@@ -750,6 +1910,113 @@
               "enum": [
                 "coordinate_table"
               ]
+            },
+            "control_flow": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "block"
+              ]
+            },
+            "accessible_description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "label_reference_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "leading_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "trailing_content": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "sanitized_html",
+                      "text",
+                      "asset",
+                      "math"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  },
+                  "asset_version_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "accessible_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "key",
+                  "format",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 8,
+              "minItems": 1
+            },
+            "width_columns": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
             }
           },
           "required": [
@@ -808,6 +2075,8 @@
   ],
   "x-invariants": [
     "Keys never encode correctness.",
-    "Family-specific schema and cardinality are validated at publication and save."
+    "Family-specific schema and cardinality are validated at publication and save.",
+    "Leading and trailing content, control flow, width and accessible text are public presentation only and never infer a grading requirement.",
+    "An optional label_reference_key points to a public prompt block in the same version and must be validated for usability."
   ]
 }

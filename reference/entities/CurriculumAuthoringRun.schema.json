@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CurriculumAuthoringRun",
+  "description": "Idempotent staged agent curriculum workflow for a specific draft and exact accepted source versions.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Must resolve to an authorized Institution in the owning institution."
+    },
+    "target_course_draft_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact authorized draft.",
+      "x-entity-reference": "CourseDraft",
+      "x-reference-scope": "Must resolve to an authorized CourseDraft in the owning institution."
+    },
+    "expected_draft_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Draft compare-and-swap revision from approved plan."
+    },
+    "platform_job_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Coordinator lease and checkpoint job.",
+      "x-entity-reference": "PlatformJob",
+      "x-reference-scope": "Same institution, job_kind course_import and target type CurriculumAuthoringRun."
+    },
+    "requested_by_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Accountable authoring requester.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "agent_principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Scoped authoring service identity.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "source_extraction_run_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 20,
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Exact sealed source evidence versions.",
+      "x-entity-reference": "SourceExtractionRun",
+      "x-reference-scope": "Every source is sealed, authorized and belongs to same institution."
+    },
+    "request_fingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical authorized brief, exact extraction set, target and expected revision."
+    },
+    "brief_object_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Sealed purpose, teaching brief, allowed provider and privacy constraints.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Same institution and Platform evidence purpose. Input brief is exact and owned by target CourseDraft; an immutable scoped run copy may be linked once the run exists."
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "coverage_plan",
+        "course_plan",
+        "learning_blocks",
+        "assessment_candidates",
+        "verification",
+        "apply_plan",
+        "owner_apply"
+      ],
+      "default": "coverage_plan",
+      "description": "Current pipeline stage."
+    },
+    "stage_manifest_object_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Latest sealed candidate or apply checkpoint manifest.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Same institution. Platform purpose evidence and exact owner CurriculumAuthoringRun. Resolve actual object version and digest before use."
+    },
+    "stage_manifest_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact stage artifact digest."
+    },
+    "approved_plan_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact reviewed candidate selection and target draft fingerprint."
+    },
+    "approved_by_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Independent human apply approver.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "approved_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact review instant."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "generating",
+        "ready_for_review",
+        "changes_requested",
+        "approved",
+        "applying",
+        "applied",
+        "blocked",
+        "canceled"
+      ],
+      "default": "planned",
+      "description": "Authoring run lifecycle."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Expected run revision used by stage and approval commands."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "target_course_draft_id",
+    "expected_draft_revision",
+    "platform_job_id",
+    "requested_by_id",
+    "agent_principal_id",
+    "source_extraction_run_ids",
+    "request_fingerprint",
+    "brief_object_id",
+    "stage",
+    "state",
+    "revision",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "requested_by_id",
+      "target_course_draft_id",
+      "request_fingerprint"
+    ]
+  ],
+  "x-invariants": [
+    "Every selected source and owner effect rechecks current rights and scope.",
+    "Candidate and approved plan manifests are protected immutable StorageObjects.",
+    "The authoring run cannot publish courses or create offerings, attempts, learner evidence or official grades.",
+    "Apply must be selection-closed and bound to exact sealed inputs and draft revision."
+  ]
+}

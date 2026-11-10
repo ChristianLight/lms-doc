@@ -1170,3 +1170,141 @@ Covers `PrivacyCaseStep`, `RecordPrivacyCaseStep`, `CompletePrivacyRequest`.
   "final_request_state": "completed"
 }
 ```
+
+## PLAT-043 — An empty reference set has positive completeness evidence
+
+Covers `ContentReferenceSet`, `ContentReference`, `RefreshContentReferenceSet`, `ReadContentReferences`.
+
+### Given
+
+- A synthetic published text definition contains no reference-bearing nodes.
+- The source owner returns an exact digest and allows this actor to reconcile it.
+
+### When
+
+- Refresh the definition set and read the returned generation.
+
+### Then
+
+- A ready set records entry_count zero and the canonical empty-sequence digest.
+- Read returns zero entries from that generation. A nonexistent set never gives the same readiness guarantee.
+
+### Fixture values
+
+```json
+{
+  "source_kind": "ContentNodeVersion",
+  "context_key": "definition",
+  "expected_count": 0
+}
+```
+
+## PLAT-044 — Source edits and target retirement share a reference fence
+
+Covers `ContentReferenceSet`, `InvalidateContentReferenceSet`, `RefreshContentReferenceSet`.
+
+### Given
+
+- A source mutation introduces an asset reference while an asset purge requests a dependency census.
+
+### When
+
+- Serialize both commands through the same target retention fence and source invalidation transaction.
+
+### Then
+
+- If the reference wins, purge sees a current complete dependency or stale coverage and retains the asset.
+- If retirement wins, creation rejects the retired target and the source cannot publish.
+- A stale set never authorizes deletion.
+
+### Fixture values
+
+```json
+{
+  "orderings": [
+    "reference_first",
+    "retirement_first"
+  ],
+  "expected_missing_asset_publication": false
+}
+```
+
+## PLAT-045 — One reusable definition binds links separately in two releases
+
+Covers `ContentReferenceSet`, `ContentReference`, `RefreshContentReferenceSet`, `ReadContentReferences`.
+
+### Given
+
+- One definition contains a stable same-course placement selector.
+- Two courses adopt the definition and each has its own exact target placement.
+
+### When
+
+- Create a definition set and refresh each publication placement context.
+
+### Then
+
+- The definition retains the selector without inventing a global placement target.
+- Each binding pins its own course graph and exact source and target placement.
+- Changing one graph invalidates only applicable bindings. Cross-course target substitution is rejected.
+
+### Fixture values
+
+```json
+{
+  "source_contexts": 2,
+  "expected_distinct_bindings": 2
+}
+```
+
+## PLAT-046 — A relation row cannot impersonate another target family
+
+Covers `ContentReference`, `RefreshContentReferenceSet`.
+
+### Given
+
+- The relation is asset but the candidate row also includes a package target.
+
+### When
+
+- Validate the candidate and attempt owner reconciliation.
+
+### Then
+
+- The schema rejects the mixed row and reconciliation never marks a generation containing it ready.
+- Digest collision is checked against full semantic keys rather than merging identities.
+
+### Fixture values
+
+```json
+{
+  "relation": "asset",
+  "forbidden_extra_target": "package_version_id"
+}
+```
+
+## PLAT-047 — Asset access does not reveal protected feedback dependencies
+
+Covers `FindContentDependencies`, `ContentReferenceSet`, `ContentReference`.
+
+### Given
+
+- An authorized author may inspect a shared asset but cannot inspect an exam feedback rule that also uses it.
+
+### When
+
+- The author opens the asset dependency inspector.
+
+### Then
+
+- Only source relationships the author may know exist are returned, with no hidden-source count or cursor gap disclosure.
+- The filtered result never authorizes asset deletion; retirement sees the protected dependency through its separately authorized complete census.
+
+### Fixture values
+
+```json
+{
+  "visible_relations": 0,
+  "retention_dependency_exists": true
+}
+```

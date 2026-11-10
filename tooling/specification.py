@@ -45,7 +45,7 @@ def schema_for_entity(entity):
         properties[field['name']] = schema
         if field['required']:
             required.append(field['name'])
-    return {
+    result = {
         '$schema': SCHEMA_URI,
         'title': entity['name'],
         'description': entity['description'],
@@ -57,6 +57,11 @@ def schema_for_entity(entity):
         'x-unique-keys': entity['unique_keys'],
         'x-invariants': entity['invariants'],
     }
+    if entity.get('schema_rules'):
+        result['allOf'] = copy.deepcopy(entity['schema_rules'])
+    if entity.get('examples'):
+        result['examples'] = copy.deepcopy(entity['examples'])
+    return result
 
 
 def validate(catalogs):
@@ -133,6 +138,9 @@ def validate(catalogs):
                 errors.append(f'{name}: transition references absent command {command}')
         try:
             Draft202012Validator.check_schema(schema_for_entity(entity))
+            entity_validator = Draft202012Validator(schema_for_entity(entity))
+            for example in entity.get('examples', []):
+                entity_validator.validate(example)
         except Exception as exc:
             errors.append(f'{name}: generated entity schema failed {exc}')
     for domain, command in registries['commands'].values():

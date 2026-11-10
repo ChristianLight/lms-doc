@@ -384,3 +384,188 @@ Covers `ReserveHostedAssetVersion`, `ApproveHostedAssetVersion`, `AssetVersion`.
   "storage_mode": "externally_hosted"
 }
 ```
+
+## CUR-015 — Protected source intake remains distinct from learner PDF
+
+Covers `ReserveCurriculumSource`, `AuthorizeCurriculumSourceUsage`, `StartSourceExtraction`, `SourceExtractionRun`, `AssetVersion`.
+
+### Given
+
+- Scoped author uploads a 28000-byte PDF and Platform verifies a managed evidence-purpose StorageObject.
+
+### When
+
+- Request private extraction and adaptation, with no learner download or remote provider permission. Queue physical pages 0 and 1. Attempt to bind the original AssetVersion in learner delivery.
+
+### Then
+
+- Authorized extraction accepted. Learner placement validation rejects evidence-purpose asset. Distribution requires a separate content-purpose version and rights.
+
+### Fixture values
+
+```json
+{
+  "expected_bytes": 28000,
+  "page_indices": [
+    0,
+    1
+  ],
+  "storage_purpose": "evidence",
+  "approved_purposes": [
+    "private_extract",
+    "adapt"
+  ],
+  "learner_bind_allowed": false
+}
+```
+
+## CUR-016 — Rotated PDF page evidence is exact and repeatable
+
+Covers `CommitSourceExtractionPage`, `SealSourceExtraction`, `GetSourceExtractionSummary`, `ReadSourceRegion`, `SourceRegion`, `SourceExtractionRun`.
+
+### Given
+
+- One selected page with crop [10,20,210,120], user unit 1 and clockwise rotation 90 degrees.
+
+### When
+
+- Fenced page worker submits source box [30,50,70,70] twice with same digest. Independent reviewer accepts exact recognized region and seals. Staff read region then open authorized evidence.
+
+### Then
+
+- One accepted receipt and region set. Canonical upright bounds [30000,20000,50000,60000]. Safe summary excludes raw source. Unauthorized caller gets generic unavailable.
+
+### Fixture values
+
+```json
+{
+  "crop_pt": [
+    10,
+    20,
+    210,
+    120
+  ],
+  "rotation": 90,
+  "source_box_pt": [
+    30,
+    50,
+    70,
+    70
+  ],
+  "canonical_box_mpt": [
+    30000,
+    20000,
+    50000,
+    60000
+  ],
+  "unique_page_receipts": 1
+}
+```
+
+## CUR-017 — Sealed source correction preserves old lineage
+
+Covers `StartSourceExtraction`, `CommitSourceExtractionPage`, `SealSourceExtraction`, `SourceExtractionRun`, `SourceRegion`.
+
+### Given
+
+- Prior exact source evidence mistook − for a hyphen. A candidate points to prior sealed region.
+
+### When
+
+- Start correction run with exact predecessor and revised review manifest. Commit corrected page and seal.
+
+### Then
+
+- New run and corrected region have new identities. Earlier source reference and affected candidate remain auditable. Changed claim requires renewed review.
+
+### Fixture values
+
+```json
+{
+  "prior_method": "ocr",
+  "correction_method": "transcription",
+  "prior_link_retained": true
+}
+```
+
+## CUR-018 — Authoring workflow applies a reviewed complete subset
+
+Covers `StartCurriculumAuthoringRun`, `RecordCurriculumAuthoringStage`, `RecordSourceDerivationLinks`, `ReadAuthoringRun`, `ReviewCurriculumAuthoringRun`, `ApplyCurriculumAuthoringSelection`, `ReadSourceDerivationTrace`, `CurriculumAuthoringRun`, `SourceDerivationLink`.
+
+### Given
+
+- Exact draft revision 7 and approved source state. One exercise contains enough input, another is missing its rate.
+
+### When
+
+- Start run, seal staged candidates and exact protected lineage. Independent reviewer selects dependency-closed complete subset. Apply at expected revision 7 and reconcile owner receipts.
+
+### Then
+
+- The complete item and linked lesson become authorized draft changes. Missing-rate item remains blocked. Source answer metadata stays staff-only. No publication or offering activation.
+
+### Fixture values
+
+```json
+{
+  "initial_draft_revision": 7,
+  "available_inputs": [
+    "elapsed_time"
+  ],
+  "unresolved_input": "fill_rate",
+  "official_attempts_created": 0
+}
+```
+
+## CUR-019 — Stale stage and cancellation do not overwrite owner history
+
+Covers `RecordCurriculumAuthoringStage`, `ApplyCurriculumAuthoringSelection`, `CancelCurriculumAuthoringRun`, `CurriculumAuthoringRun`.
+
+### Given
+
+- Worker effect A committed a draft change, lost acknowledgement and lease expired. Later worker observes receipt.
+
+### When
+
+- Retry A with old fence. Cancel future effects. Read current owner receipt and run history.
+
+### Then
+
+- Old worker fails AUTHORING_FENCE_EXPIRED. Existing effect reconciles once. Run canceled, prior authorized draft output preserved.
+
+### Fixture values
+
+```json
+{
+  "effect_commit": "before_timeout",
+  "old_fence": 3,
+  "current_fence": 4,
+  "duplicate_owner_writes": 0
+}
+```
+
+## CUR-020 — Provider rights are checked before page dispatch
+
+Covers `AuthorizeCurriculumSourceUsage`, `StartSourceExtraction`, `ReadSourceRegion`, `SourceExtractionRun`.
+
+### Given
+
+- Human approved private_extract for selected region and no external_process. A worker requests hosted OCR.
+
+### When
+
+- Attempt hosted extraction then switch to approved local isolated profile.
+
+### Then
+
+- Hosted request denied before sending bytes. Local can proceed. A page with mixed answer and teaching regions is shown only to an authorized reviewer or redacted crop view.
+
+### Fixture values
+
+```json
+{
+  "requested_remote_ocr": true,
+  "bytes_disclosed_before_approval": 0,
+  "fallback": "local_isolated"
+}
+```

@@ -22,6 +22,8 @@ Default effective exam duration is an integer seconds value after policy resolut
 
 At a lock-protected operation, obtain one authoritative server UTC decision time. Do not use device time, ingress time or last seen clock as evidence of admission. A durable last-decision timestamp per sitting rejects backward adjustments for authorization. A clock outage pauses creation of new timed attempts. A significant clock anomaly opens a staff incident and preserves evidence. Record scheduled auto-finalization effective time at the deadline and actual processing time separately. A worker running later cannot admit additional answers.
 
+A scored submission delay is calculated from the candidate's last admitted scored submission in the same delivery. While it runs, a newly eligible draft can remain writable. A scored submit returns the next eligible instant until that instant is reached. A compatible retain-first-form policy captures the original realized display and scoring inputs in the new attempt while the new attempt keeps its own responses and receipt.
+
 ### Worked timings
 
 A delivery opens at 08:00, closes at 10:00 and permits 90 minutes. A student starting at 08:40 has an effective hard deadline of 10:00. A group gets 30% extra time. Its new duration is 117 minutes. A learner starting at 08:40 still gets 10:00 unless a close extension exists. A learner-specific close of 11:00 gives that learner 10:37. An autosave admitted at 10:36:59.900 is eligible. A save admitted at 10:37:00.000 is rejected. If the expiry worker wakes at 10:38, it seals the last acknowledged eligible revision and records both the scheduled and actual finalization times.

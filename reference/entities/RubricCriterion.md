@@ -145,10 +145,59 @@ Optional. Nullable.
 }
 ```
 
+### scoring_mode
+
+Explicit scoring mode. Without it, infer levels or free points from the existing payload.
+
+Optional. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "enum": [
+    "levels",
+    "free_points",
+    "feedback_only"
+  ]
+}
+```
+
+### feedback_mode
+
+Configured marker comment requirement for this criterion. Omission uses existing workflow.
+
+Optional. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "enum": [
+    "none",
+    "optional",
+    "required"
+  ]
+}
+```
+
+### label
+
+Optional reviewed display heading separate from the detailed criterion description.
+
+Optional. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 200
+}
+```
+
 ## Integrity
 
 - Exactly one of level mode and free-point step applies.
 - Score and level must agree within published bounds.
+- Feedback-only criterion has maximum zero, no free-point step and at most one explicit zero level. A required comment must be present when marked.
 
 ## Unique keys
 

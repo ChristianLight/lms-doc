@@ -22,6 +22,11 @@
       "maxLength": 2048,
       "description": "Registered and verified authoritative source."
     },
+    "source_profile": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.-]{0,55}/[0-9a-z][0-9a-z_.-]{0,31}$",
+      "description": "Registered source identity profile. Container variants of the same decoding profile do not create separate identities."
+    },
     "source_scope": {
       "type": "string",
       "minLength": 1,
@@ -40,6 +45,25 @@
       "maxLength": 512,
       "description": "Exact source identifier retained as an opaque value."
     },
+    "record_role": {
+      "type": "string",
+      "enum": [
+        "definition",
+        "placement",
+        "asset",
+        "policy",
+        "reference",
+        "package",
+        "document"
+      ],
+      "description": "Stable crosswalk role distinguishing definitions from their placement and reference occurrences."
+    },
+    "occurrence_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Stable occurrence key in the approved source scope, or explicit definition sentinel. A changed ordinal alone cannot retarget an existing mapping."
+    },
     "target_kind": {
       "type": "string",
       "minLength": 1,
@@ -51,28 +75,190 @@
       "format": "uuid",
       "description": "Canonical owner entity UUID, validated via owner adapter."
     },
-    "last_source_revision": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 128,
-      "description": "Most recent approved source version."
-    },
-    "last_source_fingerprint": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{64}$",
-      "description": "Canonical fingerprint of the most recent approved source input."
-    },
-    "last_target_fingerprint": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{64}$",
-      "description": "Fingerprint of the target at last successful promotion."
+    "baseline_tracks": {
+      "type": "object",
+      "properties": {
+        "published": {
+          "type": "object",
+          "properties": {
+            "source_revision": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "source_fingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "target_fingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "job_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "roster_snapshot_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "source_revision",
+            "source_fingerprint",
+            "target_fingerprint"
+          ],
+          "additionalProperties": false,
+          "oneOf": [
+            {
+              "required": [
+                "job_id"
+              ],
+              "not": {
+                "required": [
+                  "roster_snapshot_id"
+                ]
+              }
+            },
+            {
+              "required": [
+                "roster_snapshot_id"
+              ],
+              "not": {
+                "required": [
+                  "job_id"
+                ]
+              }
+            }
+          ]
+        },
+        "draft": {
+          "type": "object",
+          "properties": {
+            "source_revision": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "source_fingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "target_fingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "job_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "roster_snapshot_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "source_revision",
+            "source_fingerprint",
+            "target_fingerprint"
+          ],
+          "additionalProperties": false,
+          "oneOf": [
+            {
+              "required": [
+                "job_id"
+              ],
+              "not": {
+                "required": [
+                  "roster_snapshot_id"
+                ]
+              }
+            },
+            {
+              "required": [
+                "roster_snapshot_id"
+              ],
+              "not": {
+                "required": [
+                  "job_id"
+                ]
+              }
+            }
+          ]
+        },
+        "shared": {
+          "type": "object",
+          "properties": {
+            "source_revision": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "source_fingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "target_fingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "job_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "roster_snapshot_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "source_revision",
+            "source_fingerprint",
+            "target_fingerprint"
+          ],
+          "additionalProperties": false,
+          "oneOf": [
+            {
+              "required": [
+                "job_id"
+              ],
+              "not": {
+                "required": [
+                  "roster_snapshot_id"
+                ]
+              }
+            },
+            {
+              "required": [
+                "roster_snapshot_id"
+              ],
+              "not": {
+                "required": [
+                  "job_id"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "Separate last approved source and target pair by publication layer. Published and draft tracks for one definition keep the same canonical identity."
     },
     "last_job_id": {
       "type": "string",
       "format": "uuid",
-      "description": "Successful transfer receipt that established this baseline.",
+      "description": "Successful curriculum transfer receipt for the last accepted import baseline. Absent for provider roster mappings.",
       "x-entity-reference": "TransferJob",
       "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "last_roster_snapshot_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Applied roster snapshot receipt for the last accepted feed baseline. Absent for curriculum imports.",
+      "x-entity-reference": "RosterSnapshot",
+      "x-reference-scope": "Resolve same-institution authorized RosterSnapshot for the exact verified source authority."
     },
     "state": {
       "type": "string",
@@ -99,15 +285,15 @@
     "id",
     "institution_id",
     "source_namespace",
+    "source_profile",
     "source_scope",
     "object_kind",
     "external_key",
+    "record_role",
+    "occurrence_key",
     "target_kind",
     "target_id",
-    "last_source_revision",
-    "last_source_fingerprint",
-    "last_target_fingerprint",
-    "last_job_id",
+    "baseline_tracks",
     "state",
     "revision",
     "updated_at"
@@ -121,13 +307,19 @@
     [
       "institution_id",
       "source_namespace",
+      "source_profile",
       "source_scope",
       "object_kind",
-      "external_key"
+      "external_key",
+      "record_role",
+      "occurrence_key"
     ]
   ],
   "x-invariants": [
     "Crosswalk updates require source authority and matching target baseline.",
-    "Multiple aliases may identify one native object, but one source tuple cannot identify multiple current targets."
+    "Multiple aliases may identify one native object, but one source tuple cannot identify multiple current targets.",
+    "A re-import compares only the matching accepted layer baseline. Local divergence does not advance the baseline or erase published history.",
+    "A fork creates an independently scoped source branch or target lineage. It never silently retargets the existing active crosswalk.",
+    "Each committed baseline retains exactly one transfer or roster application receipt. A roster or operational baseline uses the shared track and cannot mutate curriculum publication tracks."
   ]
 }

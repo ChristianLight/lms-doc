@@ -218,6 +218,19 @@
             ],
             "additionalProperties": false
           }
+        },
+        "schema_rules": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Additional cross-field JSON Schema constraints applied with allOf."
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
         }
       },
       "required": [

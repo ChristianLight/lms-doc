@@ -153,6 +153,49 @@ Required. Null is rejected.
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 100
+              },
+              "display_content": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                    },
+                    "format": {
+                      "type": "string",
+                      "enum": [
+                        "sanitized_html",
+                        "text",
+                        "asset",
+                        "math"
+                      ]
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 50000
+                    },
+                    "asset_version_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "accessible_text": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "format",
+                    "value"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 16,
+                "minItems": 1
               }
             },
             "required": [
@@ -173,6 +216,113 @@ Required. Null is rejected.
         },
         "clear_allowed": {
           "type": "boolean"
+        },
+        "control_flow": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "block"
+          ]
+        },
+        "accessible_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "label_reference_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "leading_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "trailing_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "width_columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
         }
       },
       "required": [
@@ -212,6 +362,49 @@ Required. Null is rejected.
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 100
+              },
+              "display_content": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                    },
+                    "format": {
+                      "type": "string",
+                      "enum": [
+                        "sanitized_html",
+                        "text",
+                        "asset",
+                        "math"
+                      ]
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 50000
+                    },
+                    "asset_version_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "accessible_text": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "format",
+                    "value"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 16,
+                "minItems": 1
               }
             },
             "required": [
@@ -239,6 +432,113 @@ Required. Null is rejected.
             "list",
             "select"
           ]
+        },
+        "control_flow": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "block"
+          ]
+        },
+        "accessible_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "label_reference_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "leading_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "trailing_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "width_columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
         }
       },
       "required": [
@@ -269,6 +569,113 @@ Required. Null is rejected.
         },
         "multiline": {
           "type": "boolean"
+        },
+        "control_flow": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "block"
+          ]
+        },
+        "accessible_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "label_reference_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "leading_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "trailing_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "width_columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
         }
       },
       "required": [
@@ -308,8 +715,119 @@ Required. Null is rejected.
         "format": {
           "type": "string",
           "enum": [
-            "text"
+            "text",
+            "structured_rich_text"
           ]
+        },
+        "control_flow": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "block"
+          ]
+        },
+        "accessible_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "label_reference_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "leading_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "trailing_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "width_columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "allow_math": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -415,6 +933,113 @@ Required. Null is rejected.
           "enum": [
             "pair_selectors"
           ]
+        },
+        "control_flow": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "block"
+          ]
+        },
+        "accessible_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "label_reference_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "leading_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "trailing_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "width_columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
         }
       },
       "required": [
@@ -488,6 +1113,113 @@ Required. Null is rejected.
           "enum": [
             "ordered_list_controls"
           ]
+        },
+        "control_flow": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "block"
+          ]
+        },
+        "accessible_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "label_reference_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "leading_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "trailing_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "width_columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
         }
       },
       "required": [
@@ -585,6 +1317,113 @@ Required. Null is rejected.
           "enum": [
             "category_selectors"
           ]
+        },
+        "control_flow": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "block"
+          ]
+        },
+        "accessible_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "label_reference_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "leading_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "trailing_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "width_columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
         }
       },
       "required": [
@@ -644,6 +1483,113 @@ Required. Null is rejected.
           },
           "minItems": 0,
           "maxItems": 64
+        },
+        "control_flow": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "block"
+          ]
+        },
+        "accessible_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "label_reference_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "leading_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "trailing_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "width_columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
         }
       },
       "required": [
@@ -695,6 +1641,113 @@ Required. Null is rejected.
           "type": "string",
           "minLength": 1,
           "maxLength": 1000
+        },
+        "control_flow": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "block"
+          ]
+        },
+        "accessible_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "label_reference_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "leading_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "trailing_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "width_columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
         }
       },
       "required": [
@@ -742,6 +1795,113 @@ Required. Null is rejected.
         },
         "required_declaration": {
           "type": "boolean"
+        },
+        "control_flow": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "block"
+          ]
+        },
+        "accessible_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "label_reference_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "leading_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "trailing_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "width_columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
         }
       },
       "required": [
@@ -815,6 +1975,113 @@ Required. Null is rejected.
           "enum": [
             "coordinate_table"
           ]
+        },
+        "control_flow": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "block"
+          ]
+        },
+        "accessible_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "label_reference_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        "leading_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "trailing_content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "sanitized_html",
+                  "text",
+                  "asset",
+                  "math"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50000
+              },
+              "asset_version_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "accessible_text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "key",
+              "format",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "width_columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
         }
       },
       "required": [
@@ -851,6 +2118,8 @@ References [ItemStimulusVersion](ItemStimulusVersion.md). Optional approved shar
 
 - Keys never encode correctness.
 - Family-specific schema and cardinality are validated at publication and save.
+- Leading and trailing content, control flow, width and accessible text are public presentation only and never infer a grading requirement.
+- An optional label_reference_key points to a public prompt block in the same version and must be validated for usability.
 
 ## Unique keys
 

@@ -61,6 +61,21 @@ Required. Null is rejected.
 }
 ```
 
+### plan_manifest_id
+
+Protected immutable manifest reviewed by this approval. Must match the approved digest and exact plan revision.
+
+Required. Null is rejected.
+
+References [StorageObject](StorageObject.md). Exact clean StorageObject owned by this transfer plan and Institution.
+
+```json
+{
+  "type": "string",
+  "format": "uuid"
+}
+```
+
 ### reviewer_principal_id
 
 Authorized actor or service identity for the recorded operation.
@@ -89,7 +104,8 @@ Required. Null is rejected.
     "curriculum",
     "assessment",
     "privacy",
-    "publication"
+    "publication",
+    "export_projection"
   ]
 }
 ```
@@ -145,6 +161,7 @@ Required. Null is rejected.
 
 - Approvals cannot be edited or moved to a new plan revision.
 - Reviewer authority is revalidated before activation.
+- An export projection approval pins both the frozen selection and the exact capability and loss report digest. Required losses cannot be approved into a successful output.
 
 ## Unique keys
 

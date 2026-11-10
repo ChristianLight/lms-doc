@@ -7,16 +7,20 @@ A system declares each direction and version it implements. A declaration includ
 | Profile identifier | Ingress | Egress | Result |
 | --- | --- | --- | --- |
 | `lms.curriculum/1` | Required | Required | Editable curriculum graph with explicit version and identity scope |
-| `olx.course/1` | First-party migration adapter | Deferred | Editable drafts and separately registered packages |
-| `olx.library.legacy/1` | First-party migration adapter | Deferred | Editable Library, entries and versioned definitions |
-| `olx.library.archive/1` | First-party migration adapter | Deferred | Editable Library and separate published/draft snapshots |
-| `scorm/1.2` | Validation and playback | Profiled generator | A PackageVersion and assigned registration |
-| `scorm/2004.2`, `scorm/2004.3`, `scorm/2004.4` | Edition-specific validation and playback | Profiled generator | A PackageVersion with explicit CAM, RTE and sequencing scope |
+| `olx.course/1` | Planned migration adapter with separately verified ZIP and tar/gzip profiles | Deferred | Editable drafts and separately registered packages |
+| `olx.library.legacy/1` | Planned migration adapter | Deferred | Editable Library, entries and versioned definitions |
+| `olx.library.archive/1` | Planned migration adapter | Deferred | Editable Library and separate published/draft snapshots |
+| `scorm/1.2` | Edition-specific validation and playback | Profiled generator for an explicit receiving-player override | A PackageVersion and assigned registration |
+| `scorm/2004.2`, `scorm/2004.3`, `scorm/2004.4` | Edition-specific validation and playback | Separately verified generators. Fourth edition is the default delivery choice when enabled | A PackageVersion with explicit CAM, RTE and sequencing scope |
 | `qti/2.1`, `qti/3.0.1` | Optional version profiles | Optional version profiles | Editable item and assessment subset with fidelity report |
 | `common-cartridge/1.3` | Optional | Optional | Outline, content resources and scoped references |
 | `lti/1.3` | Tool callback and services | Launch and services | Access to registered external ActivityVersion |
 | `oneroster/1.2` | Configured source authority | Configured destination policy | Roster, resource or gradebook exchange |
 | `xapi/2.0`, `cmi5/quartz` | Optional record and launch bridges | Optional statement delivery | Scoped activity evidence in an LRS |
+
+Archive detection records the outer container separately from the decoded source profile. A recognized course ZIP is not a native archive, a library archive or a SCORM package simply because all four use ZIP. Inspect root signature, bounded layout and profile-specific metadata before classification. Report the exact decoded profile and candidate roots in a private inspection manifest. Explicit root selection, source authority and dependency closure are part of the frozen plan. Existing archive inspection fixtures do not establish an operational importer or generator.
+
+The delivery export action defaults to a verified SCORM 2004 fourth-edition profile. SCORM 1.2 is an explicit override for a tested destination. Keep the chosen exact format, edition and profile visible. Recognized inbound-only and unverified profiles cannot be selected for output. The native editable archive remains an independent export with a different fidelity and disclosure contract.
 
 Do not enable a legacy profile by recognizing a similar namespace. A manifest can parse as XML while violating a profile's schema or runtime contract. Store the detected signature and the verification result separately. Policy records a compatibility disposition of `strict`, `review_only`, or `unsupported`. Only strict and explicitly approved review-only imports can reach editable private staging. Playback always requires an approved package runtime profile.
 

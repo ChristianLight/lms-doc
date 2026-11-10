@@ -59,6 +59,10 @@
           "feedback_code": {
             "type": "string",
             "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "level_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
           }
         },
         "required": [
@@ -69,7 +73,7 @@
         "additionalProperties": false
       },
       "minItems": 0,
-      "maxItems": 64,
+      "maxItems": 128,
       "description": "Typed criterion marks, states and safe codes."
     },
     "comments": {
@@ -102,7 +106,7 @@
         "additionalProperties": false
       },
       "minItems": 0,
-      "maxItems": 64,
+      "maxItems": 128,
       "description": "Private and candidate-facing feedback."
     },
     "evidence_digest": {

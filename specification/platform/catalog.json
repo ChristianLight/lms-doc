@@ -9384,6 +9384,1156 @@
           ]
         }
       ]
+    },
+    {
+      "name": "ContentReferenceSet",
+      "description": "Complete, owner-fenced derived relationship coverage for one exact definition and optional publication placement context.",
+      "owner": "platform",
+      "identity": "id",
+      "fields": [
+        {
+          "name": "id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Platform-assigned application identity; remains stable while this logical reference set is refreshed."
+        },
+        {
+          "name": "institution_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Institution containing the source and its private relation index.",
+          "references": "Institution",
+          "reference_scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+        },
+        {
+          "name": "source_kind",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ContentNodeVersion",
+              "ActivityVersion",
+              "ItemVersion",
+              "ItemTranslation",
+              "ItemStimulusVersion",
+              "MarkingRuleVersion",
+              "RubricVersion",
+              "LearningRuleVersion",
+              "InteractionDefinition",
+              "ItemFeedbackRule"
+            ]
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Allowlisted source owner record kind; select a fixed resolver, never a client-provided SQL table."
+        },
+        {
+          "name": "source_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Exact source row or revision ID for source_kind. Verify through the registered typed resolver; content equality is not identity."
+        },
+        {
+          "name": "context_kind",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "definition",
+              "placement"
+            ]
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Definition extraction or binding of that definition in one exact course placement."
+        },
+        {
+          "name": "context_key",
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Non-null unique context: literal definition, or lower-case canonical UUID of source_placement_id. It is not an ordinal or URL."
+        },
+        {
+          "name": "course_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Required only for placement binding; exact frozen or staged target course graph.",
+          "references": "CourseVersion",
+          "reference_scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+        },
+        {
+          "name": "source_placement_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Required only for placement binding; its transitive dependency closure must pin the named source version.",
+          "references": "ContentPlacement",
+          "reference_scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+        },
+        {
+          "name": "definition_set_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Required only for placement binding; corresponding current definition set for exactly the same source owner and version.",
+          "references": "ContentReferenceSet",
+          "reference_scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+        },
+        {
+          "name": "definition_generation",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Definition generation used for this binding. A newer definition generation invalidates it."
+        },
+        {
+          "name": "source_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Canonical owner payload and reference-bearing metadata digest captured for this generation."
+        },
+        {
+          "name": "graph_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Required for placement binding; exact publication graph and stable placement-key mapping digest."
+        },
+        {
+          "name": "projection_profile",
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Versioned reference extraction rules and canonical key encoding profile."
+        },
+        {
+          "name": "generation",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Owner-fenced generation. Entries and completion receipt must agree with it."
+        },
+        {
+          "name": "revision",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Optimistic token for operational refresh and invalidation."
+        },
+        {
+          "name": "state",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "ready",
+              "stale",
+              "failed"
+            ]
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Ready means complete coverage including a validated zero-reference result; it does not grant reader authority."
+        },
+        {
+          "name": "entry_count",
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Exact active generation entry count; zero is meaningful only with ready state."
+        },
+        {
+          "name": "entries_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Canonical sorted semantic references digest, including the empty collection when appropriate."
+        },
+        {
+          "name": "validated_at",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Server time when captured source, graph and complete entry generation were checked."
+        },
+        {
+          "name": "last_error_code",
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Fixed non-content-bearing reconciliation code. No raw source text or locators."
+        }
+      ],
+      "unique_keys": [
+        [
+          "id"
+        ],
+        [
+          "institution_id",
+          "source_kind",
+          "source_version_id",
+          "context_key"
+        ]
+      ],
+      "indexes": [
+        {
+          "fields": [
+            "institution_id",
+            "state",
+            "validated_at"
+          ],
+          "purpose": "Find stale or incomplete sets without scanning private content."
+        },
+        {
+          "fields": [
+            "definition_set_id",
+            "definition_generation"
+          ],
+          "purpose": "Invalidate placement bindings when their definition projection changes."
+        },
+        {
+          "fields": [
+            "course_version_id",
+            "state"
+          ],
+          "purpose": "Check exact publication graph readiness."
+        }
+      ],
+      "invariants": [
+        "Resolve source_kind through a fixed owner registry and verify source_version_id, its institution and current owner digest. No index row authenticates or authorizes source access.",
+        "A definition context has no placement fields. A placement context has all placement fields, context_key equals the exact source placement UUID, and its dependency closure pins this exact source version.",
+        "Ready means every schema-declared reference is extracted, target checked and represented, including an exact empty set. Published placement sets contain no unresolved required target selectors.",
+        "A source or graph mutation must mark this set and affected bindings stale in the same authoritative transaction, or refresh them there. Independent remote transactions require a publication barrier and fail-closed destructive operations.",
+        "Do not infer global coverage from the existing rows. Before target deletion, the owner-defined census of all retained reference-bearing source versions must match ready sets or be replaced by an equivalent authoritative locked scan.",
+        "Complete generation replacement, row count, entries digest, source token check and ready transition commit atomically. A partial build never advances the ready receipt.",
+        "Reference creation and target deletion acquire the same target retention fence. The fence prevents a concurrent new reference from appearing after the deletion census.",
+        "Source retirement may remove the set only after authoritative source retention ends. Index rows are rebuildable and cannot remove historic source or target evidence.",
+        "A placement refresh verifies the corresponding definition set is ready with matching source digest and projection profile, and pins its generation under the same lock/recheck barrier. Source digest equality alone does not prove definition generation equality.",
+        "Definition sets contain placement_selector rows when a stable same-course link remains context-dependent. Exact target_placement_id rows belong only to a placement context; a required placement selector cannot survive as unresolved in that context.",
+        "The complete source census includes registered LearningRuleVersion selectors and InteractionDefinition configuration references as well as visible prose. Protected marking/feedback and teacher-only references remain under their source owner disclosure policy."
+      ],
+      "retention": "Retain while the exact source version or its publication binding remains retained. Rebuild on corruption; owner audit records retain refresh or invalidation decisions separately.",
+      "states": [
+        "pending",
+        "ready",
+        "stale",
+        "failed"
+      ],
+      "transitions": [
+        {
+          "from": "pending",
+          "to": "ready",
+          "command": "RefreshContentReferenceSet",
+          "guard": "Complete source and reference validation committed.",
+          "effects": [
+            "Increment revision and persist complete generation or stale marker with durable owner event; preserve authoritative source."
+          ]
+        },
+        {
+          "from": "ready",
+          "to": "stale",
+          "command": "InvalidateContentReferenceSet",
+          "guard": "Source or graph dependency changes under owner fence.",
+          "effects": [
+            "Increment revision and persist complete generation or stale marker with durable owner event; preserve authoritative source."
+          ]
+        },
+        {
+          "from": "stale",
+          "to": "ready",
+          "command": "RefreshContentReferenceSet",
+          "guard": "New captured generation fully reconciled.",
+          "effects": [
+            "Increment revision and persist complete generation or stale marker with durable owner event; preserve authoritative source."
+          ]
+        },
+        {
+          "from": "failed",
+          "to": "ready",
+          "command": "RefreshContentReferenceSet",
+          "guard": "Failure corrected and source digest still current.",
+          "effects": [
+            "Increment revision and persist complete generation or stale marker with durable owner event; preserve authoritative source."
+          ]
+        }
+      ],
+      "schema_rules": [
+        {
+          "if": {
+            "properties": {
+              "context_kind": {
+                "const": "definition"
+              }
+            },
+            "required": [
+              "context_kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "context_key": {
+                "const": "definition"
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "course_version_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "source_placement_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "definition_set_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "definition_generation"
+                  ]
+                },
+                {
+                  "required": [
+                    "graph_digest"
+                  ]
+                }
+              ]
+            }
+          },
+          "else": {
+            "required": [
+              "course_version_id",
+              "source_placement_id",
+              "definition_set_id",
+              "definition_generation",
+              "graph_digest"
+            ],
+            "properties": {
+              "context_key": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "ready"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "required": [
+              "entries_digest",
+              "validated_at"
+            ]
+          }
+        }
+      ],
+      "examples": [
+        {
+          "id": "20000000-0000-4000-8000-000000000001",
+          "institution_id": "20000000-0000-4000-8000-000000000002",
+          "source_kind": "ContentNodeVersion",
+          "source_version_id": "20000000-0000-4000-8000-000000000003",
+          "context_kind": "definition",
+          "context_key": "definition",
+          "source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+          "projection_profile": "reference-projection/1",
+          "generation": 1,
+          "revision": 1,
+          "state": "ready",
+          "entry_count": 0,
+          "entries_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "validated_at": "2030-01-01T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "ContentReference",
+      "description": "Typed, rebuildable relation extracted from one captured native definition or resolved publication use.",
+      "owner": "platform",
+      "identity": "id",
+      "fields": [
+        {
+          "name": "id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Derived row identity. Never use it as an authored link or student progress identifier."
+        },
+        {
+          "name": "set_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Exact parent set controlling institution, owner, context and visibility.",
+          "references": "ContentReferenceSet",
+          "reference_scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+        },
+        {
+          "name": "generation",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Parent generation this derived row belongs to."
+        },
+        {
+          "name": "reference_key",
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9._:/@-]+$"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Owner-local semantic key under the projection profile. Use an explicit typed local key where present; otherwise derive from locale, stable containing block or interaction key, relation role and canonical target plus anchor, with deterministic multiplicity suffix for identical edges. Array position or label alone is not identity."
+        },
+        {
+          "name": "reference_key_digest",
+          "schema": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "SHA-256 of exact UTF-8 semantic key under the declared profile; compare full keys on collision."
+        },
+        {
+          "name": "field_pointer",
+          "schema": {
+            "type": "string",
+            "maxLength": 2048,
+            "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "RFC6901 pointer locating the reference in captured normalized owner payload. Diagnostic location, never identity."
+        },
+        {
+          "name": "relation",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "asset",
+              "content_definition",
+              "activity_definition",
+              "assessment",
+              "package",
+              "external_resource",
+              "placement",
+              "placement_selector"
+            ]
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Typed relation discriminator; exactly its corresponding target field is populated."
+        },
+        {
+          "name": "required_for_publication",
+          "schema": {
+            "type": "boolean"
+          },
+          "required": true,
+          "nullable": false,
+          "description": "Source owner policy classification; not chosen by the projection caller."
+        },
+        {
+          "name": "anchor",
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Validated target-local fragment, retained independently of canonical target identity."
+        },
+        {
+          "name": "asset_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+          "references": "AssetVersion",
+          "reference_scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+        },
+        {
+          "name": "content_node_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+          "references": "ContentNodeVersion",
+          "reference_scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+        },
+        {
+          "name": "activity_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+          "references": "ActivityVersion",
+          "reference_scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+        },
+        {
+          "name": "assessment_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+          "references": "AssessmentVersion",
+          "reference_scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+        },
+        {
+          "name": "package_version_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+          "references": "PackageVersion",
+          "reference_scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+        },
+        {
+          "name": "external_resource_map_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+          "references": "ExternalResourceMap",
+          "reference_scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+        },
+        {
+          "name": "target_placement_id",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Exact authorized target version or placement; never substitute a mutable latest pointer.",
+          "references": "ContentPlacement",
+          "reference_scope": "Resolve the exact referenced record through its registered owner and prove the same institution and captured version context before write or use."
+        },
+        {
+          "name": "target_selector",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "placement_key": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "context": {
+                "const": "same_course_version"
+              }
+            },
+            "required": [
+              "placement_key",
+              "context"
+            ],
+            "additionalProperties": false
+          },
+          "required": false,
+          "nullable": false,
+          "description": "Deferred same-course stable placement selector in a definition set. It must be resolved in every required publication binding."
+        }
+      ],
+      "unique_keys": [
+        [
+          "id"
+        ],
+        [
+          "set_id",
+          "generation",
+          "reference_key_digest"
+        ]
+      ],
+      "indexes": [
+        {
+          "fields": [
+            "set_id",
+            "generation"
+          ],
+          "purpose": "Read or replace one complete generation in semantic-key order."
+        },
+        {
+          "fields": [
+            "asset_version_id",
+            "set_id"
+          ],
+          "purpose": "Find exact reverse dependencies on AssetVersion."
+        },
+        {
+          "fields": [
+            "content_node_version_id",
+            "set_id"
+          ],
+          "purpose": "Find exact reverse dependencies on ContentNodeVersion."
+        },
+        {
+          "fields": [
+            "activity_version_id",
+            "set_id"
+          ],
+          "purpose": "Find exact reverse dependencies on ActivityVersion."
+        },
+        {
+          "fields": [
+            "assessment_version_id",
+            "set_id"
+          ],
+          "purpose": "Find exact reverse dependencies on AssessmentVersion."
+        },
+        {
+          "fields": [
+            "package_version_id",
+            "set_id"
+          ],
+          "purpose": "Find exact reverse dependencies on PackageVersion."
+        },
+        {
+          "fields": [
+            "external_resource_map_id",
+            "set_id"
+          ],
+          "purpose": "Find exact reverse dependencies on ExternalResourceMap."
+        },
+        {
+          "fields": [
+            "target_placement_id",
+            "set_id"
+          ],
+          "purpose": "Find exact reverse dependencies on ContentPlacement."
+        }
+      ],
+      "invariants": [
+        "Exactly the target field selected by relation exists; absent alternatives are omitted rather than null.",
+        "Generation equals the ready parent set generation whenever this row is used as complete dependency evidence.",
+        "Derive semantic key and field pointer from schema-declared owner content. Reject duplicate keys, hash collision, unresolved typed target or source outside the institution.",
+        "Placement selectors are allowed only in definition sets. Placement sets resolve them to exact target placement in the same CourseVersion, with the original anchor. Cross-course links require a separately implemented capability and cannot be silently promoted.",
+        "Non-placement exact targets are reauthorized by their owner for every user read and export. Presence in a source or reverse relation list grants no access.",
+        "A target asset withdrawal can disable delivery while retention still protects the historical bytes. Dependency existence is not a license or a current publication permission.",
+        "Raw URLs, auth tokens, answer text and copied learner data are excluded. External targets use an approved ExternalResourceMap identity.",
+        "Native owner payloads remain the editing and rendering authority. Projection entries are regenerated by registered owner readers, not manually edited.",
+        "Anchor is stored only in the top-level anchor field. The target selector contains no second anchor location.",
+        "Direct approved HTTPS literals remain validated editorial link values. Only provider-managed dependencies with an actual ExternalResourceMap receive external_resource rows; never create a provider mapping solely to index an ordinary website link."
+      ],
+      "retention": "Retain the active generation while its source set is retained. Obsolete rebuild generations may be deleted after committed replacement; preserve audit evidence outside this projection.",
+      "states": [],
+      "transitions": [],
+      "schema_rules": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "relation": {
+                  "const": "asset"
+                }
+              },
+              "required": [
+                "asset_version_id"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "content_node_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "activity_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "assessment_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "package_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "external_resource_map_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_placement_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_selector"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "properties": {
+                "relation": {
+                  "const": "content_definition"
+                }
+              },
+              "required": [
+                "content_node_version_id"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "asset_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "activity_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "assessment_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "package_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "external_resource_map_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_placement_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_selector"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "properties": {
+                "relation": {
+                  "const": "activity_definition"
+                }
+              },
+              "required": [
+                "activity_version_id"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "asset_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "content_node_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "assessment_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "package_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "external_resource_map_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_placement_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_selector"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "properties": {
+                "relation": {
+                  "const": "assessment"
+                }
+              },
+              "required": [
+                "assessment_version_id"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "asset_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "content_node_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "activity_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "package_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "external_resource_map_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_placement_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_selector"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "properties": {
+                "relation": {
+                  "const": "package"
+                }
+              },
+              "required": [
+                "package_version_id"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "asset_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "content_node_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "activity_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "assessment_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "external_resource_map_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_placement_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_selector"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "properties": {
+                "relation": {
+                  "const": "external_resource"
+                }
+              },
+              "required": [
+                "external_resource_map_id"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "asset_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "content_node_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "activity_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "assessment_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "package_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_placement_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_selector"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "properties": {
+                "relation": {
+                  "const": "placement"
+                }
+              },
+              "required": [
+                "target_placement_id"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "asset_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "content_node_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "activity_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "assessment_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "package_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "external_resource_map_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_selector"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "properties": {
+                "relation": {
+                  "const": "placement_selector"
+                }
+              },
+              "required": [
+                "target_selector"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "asset_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "content_node_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "activity_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "assessment_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "package_version_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "external_resource_map_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "target_placement_id"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "examples": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "reference_key": "en/block-a/illustration",
+          "reference_key_digest": "6a0d61bba4d378aa3cea2fdd586be1990adf342fe15d4358d7ffe77aabcdeb26",
+          "field_pointer": "/blocks/0/asset",
+          "relation": "asset",
+          "required_for_publication": true,
+          "asset_version_id": "20000000-0000-4000-8000-000000000005"
+        }
+      ]
     }
   ],
   "commands": [
@@ -19250,6 +20400,614 @@
       "events": [
         "PrivacyRequestChanged"
       ]
+    },
+    {
+      "name": "RefreshContentReferenceSet",
+      "method": "POST",
+      "path": "/v1/platform/content-reference-sets/refresh",
+      "description": "Derive and atomically replace a complete relation generation from authorized owner content; caller cannot submit arbitrary target rows.",
+      "permission": "platform.content.references.refresh",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "institution_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source_kind": {
+            "type": "string",
+            "enum": [
+              "ContentNodeVersion",
+              "ActivityVersion",
+              "ItemVersion",
+              "ItemTranslation",
+              "ItemStimulusVersion",
+              "MarkingRuleVersion",
+              "RubricVersion",
+              "LearningRuleVersion",
+              "InteractionDefinition",
+              "ItemFeedbackRule"
+            ]
+          },
+          "source_version_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "context_kind": {
+            "type": "string",
+            "enum": [
+              "definition",
+              "placement"
+            ]
+          },
+          "context_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48
+          },
+          "expected_source_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "expected_graph_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "source_placement_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "course_version_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expected_set_revision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "institution_id",
+          "source_kind",
+          "source_version_id",
+          "context_kind",
+          "context_key",
+          "expected_source_digest",
+          "expected_set_revision"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "context_kind": {
+                  "const": "placement"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "expected_graph_digest",
+                "source_placement_id",
+                "course_version_id"
+              ]
+            },
+            "else": {
+              "properties": {
+                "context_key": {
+                  "const": "definition"
+                }
+              },
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "expected_graph_digest"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "source_placement_id"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "course_version_id"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "set_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "generation": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "state": {
+            "const": "ready"
+          },
+          "entry_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "entries_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "required": [
+          "set_id",
+          "generation",
+          "revision",
+          "state",
+          "entry_count",
+          "entries_digest"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "required",
+      "concurrency": "Authorize the source through its exact owner before receipt replay. Compare owner and graph digests under the shared retention fence; expected_set_revision zero permits only absent-set create. Read pagination pins generation.",
+      "preconditions": [
+        "Caller is a registered owner service or authorized reconciliation worker with both platform capability and the original source owner permission.",
+        "The source resolver proves institution, exact version, information class and publication context."
+      ],
+      "transaction": [
+        "Resolve registered source reader and current typed payload optimistically. Discover target retention fences and source/graph rows, acquire the complete set in the shared deterministic lock order, then re-read and revalidate. If the required lock set changed, abort and retry from discovery rather than acquiring out of order.",
+        "Extract all declared references, reject duplicate semantic keys, and validate XOR targets. Resolve same-course selectors for placement context.",
+        "For placement binding, lock/recheck the ready definition set, its generation and projection profile. Require matching source digest and derive the binding from that exact generation. Recheck before commit.",
+        "Recheck source/graph digests and expected set revision. Store the complete generation, row count and canonical entries digest together with ready set state and outbox.",
+        "For zero outgoing references write a ready set with entry_count zero and digest of the canonical empty sequence. No row absence is interpreted as completeness."
+      ],
+      "errors": [
+        {
+          "status": 409,
+          "code": "REFERENCE_SOURCE_CHANGED",
+          "condition": "Source owner, graph, parent definition generation or set revision changed.",
+          "recovery": "Read current owner state and reconcile again; keep the old index untrusted for deletion."
+        },
+        {
+          "status": 422,
+          "code": "REFERENCE_TARGET_INVALID",
+          "condition": "A declared reference has no authorized exact target or an unsupported selector.",
+          "recovery": "Correct the source or recover the dependency through its owner."
+        },
+        {
+          "status": 422,
+          "code": "REFERENCE_PROFILE_LIMIT",
+          "condition": "A source exceeds the bounded extraction profile.",
+          "recovery": "Split source at a reviewed semantic boundary or approve a separately tested profile; never silently truncate."
+        }
+      ],
+      "events": [
+        "ContentReferenceSetChanged"
+      ],
+      "request_examples": [
+        {
+          "institution_id": "20000000-0000-4000-8000-000000000002",
+          "source_kind": "ContentNodeVersion",
+          "source_version_id": "20000000-0000-4000-8000-000000000003",
+          "context_kind": "definition",
+          "context_key": "definition",
+          "expected_source_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+          "expected_set_revision": 0
+        }
+      ],
+      "response_examples": [
+        {
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "revision": 1,
+          "state": "ready",
+          "entry_count": 0,
+          "entries_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ]
+    },
+    {
+      "name": "InvalidateContentReferenceSet",
+      "method": "POST",
+      "path": "/v1/platform/content-reference-sets/{set_id}/invalidate",
+      "description": "Fence derived coverage before changing or retiring a reference-bearing source or graph.",
+      "permission": "platform.content.references.refresh",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "source_changed",
+              "graph_changed",
+              "definition_refreshed",
+              "projection_upgrade",
+              "integrity_failure"
+            ]
+          }
+        },
+        "required": [
+          "expected_revision",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "set_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "state": {
+            "const": "stale"
+          }
+        },
+        "required": [
+          "set_id",
+          "revision",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "required",
+      "concurrency": "Authorize the source through its exact owner before receipt replay. Compare owner and graph digests under the shared retention fence; expected_set_revision zero permits only absent-set create. Read pagination pins generation.",
+      "preconditions": [
+        "Caller is a registered owner service or authorized reconciliation worker with both platform capability and the original source owner permission.",
+        "The source resolver proves institution, exact version, information class and publication context."
+      ],
+      "transaction": [
+        "Require source-owner invocation within the authoritative mutation transaction, or an authorized repair of existing corruption.",
+        "Mark the named set and dependent placement bindings stale; increment revisions and prevent a concurrent ready refresh based on old tokens.",
+        "Commit invalidation and source change together in the local deployment. A distributed implementation must hold publication and destructive operations until equivalent barriers are proven."
+      ],
+      "errors": [
+        {
+          "status": 409,
+          "code": "REFERENCE_SET_CHANGED",
+          "condition": "The expected set revision is stale.",
+          "recovery": "Reload and repeat the owner mutation or reconciliation under current fences."
+        }
+      ],
+      "events": [
+        "ContentReferenceSetChanged"
+      ],
+      "request_examples": [
+        {
+          "expected_revision": 1,
+          "reason": "source_changed"
+        }
+      ],
+      "response_examples": [
+        {
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "revision": 2,
+          "state": "stale"
+        }
+      ]
+    },
+    {
+      "name": "ReadContentReferences",
+      "method": "GET",
+      "path": "/v1/platform/content-reference-sets/{set_id}/entries",
+      "description": "Read authorized relation diagnostics for one pinned complete generation.",
+      "permission": "platform.content.references.read",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "generation"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "set_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "generation": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "entries": {
+            "type": "array",
+            "maxItems": 200,
+            "items": {
+              "type": "object",
+              "properties": {
+                "reference_key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "relation": {
+                  "type": "string",
+                  "enum": [
+                    "asset",
+                    "content_definition",
+                    "activity_definition",
+                    "assessment",
+                    "package",
+                    "external_resource",
+                    "placement",
+                    "placement_selector"
+                  ]
+                },
+                "field_pointer": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "target_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "resolved": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "reference_key",
+                "relation",
+                "field_pointer",
+                "resolved"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "next_cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "required": [
+          "set_id",
+          "generation",
+          "entries"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "none",
+      "concurrency": "Authorize the source through its exact owner before receipt replay. Compare owner and graph digests under the shared retention fence; expected_set_revision zero permits only absent-set create. Read pagination pins generation.",
+      "preconditions": [
+        "Caller may be an authorized human or service with platform diagnostics capability and underlying exact source permission; service-only refresh authority is not required for this read.",
+        "The source resolver proves institution, exact version, information class and publication context."
+      ],
+      "transaction": [
+        "Reauthorize exact source and each disclosed reference. Suppress rows whose existence is protected; provide unavailable only where the actor may know a reference exists. Raw total counts, cursor offsets and target metadata must not disclose suppressed relationships.",
+        "Require requested generation to remain ready and current. Order entries by reference key with an opaque scope-bound cursor.",
+        "Return source-local diagnostic semantic reference keys only, without copied prose, answer keys, raw import identifiers, credential-bearing URLs or learner data."
+      ],
+      "errors": [
+        {
+          "status": 409,
+          "code": "REFERENCE_INDEX_STALE",
+          "condition": "The requested generation is stale, incomplete or replaced.",
+          "recovery": "Reconcile through the authorized owner before relying on diagnostics."
+        }
+      ],
+      "events": [],
+      "request_examples": [
+        {
+          "generation": 1,
+          "limit": 50
+        }
+      ],
+      "response_examples": [
+        {
+          "set_id": "20000000-0000-4000-8000-000000000001",
+          "generation": 1,
+          "entries": []
+        }
+      ]
+    },
+    {
+      "name": "FindContentDependencies",
+      "method": "GET",
+      "path": "/v1/platform/content-references/targets",
+      "description": "Find authorized retained-source dependencies for one exact typed target; filtered diagnostics never establish permission to delete.",
+      "permission": "platform.content.references.read",
+      "request_schema": {
+        "type": "object",
+        "properties": {
+          "institution_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "target_kind": {
+            "type": "string",
+            "enum": [
+              "AssetVersion",
+              "ContentNodeVersion",
+              "ActivityVersion",
+              "AssessmentVersion",
+              "PackageVersion",
+              "ExternalResourceMap",
+              "ContentPlacement"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "institution_id",
+          "target_kind",
+          "target_id"
+        ],
+        "additionalProperties": false
+      },
+      "response_schema": {
+        "type": "object",
+        "properties": {
+          "dependencies": {
+            "type": "array",
+            "maxItems": 200,
+            "items": {
+              "type": "object",
+              "properties": {
+                "set_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "source_kind": {
+                  "type": "string",
+                  "enum": [
+                    "ContentNodeVersion",
+                    "ActivityVersion",
+                    "ItemVersion",
+                    "ItemTranslation",
+                    "ItemStimulusVersion",
+                    "MarkingRuleVersion",
+                    "RubricVersion",
+                    "LearningRuleVersion",
+                    "InteractionDefinition",
+                    "ItemFeedbackRule"
+                  ]
+                },
+                "source_version_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "context_key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 48
+                },
+                "generation": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "ready",
+                    "stale",
+                    "pending",
+                    "failed"
+                  ]
+                }
+              },
+              "required": [
+                "set_id",
+                "source_kind",
+                "source_version_id",
+                "context_key",
+                "generation",
+                "state"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "next_cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "required": [
+          "dependencies"
+        ],
+        "additionalProperties": false
+      },
+      "success_status": 200,
+      "idempotency": "none",
+      "concurrency": "Authorize the source through its exact owner before receipt replay. Compare owner and graph digests under the shared retention fence; expected_set_revision zero permits only absent-set create. Read pagination pins generation.",
+      "preconditions": [
+        "Authorize target existence through its registered owner within the institution.",
+        "Authorize each source and information class before returning its relationship; target access alone grants no source visibility."
+      ],
+      "transaction": [
+        "Dispatch target_kind to a fixed typed target column and scope the reverse query by institution before cursor pagination.",
+        "Return only relationships the actor may know exist; suppress protected source metadata and filter before counts or pagination.",
+        "After field-level authorization, deduplicate by exact set ID and generation. Order by source_kind, source_version_id, context_key, set ID and generation with an opaque target-bound generation cursor; a changed selected generation requires restart. Do not page raw edges before this grouping.",
+        "Mark stale source sets as diagnostic only. Never emit safe-to-delete, completeness or total retained-source counts from this filtered endpoint. Target retirement runs its independent privileged census and retention fence."
+      ],
+      "errors": [
+        {
+          "status": 404,
+          "code": "REFERENCE_TARGET_UNAVAILABLE",
+          "condition": "Target is missing, retired from this operation or hidden from the actor.",
+          "recovery": "Use an authorized target context; do not probe unrelated identifiers."
+        },
+        {
+          "status": 409,
+          "code": "REFERENCE_CURSOR_CHANGED",
+          "condition": "Target scope or selected set generations changed during pagination.",
+          "recovery": "Restart diagnostic pagination with the same authorized target."
+        }
+      ],
+      "events": [],
+      "request_examples": [
+        {
+          "institution_id": "20000000-0000-4000-8000-000000000002",
+          "target_kind": "AssetVersion",
+          "target_id": "20000000-0000-4000-8000-000000000005",
+          "limit": 50
+        }
+      ],
+      "response_examples": [
+        {
+          "dependencies": []
+        }
+      ]
     }
   ],
   "events": [
@@ -19780,6 +21538,55 @@
       "ordering": "By aggregate ID, version and event ordinal.",
       "deduplication": "Stable OutboxEvent ID. Consumers deduplicate using source and message ID.",
       "privacy": "Only institution, object IDs, versions and classified states. Fetch additional authorized projections through owner."
+    },
+    {
+      "name": "ContentReferenceSetChanged",
+      "version": 1,
+      "description": "Derived coverage was completed or invalidated for one owner snapshot and context.",
+      "producer": "platform",
+      "payload_schema": {
+        "type": "object",
+        "properties": {
+          "institution_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "set_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "generation": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "ready",
+              "stale",
+              "failed"
+            ]
+          }
+        },
+        "required": [
+          "institution_id",
+          "set_id",
+          "generation",
+          "revision",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "ordering": "By set ID and monotonic revision.",
+      "deduplication": "Canonical OutboxEvent ID; consumers additionally reject older set revisions.",
+      "privacy": "No source text, answer data, external locator or target list. Reauthorize before fetching source diagnostics."
     }
   ],
   "permissions": [
@@ -20315,6 +22122,39 @@
       ],
       "constraints": [
         "Require independent review and prevent silent deadline changes."
+      ]
+    },
+    {
+      "key": "platform.content.references.refresh",
+      "description": "Invoke trusted owner-driven relation reconciliation or invalidation.",
+      "scopes": [
+        "Institution",
+        "ContentReferenceSet"
+      ],
+      "default_roles": [
+        "integration",
+        "platform_operator"
+      ],
+      "constraints": [
+        "Require registered owner service or explicit scoped repair capability and underlying source authority. Operational administrator role alone does not expose protected educational content.",
+        "Caller cannot supply or overwrite derived target rows. A source mutation invokes invalidation under its original actor context."
+      ]
+    },
+    {
+      "key": "platform.content.references.read",
+      "description": "Inspect exact-generation relation diagnostics for a source the actor may inspect.",
+      "scopes": [
+        "Institution",
+        "ContentReferenceSet"
+      ],
+      "default_roles": [
+        "curriculum_author",
+        "examiner",
+        "support"
+      ],
+      "constraints": [
+        "Require the same source visibility as the original content and separate target checks.",
+        "Do not expose protected answer relationships, draft titles or cross-institution existence via reverse lookup."
       ]
     }
   ],
@@ -21384,6 +23224,130 @@
         "artifact_person_count": 1,
         "deleted_records": 0,
         "final_request_state": "completed"
+      }
+    },
+    {
+      "id": "PLAT-043",
+      "title": "An empty reference set has positive completeness evidence",
+      "covers": [
+        "ContentReferenceSet",
+        "ContentReference",
+        "RefreshContentReferenceSet",
+        "ReadContentReferences"
+      ],
+      "given": [
+        "A synthetic published text definition contains no reference-bearing nodes.",
+        "The source owner returns an exact digest and allows this actor to reconcile it."
+      ],
+      "when": [
+        "Refresh the definition set and read the returned generation."
+      ],
+      "then": [
+        "A ready set records entry_count zero and the canonical empty-sequence digest.",
+        "Read returns zero entries from that generation. A nonexistent set never gives the same readiness guarantee."
+      ],
+      "fixtures": {
+        "source_kind": "ContentNodeVersion",
+        "context_key": "definition",
+        "expected_count": 0
+      }
+    },
+    {
+      "id": "PLAT-044",
+      "title": "Source edits and target retirement share a reference fence",
+      "covers": [
+        "ContentReferenceSet",
+        "InvalidateContentReferenceSet",
+        "RefreshContentReferenceSet"
+      ],
+      "given": [
+        "A source mutation introduces an asset reference while an asset purge requests a dependency census."
+      ],
+      "when": [
+        "Serialize both commands through the same target retention fence and source invalidation transaction."
+      ],
+      "then": [
+        "If the reference wins, purge sees a current complete dependency or stale coverage and retains the asset.",
+        "If retirement wins, creation rejects the retired target and the source cannot publish.",
+        "A stale set never authorizes deletion."
+      ],
+      "fixtures": {
+        "orderings": [
+          "reference_first",
+          "retirement_first"
+        ],
+        "expected_missing_asset_publication": false
+      }
+    },
+    {
+      "id": "PLAT-045",
+      "title": "One reusable definition binds links separately in two releases",
+      "covers": [
+        "ContentReferenceSet",
+        "ContentReference",
+        "RefreshContentReferenceSet",
+        "ReadContentReferences"
+      ],
+      "given": [
+        "One definition contains a stable same-course placement selector.",
+        "Two courses adopt the definition and each has its own exact target placement."
+      ],
+      "when": [
+        "Create a definition set and refresh each publication placement context."
+      ],
+      "then": [
+        "The definition retains the selector without inventing a global placement target.",
+        "Each binding pins its own course graph and exact source and target placement.",
+        "Changing one graph invalidates only applicable bindings. Cross-course target substitution is rejected."
+      ],
+      "fixtures": {
+        "source_contexts": 2,
+        "expected_distinct_bindings": 2
+      }
+    },
+    {
+      "id": "PLAT-046",
+      "title": "A relation row cannot impersonate another target family",
+      "covers": [
+        "ContentReference",
+        "RefreshContentReferenceSet"
+      ],
+      "given": [
+        "The relation is asset but the candidate row also includes a package target."
+      ],
+      "when": [
+        "Validate the candidate and attempt owner reconciliation."
+      ],
+      "then": [
+        "The schema rejects the mixed row and reconciliation never marks a generation containing it ready.",
+        "Digest collision is checked against full semantic keys rather than merging identities."
+      ],
+      "fixtures": {
+        "relation": "asset",
+        "forbidden_extra_target": "package_version_id"
+      }
+    },
+    {
+      "id": "PLAT-047",
+      "title": "Asset access does not reveal protected feedback dependencies",
+      "covers": [
+        "FindContentDependencies",
+        "ContentReferenceSet",
+        "ContentReference"
+      ],
+      "given": [
+        "An authorized author may inspect a shared asset but cannot inspect an exam feedback rule that also uses it."
+      ],
+      "when": [
+        "The author opens the asset dependency inspector."
+      ],
+      "then": [
+        "Only source relationships the author may know exist are returned, with no hidden-source count or cursor gap disclosure.",
+        "The filtered result never authorizes asset deletion; retirement sees the protected dependency through its separately authorized complete census."
+      ],
+      "fixtures": {
+        "visible_relations": 0,
+        "retention_dependency_exists": true
       }
     }
   ]

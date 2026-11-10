@@ -70,6 +70,10 @@
       "type": "string",
       "format": "date-time",
       "description": "Effective approval instant."
+    },
+    "bypassed_required_self_review": {
+      "type": "boolean",
+      "description": "Recorded authorized exception allowing staff decision before a required self review. Omission means no exception."
     }
   },
   "required": [

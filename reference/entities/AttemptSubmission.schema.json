@@ -56,7 +56,7 @@
         "additionalProperties": false
       },
       "minItems": 0,
-      "maxItems": 16000,
+      "maxItems": 32000,
       "description": "Ordered accepted revision references and explicit blank states."
     },
     "manifest_digest": {
@@ -120,6 +120,7 @@
   "x-invariants": [
     "One authoritative submission per attempt.",
     "Manifest and referenced versions are immutable.",
-    "Processed time is not before effective time."
+    "Processed time is not before effective time.",
+    "A complete form contains at most 32,000 interaction entries. Enforce cumulative response, manifest and protected attachment byte budgets before sealing."
   ]
 }

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradePolicyPublished",
+  "description": "Approved grade policy is frozen and eligible for adoption.",
+  "type": "object",
+  "properties": {
+    "policy_version_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "structure_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "policy_version_id",
+    "offering_id",
+    "structure_digest"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per offering policy revision.",
+  "x-deduplication": "policy_version_id.",
+  "x-privacy": "Staff-only configuration metadata."
+}

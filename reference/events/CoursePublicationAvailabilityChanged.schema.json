@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CoursePublicationAvailabilityChanged",
+  "description": "Published course version availability changed without modifying content.",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "course_version_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "manifest_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "archived",
+        "withdrawn"
+      ]
+    }
+  },
+  "required": [
+    "course_id",
+    "course_version_id",
+    "manifest_digest",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "curriculum",
+  "x-ordering": "Causal by exact course version.",
+  "x-deduplication": "Course version, state and availability transition.",
+  "x-privacy": "No learner information."
+}

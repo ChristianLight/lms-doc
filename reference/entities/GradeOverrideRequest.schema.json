@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeOverrideRequest",
+  "description": "Scoped proposal to override computed result or academic disposition.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique GradeOverrideRequest identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering within the same institution.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering within the same institution."
+    },
+    "grade_result_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Affected grade result in same offering.",
+      "x-entity-reference": "GradeResult",
+      "x-reference-scope": "Affected grade result in same offering."
+    },
+    "base_revision_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact current computation anchoring the request.",
+      "x-entity-reference": "GradeResultRevision",
+      "x-reference-scope": "Exact current computation anchoring the request."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "under_review",
+        "approved",
+        "rejected",
+        "stale",
+        "withdrawn"
+      ],
+      "default": "requested",
+      "description": "Approval lifecycle."
+    },
+    "override_kind": {
+      "type": "string",
+      "enum": [
+        "numeric",
+        "outcome",
+        "incomplete",
+        "withdrawal",
+        "gate_exception"
+      ],
+      "description": "Requested exceptional interpretation."
+    },
+    "requested_ratio": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "numerator": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19727})$"
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19727}$"
+            }
+          },
+          "required": [
+            "numerator",
+            "denominator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Proposed exact ratio when numeric."
+    },
+    "requested_outcome": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "pass",
+            "fail",
+            "incomplete",
+            "withdrawn",
+            "exempt"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Proposed disposition or pass/fail when applicable."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "description": "Restricted staff rationale."
+    },
+    "learner_explanation": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved learner-visible explanation."
+    },
+    "effective_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Proposed academic effective date."
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional expiry allowed for provisional override."
+    },
+    "base_fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Material input fingerprint approved by requester."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "offering_id",
+    "grade_result_id",
+    "base_revision_id",
+    "state",
+    "override_kind",
+    "requested_ratio",
+    "requested_outcome",
+    "reason",
+    "learner_explanation",
+    "effective_at",
+    "expires_at",
+    "base_fingerprint",
+    "actor_id",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Numeric and outcome fields follow override kind.",
+    "Official approval needs distinct reviewer and unchanged inputs."
+  ]
+}

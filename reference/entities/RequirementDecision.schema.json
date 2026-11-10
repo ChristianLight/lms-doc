@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RequirementDecision",
+  "description": "Authorized waiver or substitution scoped to exact programme requirement.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique RequirementDecision identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Educational identity within the same institution.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Educational identity within the same institution."
+    },
+    "program_enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Learner programme context.",
+      "x-entity-reference": "ProgramEnrollment",
+      "x-reference-scope": "Learner programme context."
+    },
+    "requirement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Rule within assigned requirement version.",
+      "x-entity-reference": "ProgramRequirement",
+      "x-reference-scope": "Rule within assigned requirement version."
+    },
+    "credit_decision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved substitution source if relevant.",
+      "x-entity-reference": "CreditDecision",
+      "x-reference-scope": "Approved substitution source if relevant."
+    },
+    "recognition_decision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved external support if relevant.",
+      "x-entity-reference": "RecognitionDecision",
+      "x-reference-scope": "Approved external support if relevant."
+    },
+    "supersedes_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Earlier requirement decision if corrected.",
+      "x-entity-reference": "RequirementDecision",
+      "x-reference-scope": "Earlier requirement decision if corrected."
+    },
+    "decision_kind": {
+      "type": "string",
+      "enum": [
+        "waiver",
+        "substitution",
+        "withdrawal"
+      ],
+      "description": "Approved rule-level action."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 3000,
+      "description": "Restricted and reviewable justification."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive decision boundary."
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive expiration when any."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "person_id",
+    "program_enrollment_id",
+    "requirement_id",
+    "credit_decision_id",
+    "recognition_decision_id",
+    "supersedes_id",
+    "decision_kind",
+    "reason",
+    "effective_from",
+    "expires_at",
+    "actor_id",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Waiver is not itself credit.",
+    "Substitution names eligible source evidence.",
+    "Revocation preserves earlier decision."
+  ]
+}

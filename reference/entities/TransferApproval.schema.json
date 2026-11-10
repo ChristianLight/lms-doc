@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TransferApproval",
+  "description": "Immutable approval of an exact staged plan and bounded scope.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "job_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved plan owner.",
+      "x-entity-reference": "TransferJob",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "plan_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Reviewed plan version."
+    },
+    "plan_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Exact graph and baseline digest approved."
+    },
+    "reviewer_principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor or service identity for the recorded operation.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "approval_kind": {
+      "type": "string",
+      "enum": [
+        "curriculum",
+        "assessment",
+        "privacy",
+        "publication"
+      ],
+      "description": "Which owner gate the decision satisfies."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "Review evidence and rationale."
+    },
+    "scope_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "maxItems": 200,
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Concrete scopes approved by this actor."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    }
+  },
+  "required": [
+    "id",
+    "job_id",
+    "plan_revision",
+    "plan_digest",
+    "reviewer_principal_id",
+    "approval_kind",
+    "reason",
+    "scope_keys",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "job_id",
+      "plan_revision",
+      "reviewer_principal_id",
+      "approval_kind"
+    ]
+  ],
+  "x-invariants": [
+    "Approvals cannot be edited or moved to a new plan revision.",
+    "Reviewer authority is revalidated before activation."
+  ]
+}

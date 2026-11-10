@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExamIncident",
+  "description": "Protected operational event and reviewed intervention record.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ExamIncident identifier."
+    },
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exam context.",
+      "x-entity-reference": "AssessmentDelivery",
+      "x-reference-scope": "Exam context."
+    },
+    "attempt_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional affected attempt within same delivery.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Optional affected attempt within same delivery."
+    },
+    "category": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Controlled operational incident type."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "under_review",
+        "resolved"
+      ],
+      "description": "Restricted investigation status."
+    },
+    "opened_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized supervisor or service actor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized supervisor or service actor."
+    },
+    "opened_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative discovery time."
+    },
+    "protected_evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Private incident evidence approved for review.",
+      "x-entity-reference": "AssetVersion",
+      "x-reference-scope": "Private incident evidence approved for review."
+    },
+    "resolution": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Authorized disposition rationale."
+    },
+    "resolved_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Decision time."
+    },
+    "disposition": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "no_action",
+            "extension_approved",
+            "retake_approved",
+            "void_approved",
+            "escalated"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Scoped reviewed action authorized by the decision."
+    },
+    "reviewer_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Authorized independent reviewer who closed the incident.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized independent reviewer who closed the incident."
+    },
+    "write_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "CAS token for workflow and protected evidence changes."
+    }
+  },
+  "required": [
+    "id",
+    "delivery_id",
+    "category",
+    "status",
+    "opened_by",
+    "opened_at",
+    "protected_evidence_ids",
+    "write_version"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Proctoring signals do not automatically change a mark.",
+    "Corrections require authorized separate commands."
+  ]
+}

@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ItemMarkRevision",
+  "description": "Immutable provisional or accepted judgment on an attempt item.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ItemMarkRevision identifier."
+    },
+    "attempt_item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Realized item being judged.",
+      "x-entity-reference": "AttemptItem",
+      "x-reference-scope": "Realized item being judged."
+    },
+    "submission_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact submitted evidence for this item.",
+      "x-entity-reference": "AttemptSubmission",
+      "x-reference-scope": "Exact submitted evidence for this item."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic item mark revision."
+    },
+    "assignment_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Assigned reviewer workflow where human scoring contributes.",
+      "x-entity-reference": "MarkingAssignment",
+      "x-reference-scope": "Assigned reviewer workflow where human scoring contributes."
+    },
+    "evaluation_run_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Verified exact-scope evaluation run inputs.",
+      "x-entity-reference": "EvaluationRun",
+      "x-reference-scope": "Verified exact-scope evaluation run inputs."
+    },
+    "marker_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized marker, moderator or service principal.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized marker, moderator or service principal."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "deterministic",
+        "human",
+        "moderated",
+        "manual_correction"
+      ],
+      "description": "Source class used for audit and review."
+    },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "points": {
+            "type": "string",
+            "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+          },
+          "maximum": {
+            "type": "string",
+            "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+          },
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "scored",
+              "blank",
+              "invalid",
+              "manual_review",
+              "excused"
+            ]
+          },
+          "feedback_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          }
+        },
+        "required": [
+          "criterion_key",
+          "maximum",
+          "disposition"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "description": "Individual criterion values and dispositions."
+    },
+    "private_comments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "candidate",
+              "marker_only"
+            ]
+          }
+        },
+        "required": [
+          "criterion_key",
+          "text",
+          "visibility"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "description": "Scoped comments with declared visibility."
+    },
+    "points": {
+      "type": "string",
+      "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])",
+      "description": "Total raw awarded points in this item mark."
+    },
+    "maximum": {
+      "type": "string",
+      "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])",
+      "description": "Actual scored maximum under pinned item rule."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "provisional",
+        "accepted",
+        "rejected",
+        "superseded"
+      ],
+      "description": "Provisional or accepted lifecycle projection."
+    },
+    "accepted_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approval time for contributing revision."
+    },
+    "supersedes_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Earlier authoritative mark for same attempt item if corrected.",
+      "x-entity-reference": "ItemMarkRevision",
+      "x-reference-scope": "Earlier authoritative mark for same attempt item if corrected."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_item_id",
+    "submission_id",
+    "revision",
+    "evaluation_run_ids",
+    "marker_id",
+    "source",
+    "criteria",
+    "private_comments",
+    "points",
+    "maximum",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "attempt_item_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "One accepted current head per attempt item.",
+    "A correction appends rather than edits scored evidence.",
+    "Independent provisional marks remain inspectable by authorized staff."
+  ]
+}

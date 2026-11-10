@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageRuntimeElement",
+  "description": "Edition-validated value for one runtime element path in an occurrence snapshot.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "sco_state_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Current occurrence snapshot.",
+      "x-entity-reference": "PackageScoState",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "element_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Canonical data model name including validated indexes."
+    },
+    "value": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 65536,
+      "description": "Current raw lexical value with edition and SPM validation."
+    },
+    "commit_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Durable commit that last changed this value.",
+      "x-entity-reference": "PackageCommit",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "learner_response",
+        "private_state",
+        "identity"
+      ],
+      "description": "Runtime value access and redaction class."
+    },
+    "element_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Pinned edition vocabulary or scalar type used by validator."
+    }
+  },
+  "required": [
+    "id",
+    "sco_state_id",
+    "element_key",
+    "value",
+    "commit_id",
+    "classification",
+    "element_type"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "sco_state_id",
+      "element_key"
+    ]
+  ],
+  "x-invariants": [
+    "Write-only at the SCO interface does not mean value is absent internally.",
+    "Do not leak protected values into telemetry or gradebook events."
+  ]
+}

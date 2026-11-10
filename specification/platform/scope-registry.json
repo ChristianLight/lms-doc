@@ -1,0 +1,1037 @@
+{
+  "registry_version": "1.0.0",
+  "rules": [
+    "Resolve every stored entity and every link inside the authenticated institution before considering a capability. Missing or malformed joins deny access.",
+    "A permission lists eligible target contexts. Resolve the operation's canonical owner resource first, then use only declared eligible scopes reachable from it. An alternative context never bypasses the primary owner's checks.",
+    "A grant names an assignable context and a scoped resource. Exact matching requires the same context and identity. Ancestor matching requires include_descendants, the typed authority path and the owner predicate for that action.",
+    "A link in tenant_path verifies institution only. A link in authority_parents or an approved effective relation in authority_queries is the only allowed inherited permission edge. Do not traverse other relationships or search for arbitrary routes.",
+    "If an authority parent has a condition or purpose, treat it as a required predicate. A missing optional relationship contributes no parent.",
+    "Evaluate the domain owner guard and any affected subject, assigned marker, learner, current lease, publishing authority, independent approval, or issuer checks after resolving eligible grants.",
+    "For bulk or multi-target operations validate every affected row and the specific aggregate grant. Reject a cross-tenant or mixed-visibility batch before committing an academic transition.",
+    "Do not convert evidence pins, historical membership, provider roster or owning Course reference into classroom authorization."
+  ],
+  "bootstrap": {
+    "permission": "platform.institution.bootstrap",
+    "context": "DeploymentControlPlane",
+    "assignable": false,
+    "entity": null,
+    "entry_rule": "CreateInstitution requires independently authorized deployment provisioning and no existing institution identifier. This control context is outside ordinary RoleAssignment. Creating a tenant does not confer rights in other tenants."
+  },
+  "contexts": [
+    {
+      "context": "AcademicPeriod",
+      "entity": "AcademicPeriod",
+      "assignable": true,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "AcademicPeriod",
+          "path": [
+            "parent_id"
+          ],
+          "when": "Parent is present and interval is enclosed."
+        },
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Use current period and specific schedule or records capability. Period membership groups courses for reporting only. It does not grant roster or instructional authority."
+    },
+    {
+      "context": "ActivityVersion",
+      "entity": "ActivityVersion",
+      "assignable": false,
+      "tenant_path": [
+        "activity_id",
+        "institution_id"
+      ],
+      "authority_parents": [],
+      "owner_guard": "ActivityVersion is authority-neutral by itself. A package launch uses the composite EnrollmentRelease and exact ContentPlacement route declared by that operation. A matching activity UUID is insufficient."
+    },
+    {
+      "context": "AssessmentAppeal",
+      "entity": "AssessmentAppeal",
+      "assignable": false,
+      "tenant_path": [
+        "attempt_id",
+        "delivery_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Attempt",
+          "path": [
+            "attempt_id"
+          ]
+        }
+      ],
+      "owner_guard": "Verify appeal subject, current review assignment, independence and disclosure. Intake and adjudication permissions are distinct."
+    },
+    {
+      "context": "AssessmentDelivery",
+      "entity": "AssessmentDelivery",
+      "assignable": true,
+      "tenant_path": [
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "CourseOffering",
+          "path": [
+            "offering_id"
+          ]
+        }
+      ],
+      "owner_guard": "Resolve exact delivery, offering and published placement. Even a direct delivery grant requires appropriate academic duty, independence, assigned candidate population and version predicates for the command."
+    },
+    {
+      "context": "AssessmentUpload",
+      "entity": "AssessmentUpload",
+      "assignable": false,
+      "tenant_path": [
+        "attempt_id",
+        "delivery_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Attempt",
+          "path": [
+            "attempt_id"
+          ]
+        }
+      ],
+      "owner_guard": "Verify current upload purpose, candidate lease, scan and same pinned attempt. Storage authority cannot mutate the assessment."
+    },
+    {
+      "context": "Attempt",
+      "entity": "Attempt",
+      "assignable": false,
+      "tenant_path": [
+        "delivery_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "AssessmentDelivery",
+          "path": [
+            "delivery_id"
+          ]
+        },
+        {
+          "context": "Enrollment",
+          "path": [
+            "enrollment_id"
+          ],
+          "when": "Enrollment is present and matches the exact candidate and delivery offering.",
+          "purpose": "Candidate self access or separately eligible roster-scoped records purpose only."
+        }
+      ],
+      "owner_guard": "Require candidate ownership or an eligible TeamSnapshot member for learner actions, and current applicable lease. For staff require actual assignment and duty purpose. Own learner scope may follow enrollment.person_id only after verification."
+    },
+    {
+      "context": "AttemptItem",
+      "entity": "AttemptItem",
+      "assignable": false,
+      "tenant_path": [
+        "attempt_id",
+        "delivery_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Attempt",
+          "path": [
+            "attempt_id"
+          ]
+        }
+      ],
+      "owner_guard": "Pin exact item and response context. Never expose solution or marking keys through candidate authority."
+    },
+    {
+      "context": "AttemptSubmission",
+      "entity": "AttemptSubmission",
+      "assignable": false,
+      "tenant_path": [
+        "attempt_id",
+        "delivery_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Attempt",
+          "path": [
+            "attempt_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require sealed submission and a declared review, marking or release operation. Submission actor need not equal the assessment beneficiary."
+    },
+    {
+      "context": "Cmi5Registration",
+      "entity": "Cmi5Registration",
+      "assignable": false,
+      "tenant_path": [
+        "enrollment_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Enrollment",
+          "path": [
+            "enrollment_id"
+          ]
+        }
+      ],
+      "owner_guard": "Verify exact course placement and immutable package, active actor, authorized mode and writer generation. Read-only Browse and Review do not confer result write."
+    },
+    {
+      "context": "Cohort",
+      "entity": "Cohort",
+      "assignable": true,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "OrganizationUnit",
+          "path": [
+            "owner_unit_id"
+          ],
+          "when": "Owning unit is present and active for current actions."
+        },
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Validate membership change policy and current cohort institution. A cohort role does not grant powers in offerings or groups occupied by cohort members."
+    },
+    {
+      "context": "Course",
+      "entity": "Course",
+      "assignable": true,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "OrganizationUnit",
+          "path": [
+            "owner_unit_id"
+          ],
+          "when": "Owning unit is present and active for current actions."
+        },
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Validate current curriculum role, edition and draft or publication state. Course-level scope does not imply authority over an offering's learner records."
+    },
+    {
+      "context": "CourseOffering",
+      "entity": "CourseOffering",
+      "assignable": true,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "OrganizationUnit",
+          "path": [
+            "owner_unit_id"
+          ],
+          "when": "Owning unit is present and active for current actions."
+        },
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Validate current enrollment, teaching assignment or separately delegated operational purpose. Owning Course is a required integrity join, never an authority parent."
+    },
+    {
+      "context": "Credential",
+      "entity": "Credential",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Person",
+          "path": [
+            "person_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require scope over the qualification or exact issued credential and current public or authenticated disclosure policy. An optional verification token gives access only to approved limited claims."
+    },
+    {
+      "context": "Enrollment",
+      "entity": "Enrollment",
+      "assignable": false,
+      "tenant_path": [
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "CourseOffering",
+          "path": [
+            "offering_id"
+          ]
+        },
+        {
+          "context": "Person",
+          "path": [
+            "person_id"
+          ],
+          "purpose": "Only self or separately authorized person-specific records access."
+        }
+      ],
+      "owner_guard": "Require the matching active Person for self participation, or an assigned scoped official purpose. Resolve active SectionMembership or GroupMembership only for an operation explicitly using that roster scope.",
+      "authority_queries": [
+        {
+          "context": "Section",
+          "relation": "SectionMembership",
+          "from_field": "id",
+          "match_field": "enrollment_id",
+          "target_field": "section_id",
+          "effective_from_field": "effective_from",
+          "effective_to_field": "effective_to",
+          "when": "Resolve membership at the current authoritative instant. Use an owner-pinned historical instant only when this command explicitly permits historical access."
+        },
+        {
+          "context": "LearningGroup",
+          "relation": "GroupMembership",
+          "from_field": "id",
+          "match_field": "enrollment_id",
+          "target_field": "learning_group_id",
+          "effective_from_field": "effective_from",
+          "effective_to_field": "effective_to",
+          "when": "Resolve membership at the current authoritative instant. Group context must be an eligible permission scope and group must belong to this offering."
+        }
+      ]
+    },
+    {
+      "context": "EvaluationRun",
+      "entity": "EvaluationRun",
+      "assignable": false,
+      "tenant_path": [
+        "attempt_item_id",
+        "attempt_id",
+        "delivery_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "AttemptItem",
+          "path": [
+            "attempt_item_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require authorized evaluator service mandate, approved pinned marking rule, active worker fence and sanitized result boundaries."
+    },
+    {
+      "context": "EvaluatorRelease",
+      "entity": "EvaluatorRelease",
+      "assignable": false,
+      "tenant_path": [
+        "approved_by",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Institution",
+          "path": [
+            "approved_by",
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Resolve institution from the approved evaluator scope. Approving Principal is immutable attribution and may not be moved across institutions. An institution-approved evaluator release does not authorize arbitrary execution."
+    },
+    {
+      "context": "ExamIncident",
+      "entity": "ExamIncident",
+      "assignable": false,
+      "tenant_path": [
+        "delivery_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "AssessmentDelivery",
+          "path": [
+            "delivery_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require approved incident purpose and exact delivery, candidate and record custody. General delivery supervision does not reveal protected incident evidence."
+    },
+    {
+      "context": "ExchangeProfile",
+      "entity": "ExchangeProfile",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require approved external destination, current profile, processing authority and data-minimized projection."
+    },
+    {
+      "context": "ExternalGradeBinding",
+      "entity": "ExternalGradeBinding",
+      "assignable": false,
+      "tenant_path": [
+        "deployment_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "ExternalToolDeployment",
+          "path": [
+            "deployment_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require exact platform/tool service scope, resource context, GradeItem mapping, tenant and authorized learner. No direct official grade release."
+    },
+    {
+      "context": "ExternalToolDeployment",
+      "entity": "ExternalToolDeployment",
+      "assignable": true,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require approved deployment role and registered tool issuer, audience, scopes and context. Configuration authority does not grant a learner launch or grade access."
+    },
+    {
+      "context": "ExternalToolResourceLink",
+      "entity": "ExternalToolResourceLink",
+      "assignable": false,
+      "tenant_path": [
+        "course_offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "CourseOffering",
+          "path": [
+            "course_offering_id"
+          ]
+        },
+        {
+          "context": "ExternalToolDeployment",
+          "path": [
+            "deployment_id"
+          ],
+          "purpose": "Configuration and grading use only the separately permitted operation. This path never grants learner launch."
+        }
+      ],
+      "owner_guard": "Check same-institution approved deployment, exact placement and active learner or authoring context. Launch and connector configuration are separate privileges."
+    },
+    {
+      "context": "GradeEvidence",
+      "entity": "GradeEvidence",
+      "assignable": false,
+      "tenant_path": [
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "CourseOffering",
+          "path": [
+            "offering_id"
+          ]
+        }
+      ],
+      "owner_guard": "Validate original producer, exact GradeItem and candidate EnrollmentRelease, private record scope and approved consumption purpose. Evidence remains inaccessible to unrelated staff or guardians."
+    },
+    {
+      "context": "GradeItem",
+      "entity": "GradeItem",
+      "assignable": false,
+      "tenant_path": [
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "CourseOffering",
+          "path": [
+            "offering_id"
+          ]
+        }
+      ],
+      "owner_guard": "Use the exact GradeItem and approved offering/records assignment. A GradeItem cannot authorize unpublished results, cross-class grading or candidate record access on its own."
+    },
+    {
+      "context": "GradeRelease",
+      "entity": "GradeRelease",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "CourseOffering",
+          "path": [
+            "offering_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require authorized grade release or review purpose and check the exact selection, period, audience and academic visibility scope."
+    },
+    {
+      "context": "GradeResult",
+      "entity": "GradeResult",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Enrollment",
+          "path": [
+            "enrollment_id"
+          ]
+        }
+      ],
+      "owner_guard": "Learner access follows an active released revision, never the computed pointer. Staff needs authorized educational purpose and current offering, section or explicitly reviewed historical scope."
+    },
+    {
+      "context": "GradeResultRevision",
+      "entity": "GradeResultRevision",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "GradeResult",
+          "path": [
+            "grade_result_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require exact result and approval state. Return current or historical revision only to the allowed viewer. Revalidate a staff explanation before disclosing source evidence."
+    },
+    {
+      "context": "Institution",
+      "entity": "Institution",
+      "assignable": true,
+      "tenant_path": [],
+      "authority_parents": [],
+      "owner_guard": "Institution context is its own tenant. Institution-wide scope management or academic grant inheritance requires the specific capability, descendants opt-in and applicable owner guard. Creation uses trusted deployment bootstrap authority outside an existing institution."
+    },
+    {
+      "context": "IntegrationConnection",
+      "entity": "IntegrationConnection",
+      "assignable": true,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require registered provider profile, allowed action, version, exact service mandate and connector state. Integration metadata authority does not grant the connected provider's academic records."
+    },
+    {
+      "context": "ItemBank",
+      "entity": "ItemBank",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Course",
+          "path": [
+            "owner_scope_id"
+          ],
+          "when": "owner_kind is Course and the owner scope resolves to the same institution's Course.",
+          "polymorphic": {
+            "field": "owner_kind",
+            "value": "Course"
+          }
+        },
+        {
+          "context": "OrganizationUnit",
+          "path": [
+            "owner_scope_id"
+          ],
+          "when": "owner_kind is OrganizationUnit and the owner scope resolves to the same institution's OrganizationUnit.",
+          "polymorphic": {
+            "field": "owner_kind",
+            "value": "OrganizationUnit"
+          }
+        },
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Owner kind and owner ID resolve through a typed branch. Apply the domain's explicit ItemBankGrant or specifically documented inherited bank policy, exact operation and answer-key disclosure. Neither RoleAssignment nor ownership alone bypasses these checks."
+    },
+    {
+      "context": "LearningGroup",
+      "entity": "LearningGroup",
+      "assignable": true,
+      "tenant_path": [
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Section",
+          "path": [
+            "section_id"
+          ],
+          "when": "Section is present and belongs to this group's offering."
+        },
+        {
+          "context": "CourseOffering",
+          "path": [
+            "offering_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require current group membership for participant actions. A group grant does not extend to another group, section or offering."
+    },
+    {
+      "context": "Library",
+      "entity": "Library",
+      "assignable": true,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "OrganizationUnit",
+          "path": [
+            "owner_unit_id"
+          ],
+          "when": "Owning unit is present and active for current actions."
+        },
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Validate library version and rights, reuse policy and explicit publication capability. An offering role never authorizes its course's source library."
+    },
+    {
+      "context": "MarkingAssignment",
+      "entity": "MarkingAssignment",
+      "assignable": false,
+      "tenant_path": [
+        "attempt_item_id",
+        "attempt_id",
+        "delivery_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "AttemptItem",
+          "path": [
+            "attempt_item_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require authenticated Principal is named marker or a separately authorized reassignment reviewer. Role inheritance alone cannot read or grade an assigned script."
+    },
+    {
+      "context": "OrganizationUnit",
+      "entity": "OrganizationUnit",
+      "assignable": true,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "OrganizationUnit",
+          "path": [
+            "parent_id"
+          ],
+          "when": "Parent is present and current institution hierarchy permits it."
+        },
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Validate tree ancestry at the current authorization epoch. An administrator's organizational role grants no unrelated personal records access."
+    },
+    {
+      "context": "PackageLaunchSession",
+      "entity": "PackageLaunchSession",
+      "assignable": false,
+      "tenant_path": [
+        "registration_id",
+        "enrollment_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "PackageRegistration",
+          "path": [
+            "registration_id"
+          ]
+        }
+      ],
+      "owner_guard": "Authorize bootstrap or scoped runtime credential under adapter profile. Verify origin, nonce, actor or bound session, exact occurrence, launch generation and expiry."
+    },
+    {
+      "context": "PackageRegistration",
+      "entity": "PackageRegistration",
+      "assignable": false,
+      "tenant_path": [
+        "enrollment_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Enrollment",
+          "path": [
+            "enrollment_id"
+          ]
+        }
+      ],
+      "owner_guard": "Verify active runtime capability, release and placement, and current writer lease when required. Course or offering administration grants no package session token."
+    },
+    {
+      "context": "PackageVersion",
+      "entity": "PackageVersion",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require approved package custody and installation profile. Package approval grants no learner enrollment or runtime session."
+    },
+    {
+      "context": "PeerReviewAssignment",
+      "entity": "PeerReviewAssignment",
+      "assignable": false,
+      "tenant_path": [
+        "submission_id",
+        "attempt_id",
+        "delivery_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "AttemptSubmission",
+          "path": [
+            "submission_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require verified reviewer Enrollment, peer release policy and de-identification. Recipient enrollment or submitted work is not a reviewer assignment."
+    },
+    {
+      "context": "PeerReviewPolicyVersion",
+      "entity": "PeerReviewPolicyVersion",
+      "assignable": false,
+      "tenant_path": [
+        "delivery_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "AssessmentDelivery",
+          "path": [
+            "delivery_id"
+          ]
+        }
+      ],
+      "owner_guard": "Verify exact owner delivery, reviewed policy and independent approval or current worker fence. Generic course access does not authorize marking or publishing."
+    },
+    {
+      "context": "Person",
+      "entity": "Person",
+      "assignable": true,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "For self operations require active Principal.person_id equals target. Other actions require their declared custody, relationship or directory predicate and scope. A Person grant never implies academic staff authority."
+    },
+    {
+      "context": "Program",
+      "entity": "Program",
+      "assignable": true,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "OrganizationUnit",
+          "path": [
+            "organization_unit_id"
+          ],
+          "when": "Owning unit is present and active for current actions."
+        },
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Validate assigned program operation and person-specific record access separately. Program membership does not grant teaching or grade access in participating offerings."
+    },
+    {
+      "context": "ProgramEnrollment",
+      "entity": "ProgramEnrollment",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Program",
+          "path": [
+            "program_id"
+          ]
+        },
+        {
+          "context": "Person",
+          "path": [
+            "person_id"
+          ],
+          "purpose": "Self or explicitly approved person-specific record access only."
+        }
+      ],
+      "owner_guard": "Require program assignment and person-specific purpose or current own learner view. Program membership does not grant classroom authority."
+    },
+    {
+      "context": "RegradeJob",
+      "entity": "RegradeJob",
+      "assignable": false,
+      "tenant_path": [
+        "delivery_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "AssessmentDelivery",
+          "path": [
+            "delivery_id"
+          ]
+        }
+      ],
+      "owner_guard": "Verify exact owner delivery, reviewed policy and independent approval or current worker fence. Generic course access does not authorize marking or publishing."
+    },
+    {
+      "context": "ReportCard",
+      "entity": "ReportCard",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Person",
+          "path": [
+            "person_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require own issued record, approved current guardian relationship and category, or scoped registrar. Academic-period grouping does not grant access to other learners."
+    },
+    {
+      "context": "ReportCardRevision",
+      "entity": "ReportCardRevision",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "ReportCard",
+          "path": [
+            "report_card_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require exact issued or authorized working revision, permitted audience and current artifact access. Old official revisions retain their history."
+    },
+    {
+      "context": "RosterFeed",
+      "entity": "RosterFeed",
+      "assignable": true,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require the exact provider identity and allowed units, model fields, source authority, approval and baseline. Feed authority is never general tenant roster management."
+    },
+    {
+      "context": "Section",
+      "entity": "Section",
+      "assignable": true,
+      "tenant_path": [
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "CourseOffering",
+          "path": [
+            "offering_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require the requested section and current teaching or enrollment relationship. A Section does not derive authority from its roster members."
+    },
+    {
+      "context": "TeamSnapshot",
+      "entity": "TeamSnapshot",
+      "assignable": false,
+      "tenant_path": [
+        "delivery_id",
+        "offering_id",
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "AssessmentDelivery",
+          "path": [
+            "delivery_id"
+          ]
+        }
+      ],
+      "owner_guard": "Frozen group and learner evidence does not convey current membership. Verify group offering and the candidate member's pinned enrollment and eligibility."
+    },
+    {
+      "context": "Transcript",
+      "entity": "Transcript",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Person",
+          "path": [
+            "person_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require own authorized education record, registrar custody or explicit authorized recipient. A disclosure grant never grants underlying grade table access."
+    },
+    {
+      "context": "TranscriptRevision",
+      "entity": "TranscriptRevision",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Transcript",
+          "path": [
+            "transcript_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require exact issued or authorized staged revision and current record disclosure purpose. Issued snapshot bytes stay immutable."
+    },
+    {
+      "context": "TransferJob",
+      "entity": "TransferJob",
+      "assignable": false,
+      "tenant_path": [
+        "institution_id"
+      ],
+      "authority_parents": [
+        {
+          "context": "Institution",
+          "path": [
+            "institution_id"
+          ]
+        }
+      ],
+      "owner_guard": "Require authorized target, format and transfer direction. Academic or student-data access is independently checked during review, activation and collection."
+    }
+  ]
+}

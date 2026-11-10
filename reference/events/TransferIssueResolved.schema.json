@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TransferIssueResolved",
+  "description": "A scoped issue decision was durably recorded.",
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "issue_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "resolution": {
+      "type": "string",
+      "enum": [
+        "replace",
+        "map",
+        "accept_difference",
+        "exclude"
+      ]
+    }
+  },
+  "required": [
+    "job_id",
+    "issue_id",
+    "revision",
+    "resolution"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Issue revision.",
+  "x-deduplication": "Issue and revision.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

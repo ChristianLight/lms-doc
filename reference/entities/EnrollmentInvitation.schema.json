@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EnrollmentInvitation",
+  "description": "One-use intended-person invitation into an offered admission path.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Delivery scope.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Verified intended learner.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Person must belong to the same institution as the offering."
+    },
+    "section_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional offered section.",
+      "x-entity-reference": "Section",
+      "x-reference-scope": "Must resolve to an authorized Section in the owning institution."
+    },
+    "token_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Hash of opaque random invitation capability."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "issued",
+        "used",
+        "revoked",
+        "expired"
+      ],
+      "default": "issued",
+      "description": "Invitation lifecycle."
+    },
+    "bypass_application_window": {
+      "type": "boolean",
+      "default": false,
+      "description": "Approved scoped exception to registration dates."
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Issue time."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive expiry."
+    },
+    "issued_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized inviter.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "application_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Application created by token use.",
+      "x-entity-reference": "EnrollmentApplication",
+      "x-reference-scope": "Must resolve to an authorized EnrollmentApplication in the owning institution."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "person_id",
+    "token_digest",
+    "state",
+    "bypass_application_window",
+    "issued_at",
+    "expires_at",
+    "issued_by"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "token_digest"
+    ]
+  ],
+  "x-invariants": [
+    "Only matching authenticated person may consume.",
+    "An invitation is not a seat reservation or enrollment."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeOverrideDecided",
+  "description": "Official override decision appended for authorized review.",
+  "type": "object",
+  "properties": {
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "request_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "decision_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "reject",
+        "revoke"
+      ]
+    }
+  },
+  "required": [
+    "offering_id",
+    "request_id",
+    "decision_id",
+    "decision"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per override request.",
+  "x-deduplication": "decision_id.",
+  "x-privacy": "No reviewer rationale or score."
+}

@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MarkingAssignment",
+  "description": "Authorized staff scope for reviewing one exact item and submission.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique MarkingAssignment identifier."
+    },
+    "attempt_item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact realized item.",
+      "x-entity-reference": "AttemptItem",
+      "x-reference-scope": "Exact realized item."
+    },
+    "submission_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Sealed submission of same attempt.",
+      "x-entity-reference": "AttemptSubmission",
+      "x-reference-scope": "Sealed submission of same attempt."
+    },
+    "marker_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Scoped eligible staff assignment or null for open claim.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Scoped eligible staff assignment or null for open claim."
+    },
+    "blind_code": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Opaque candidate label under moderation policy."
+    },
+    "marking_pass": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Independent marking pass ordinal."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "open",
+        "assigned",
+        "submitted",
+        "revoked",
+        "expired"
+      ],
+      "description": "Open, assigned, submitted, revoked or expired."
+    },
+    "due_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Review queue target."
+    },
+    "write_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Assignment and draft concurrency version."
+    },
+    "current_draft_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Protected marker-attributed draft head for scope and concurrency."
+    },
+    "current_draft_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Current private draft revision for the exact still assigned marker.",
+      "x-entity-reference": "MarkDraftRevision",
+      "x-reference-scope": "Current private draft revision for the exact still assigned marker."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_item_id",
+    "submission_id",
+    "marking_pass",
+    "state",
+    "write_version"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "attempt_item_id",
+      "marking_pass"
+    ]
+  ],
+  "x-invariants": [
+    "Multiple passes require distinct markers when independent.",
+    "Scope grants are rechecked on every read and write."
+  ]
+}

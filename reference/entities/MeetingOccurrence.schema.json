@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MeetingOccurrence",
+  "description": "Materialized scheduled meeting with stable recurrence identity.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "meeting_series_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Series owner.",
+      "x-entity-reference": "MeetingSeries",
+      "x-reference-scope": "Must resolve to an authorized MeetingSeries in the owning institution."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Scoped calendar read and filtering.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "recurrence_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 48,
+      "description": "Stable original civil recurrence identity."
+    },
+    "starts_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Canonical scheduled instant."
+    },
+    "ends_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Canonical end instant."
+    },
+    "check_in_open_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive check-in start."
+    },
+    "check_in_close_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive learner check-in end."
+    },
+    "roster_frozen_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Attendance roster snapshot anchor."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "open",
+        "closed",
+        "cancelled"
+      ],
+      "default": "scheduled",
+      "description": "Occurrence state."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Calendar and check-in mutation revision."
+    }
+  },
+  "required": [
+    "id",
+    "meeting_series_id",
+    "offering_id",
+    "recurrence_id",
+    "starts_at",
+    "ends_at",
+    "check_in_open_at",
+    "check_in_close_at",
+    "state",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "meeting_series_id",
+      "recurrence_id"
+    ]
+  ],
+  "x-invariants": [
+    "End is after start.",
+    "Completed meeting and attendance remain auditable on cancellation."
+  ]
+}

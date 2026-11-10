@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentRegradeCompleted",
+  "description": "A durable correction batch reconciled.",
+  "type": "object",
+  "properties": {
+    "regrade_job_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "counts": {
+      "type": "object",
+      "properties": {
+        "planned": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "changed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "unchanged": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "excluded": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "conflicted": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "planned",
+        "changed",
+        "unchanged",
+        "excluded",
+        "conflicted",
+        "failed"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "regrade_job_id",
+    "delivery_id",
+    "counts"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Per RegradeJob completion or stop.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "Aggregate operational counts only."
+}

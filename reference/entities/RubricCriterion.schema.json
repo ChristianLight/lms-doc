@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RubricCriterion",
+  "description": "Stable rubric criterion and approved levels or free points.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique RubricCriterion identifier."
+    },
+    "rubric_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Rubric revision defining marks and descriptors.",
+      "x-entity-reference": "RubricVersion",
+      "x-reference-scope": "Rubric revision defining marks and descriptors."
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Stable criterion identifier."
+    },
+    "display_order": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Distinct ordinal within rubric."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "description": "Candidate-safe marking description."
+    },
+    "maximum": {
+      "type": "string",
+      "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])",
+      "description": "Maximum criterion points."
+    },
+    "point_step": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Positive increment for authorized free-point scoring."
+    },
+    "levels": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "level_key": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "descriptor": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "points": {
+                "type": "string",
+                "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "level_key",
+              "label",
+              "descriptor",
+              "points"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 30
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Available stable level keys and point values."
+    }
+  },
+  "required": [
+    "id",
+    "rubric_version_id",
+    "key",
+    "display_order",
+    "description",
+    "maximum"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "rubric_version_id",
+      "key"
+    ],
+    [
+      "rubric_version_id",
+      "display_order"
+    ]
+  ],
+  "x-invariants": [
+    "Exactly one of level mode and free-point step applies.",
+    "Score and level must agree within published bounds."
+  ]
+}

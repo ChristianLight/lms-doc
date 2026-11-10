@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CompetencyEvidence",
+  "description": "Accepted observed outcome level with exact educational source revision.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique CompetencyEvidence identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Educational identity within the same institution.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Educational identity within the same institution."
+    },
+    "competency_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Pinned outcome and ordered scale.",
+      "x-entity-reference": "CompetencyVersion",
+      "x-reference-scope": "Pinned outcome and ordered scale."
+    },
+    "alignment_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved source mapping if used.",
+      "x-entity-reference": "CompetencyAlignment",
+      "x-reference-scope": "Approved source mapping if used."
+    },
+    "enrollment_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional same-person course evidence scope.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Optional same-person course evidence scope."
+    },
+    "grade_release_entry_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Released grade source if applicable.",
+      "x-entity-reference": "GradeReleaseEntry",
+      "x-reference-scope": "Released grade source if applicable."
+    },
+    "item_mark_revision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Verified rubric or item mark if applicable.",
+      "x-entity-reference": "ItemMarkRevision",
+      "x-reference-scope": "Verified rubric or item mark if applicable."
+    },
+    "recognition_decision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Accepted prior evidence if applicable.",
+      "x-entity-reference": "RecognitionDecision",
+      "x-reference-scope": "Accepted prior evidence if applicable."
+    },
+    "supersedes_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Corrected source revision within same observation.",
+      "x-entity-reference": "CompetencyEvidence",
+      "x-reference-scope": "Corrected source revision within same observation."
+    },
+    "source_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable identity of the observation source."
+    },
+    "source_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic source revision."
+    },
+    "level_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+      "description": "Approved observed competency level."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "accepted",
+        "revoked",
+        "unverified"
+      ],
+      "description": "Eligibility disposition."
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Effective observation instant."
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exclusive evidence cutoff."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "person_id",
+    "competency_version_id",
+    "alignment_id",
+    "enrollment_id",
+    "grade_release_entry_id",
+    "item_mark_revision_id",
+    "recognition_decision_id",
+    "supersedes_id",
+    "source_key",
+    "source_revision",
+    "level_code",
+    "state",
+    "observed_at",
+    "expires_at",
+    "actor_id",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "person_id",
+      "competency_version_id",
+      "source_key",
+      "source_revision"
+    ]
+  ],
+  "x-invariants": [
+    "One effective evidence revision per observation source.",
+    "Observed source and learner association verified."
+  ]
+}

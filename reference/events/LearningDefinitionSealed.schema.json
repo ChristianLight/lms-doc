@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LearningDefinitionSealed",
+  "description": "An immutable resource or activity revision was sealed.",
+  "type": "object",
+  "properties": {
+    "definition_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "definition_version_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "content",
+        "activity"
+      ]
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "definition_id",
+    "definition_version_id",
+    "kind",
+    "digest"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "curriculum",
+  "x-ordering": "By stable definition revision.",
+  "x-deduplication": "Exact version ID.",
+  "x-privacy": "No body, answers or rights secret."
+}

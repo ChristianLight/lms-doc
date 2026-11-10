@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MembershipScopeChanged",
+  "description": "A scoped section, group or cohort interval changed.",
+  "type": "object",
+  "properties": {
+    "scope_kind": {
+      "type": "string",
+      "enum": [
+        "section",
+        "learning_group",
+        "cohort"
+      ]
+    },
+    "scope_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "effective_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "scope_kind",
+    "scope_id",
+    "revision",
+    "effective_at"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By exact membership scope revision.",
+  "x-deduplication": "Scope ID, revision and effective instant.",
+  "x-privacy": "No learner details in broad event; authorized consumers resolve exact effect."
+}

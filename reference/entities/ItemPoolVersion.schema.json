@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ItemPoolVersion",
+  "description": "Reviewed frozen selection inventory and item metadata.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ItemPoolVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution permitted to select items.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Institution permitted to select items."
+    },
+    "pool_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Institution-scoped logical pool key."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic pool revision."
+    },
+    "eligible_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_version_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "variant_profile_version_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "difficulty": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "minItems": 0,
+            "maxItems": 32
+          }
+        },
+        "required": [
+          "item_version_id",
+          "difficulty",
+          "tags"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 25000,
+      "description": "Pinned item revisions and reviewed coverage and variant metadata."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Digest over frozen item set and metadata."
+    },
+    "approved_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Pool reviewer with all necessary bank read and reuse rights.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Pool reviewer with all necessary bank read and reuse rights."
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Pool approval time."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "pool_key",
+    "revision",
+    "eligible_items",
+    "digest",
+    "approved_by",
+    "approved_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "pool_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Candidates are resolved from a frozen list rather than a current query.",
+    "Item revision appears at most once per pool."
+  ]
+}

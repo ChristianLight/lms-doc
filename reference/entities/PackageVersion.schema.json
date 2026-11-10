@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageVersion",
+  "description": "Immutable SCORM or cmi5 package profile, source bytes and validated manifest projection.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning these data and their access policy.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "artifact_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Archive bytes accepted for the owning trust boundary.",
+      "x-entity-reference": "TransferArtifact",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "profile": {
+      "type": "string",
+      "enum": [
+        "scorm",
+        "cmi5"
+      ],
+      "description": "Playback profile family."
+    },
+    "edition": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Exact standard edition declared and validated."
+    },
+    "manifest_identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Original scoped manifest ID."
+    },
+    "manifest_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of validated manifest projection."
+    },
+    "manifest_locator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Exact approved root manifest path."
+    },
+    "schema_build": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Immutable schema bundle and compatibility policy version."
+    },
+    "network_allowlist": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri",
+        "maxLength": 2048
+      },
+      "maxItems": 50,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Exact reviewed origins the content execution may reach."
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "staged",
+        "approved",
+        "blocked",
+        "withdrawn"
+      ],
+      "description": "Runtime and rights review gate."
+    },
+    "reviewer_principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approver when approved.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "compatibility": {
+      "type": "string",
+      "enum": [
+        "strict",
+        "review_only",
+        "unsupported"
+      ],
+      "description": "Verified packaging profile classification."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "artifact_id",
+    "profile",
+    "edition",
+    "manifest_identifier",
+    "manifest_digest",
+    "manifest_locator",
+    "schema_build",
+    "network_allowlist",
+    "review_status",
+    "compatibility",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "artifact_id",
+      "profile",
+      "edition",
+      "schema_build"
+    ]
+  ],
+  "x-invariants": [
+    "A byte or validated manifest change creates a new version.",
+    "Approval is separately scoped and does not activate a course assignment.",
+    "Existing registrations retain the assigned package digest."
+  ]
+}

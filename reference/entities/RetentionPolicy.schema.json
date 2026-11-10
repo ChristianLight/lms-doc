@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RetentionPolicy",
+  "description": "Versioned disposition rule selected by institution and data class.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "record_class": {
+      "type": "string",
+      "enum": [
+        "identity_contact",
+        "enrollment_history",
+        "academic_official",
+        "submissions",
+        "drafts",
+        "exam_telemetry",
+        "audit",
+        "connector_message",
+        "communication",
+        "backup",
+        "private_export",
+        "asset_bytes"
+      ],
+      "description": "Data classification with documented authoritative owner."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic revision per record class."
+    },
+    "trigger": {
+      "type": "string",
+      "enum": [
+        "creation",
+        "closure",
+        "withdrawal",
+        "publication",
+        "replacement",
+        "completion",
+        "provider_ack"
+      ],
+      "description": "Date origin for calculating eligibility."
+    },
+    "retain_days": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 36525,
+      "description": "Minimum retention in complete UTC days after trigger."
+    },
+    "disposition": {
+      "type": "string",
+      "enum": [
+        "delete",
+        "pseudonymize",
+        "archive",
+        "manual_review"
+      ],
+      "description": "Action applied only with owner verification."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive effective date. The current revision is latest approved at or before evaluation time."
+    },
+    "effective_before": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive review deadline for the approved rule."
+    },
+    "approved_by_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Independent institutional authority approving the rule.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "description": "Policy evidence and approval reason."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "record_class",
+    "revision",
+    "trigger",
+    "retain_days",
+    "disposition",
+    "effective_from",
+    "effective_before",
+    "approved_by_id",
+    "reason"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "record_class",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Unknown policy or trigger blocks disposal. New policy never retroactively shortens retention without explicit approved migration.",
+    "Legal holds and outstanding corrections are applied before disposition."
+  ]
+}

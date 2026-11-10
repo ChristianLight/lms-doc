@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StorageObject",
+  "description": "One private stored binary or pinned provider version used by a domain-owned resource.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "owner_resource_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Exact owning domain resource type from the storage registry."
+    },
+    "owner_resource_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning resource UUID. Validate existence and scope with the domain owner."
+    },
+    "owner_resource_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Owning resource generation when upload was initiated."
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "content",
+        "submission",
+        "evidence",
+        "export",
+        "package"
+      ],
+      "description": "Access and scanning profile."
+    },
+    "backend": {
+      "type": "string",
+      "enum": [
+        "database",
+        "object_storage",
+        "document_provider",
+        "media_provider"
+      ],
+      "description": "Selected private storage or registered provider mode."
+    },
+    "provider_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Immutable external version. Required when using a provider."
+    },
+    "protected_object_key_ref": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Restricted backend locator. Never supplied by the uploading client."
+    },
+    "expected_bytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483648,
+      "description": "Approved declared upper bound for this upload."
+    },
+    "observed_bytes": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483648
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Measured stored size."
+    },
+    "content_sha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Digest measured in quarantine."
+    },
+    "verified_media_type": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Server-verified media type."
+    },
+    "available_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "When authorized delivery became possible."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "reserved",
+        "uploaded",
+        "scanning",
+        "available",
+        "rejected",
+        "revoked",
+        "disposed"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "owner_resource_type",
+    "owner_resource_id",
+    "owner_resource_version",
+    "purpose",
+    "backend",
+    "protected_object_key_ref",
+    "expected_bytes",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "No read before successful scan and authoritative domain linkage. Authorization derives from the domain resource and requested version.",
+    "Digest match never grants cross-institution visibility. Serving and upload origins are isolated from trusted application sessions."
+  ]
+}

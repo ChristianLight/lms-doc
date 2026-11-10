@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ItemReviewDecision",
+  "description": "Immutable decision against one reviewed item digest.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ItemReviewDecision identifier."
+    },
+    "item_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Review target in the reviewer bank scope.",
+      "x-entity-reference": "ItemVersion",
+      "x-reference-scope": "Review target in the reviewer bank scope."
+    },
+    "content_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Exact approved, returned or rejected graph."
+    },
+    "reviewer_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized reviewer, independent where required.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized reviewer, independent where required."
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "changes_requested",
+        "reject"
+      ],
+      "description": "Approval or return outcome."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "description": "Private concise rationale."
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative decision time."
+    }
+  },
+  "required": [
+    "id",
+    "item_version_id",
+    "content_digest",
+    "reviewer_id",
+    "decision",
+    "reason",
+    "decided_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "item_version_id",
+      "content_digest",
+      "reviewer_id",
+      "decided_at"
+    ]
+  ],
+  "x-invariants": [
+    "A decision never approves a changed graph."
+  ]
+}

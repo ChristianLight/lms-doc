@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PrivacyCaseStep",
+  "description": "Scoped non-destructive work item for a verified privacy request.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "privacy_request_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved parent request.",
+      "x-entity-reference": "PrivacyRequest",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "collect",
+        "correct",
+        "restrict_processing",
+        "restore_processing"
+      ],
+      "description": "Authorized purpose and work type."
+    },
+    "target_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Authoritative resource type. Resolve against domain registry."
+    },
+    "target_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Scoped target identity."
+    },
+    "expected_target_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Exact approved version to revalidate before access or change."
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "identity_contact",
+        "enrollment_history",
+        "academic_official",
+        "submissions",
+        "drafts",
+        "exam_telemetry",
+        "audit",
+        "connector_message",
+        "communication",
+        "backup",
+        "private_export",
+        "asset_bytes"
+      ],
+      "description": "Approved scope for collected or changed fields."
+    },
+    "instruction_ref": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected authorized field projection or proposed correction evidence."
+    },
+    "effect_key": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Stable effect identity for canonical approved operation."
+    },
+    "result_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Protected artifact or verified applied canonical effect reference."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "applied",
+        "blocked",
+        "excluded"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "privacy_request_id",
+    "action",
+    "target_type",
+    "target_id",
+    "expected_target_version",
+    "data_class",
+    "instruction_ref",
+    "effect_key",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "privacy_request_id",
+      "effect_key"
+    ]
+  ],
+  "x-invariants": [
+    "Scope and authorization are checked before collection or owner mutation. This step grants no deletion authority.",
+    "A subject correction uses canonical owner operation. Historical evidence and issued records retain original versions until an authorized correction."
+  ]
+}

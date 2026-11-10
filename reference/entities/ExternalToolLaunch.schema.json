@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExternalToolLaunch",
+  "description": "Single-use OIDC state and nonce record for a scoped launch.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "deployment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized tool.",
+      "x-entity-reference": "ExternalToolDeployment",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "resource_link_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Launch destination when resource launch.",
+      "x-entity-reference": "ExternalToolResourceLink",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "actor_principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor or service identity for the recorded operation.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "launch_kind": {
+      "type": "string",
+      "enum": [
+        "resource",
+        "deep_link"
+      ],
+      "description": "Exact LTI message intent."
+    },
+    "target_link_uri": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Pinned target URI of authorization request."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Maximum state lifetime."
+    },
+    "consumed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "OIDC challenge consumption time when the platform issues the ID token. This does not consume a later Deep Linking response."
+    },
+    "course_offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning released or authoring context.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Reference must resolve in the exact owning Institution."
+    },
+    "course_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact editor-selected draft destination for deep linking.",
+      "x-entity-reference": "CourseVersion",
+      "x-reference-scope": "Reference must resolve in the exact owning Institution."
+    },
+    "destination_placement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Optional placement or container destination pinned to the draft version.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Reference must resolve in the exact owning Institution."
+    },
+    "destination_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Draft compare-and-swap revision required for authoring intent."
+    },
+    "browser_session_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Binding to authenticated app browser session, not a raw cookie or token."
+    },
+    "deep_link_correlation_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "One-use digest of platform-generated echoed deep-link data."
+    },
+    "accepted_content_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "maxItems": 20,
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Permitted LTI Deep Linking content types for this challenge."
+    },
+    "accepted_media_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "maxItems": 20,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Allowed media types for this authoring challenge."
+    },
+    "accept_multiple": {
+      "type": "boolean",
+      "description": "Whether tool may return more than one item."
+    },
+    "deep_link_return_uri": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Exact trusted platform callback URL for this authoring challenge."
+    },
+    "response_consumed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Independent one-use timestamp for a validated deep-link response."
+    },
+    "login_hint_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of the one-use opaque platform-issued login hint."
+    },
+    "message_hint_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of the platform-issued message hint when present."
+    },
+    "tool_state_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of tool-generated state supplied only at authorization."
+    },
+    "tool_nonce_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of tool-generated nonce supplied only at authorization."
+    }
+  },
+  "required": [
+    "id",
+    "deployment_id",
+    "actor_principal_id",
+    "launch_kind",
+    "target_link_uri",
+    "created_at",
+    "expires_at",
+    "course_offering_id",
+    "browser_session_digest",
+    "login_hint_digest"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "deployment_id",
+      "login_hint_digest"
+    ]
+  ],
+  "x-invariants": [
+    "Launch credentials must be single-use and bound to current authenticated session.",
+    "No private key or raw token is persisted in audit.",
+    "Resource launch requires a released resource link, exact context and same browser binding. Deep Linking launch requires a writable draft destination, draft revision, return URI, allowed content types and independent response correlation.",
+    "Consume OIDC signing and Deep Linking callback independently. A replay cannot obtain a second ID token or replace the validated selection.",
+    "Authorize once only. Validate state and nonce from the tool request, sign the requested nonce and echo the exact tool state to its registered redirect. Raw secrets do not enter ordinary receipts or logs."
+  ]
+}

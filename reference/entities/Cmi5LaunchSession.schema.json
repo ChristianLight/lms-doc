@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cmi5LaunchSession",
+  "description": "One cmi5 AU session and one-use credential fetch record.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "registration_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning registration.",
+      "x-entity-reference": "Cmi5Registration",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "au_key": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Verified assignable-unit identifier."
+    },
+    "session_uuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "cmi5 context session ID."
+    },
+    "launch_mode": {
+      "type": "string",
+      "enum": [
+        "Normal",
+        "Browse",
+        "Review"
+      ],
+      "description": "Effective mode for this AU launch."
+    },
+    "fetch_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of one-use fetch credential."
+    },
+    "lease_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Maximum credential and launch lease expiry."
+    },
+    "fetched_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "One-time fetch success time."
+    },
+    "terminated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Valid terminated evidence time."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "issued",
+        "fetched",
+        "initialized",
+        "terminated",
+        "abandoned",
+        "revoked"
+      ],
+      "description": "Authoritative lifecycle state advanced only through owner commands."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic generation fencing current launch and credential."
+    },
+    "au_activity_iri": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Assigned platform activity IRI for this AU, verified against immutable package map."
+    },
+    "credential_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Stored digest of the bounded credential issued after fetch."
+    },
+    "last_evidence_ordinal": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Highest accepted evidence ordinal for this session."
+    }
+  },
+  "required": [
+    "id",
+    "registration_id",
+    "au_key",
+    "session_uuid",
+    "launch_mode",
+    "fetch_digest",
+    "lease_expires_at",
+    "state",
+    "revision",
+    "created_at",
+    "generation",
+    "au_activity_iri",
+    "last_evidence_ordinal"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "session_uuid"
+    ],
+    [
+      "fetch_digest"
+    ],
+    [
+      "registration_id",
+      "generation"
+    ]
+  ],
+  "x-invariants": [
+    "Browse and Review cannot alter completion, success or score evidence.",
+    "Fetched credentials cannot be returned to a second fetch request."
+  ]
+}

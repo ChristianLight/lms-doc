@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LearningRecordDeliveryCompleted",
+  "description": "Destination acceptance or permanent rejection was recorded.",
+  "type": "object",
+  "properties": {
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "statement_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "delivered",
+        "rejected",
+        "dead_letter"
+      ]
+    }
+  },
+  "required": [
+    "delivery_id",
+    "statement_id",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Delivery revision.",
+  "x-deduplication": "Delivery terminal receipt.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

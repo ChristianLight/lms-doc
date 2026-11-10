@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TransferRecord",
+  "description": "A typed source object and its proposed target binding in one immutable staging revision.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "job_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Transfer job and source profile.",
+      "x-entity-reference": "TransferJob",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "source_scope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Stable parent scope."
+    },
+    "object_kind": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Canonical or source-profile object type."
+    },
+    "source_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Exact original case-sensitive source key."
+    },
+    "source_revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Source snapshot key or content-derived revision."
+    },
+    "source_locator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048,
+      "description": "Archive relative path and node selector, not an arbitrary URL."
+    },
+    "source_fingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of preserved source record identity, bytes and projection-relevant metadata."
+    },
+    "parent_record_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Structural parent within the same job.",
+      "x-entity-reference": "TransferRecord",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "dependency_record_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 2048,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Typed job record dependencies validated against the staging graph.",
+      "x-entity-reference": "TransferRecord",
+      "x-reference-scope": "Every referenced record belongs to this transfer job."
+    },
+    "target_kind": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Authorized destination owner entity class."
+    },
+    "target_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Canonical target identity in the registered owner domain."
+    },
+    "target_revision_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Target immutable version or staged pointer."
+    },
+    "baseline_target_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Target fingerprint used in three-way comparison."
+    },
+    "disposition": {
+      "type": "string",
+      "enum": [
+        "equivalent",
+        "mapped_with_loss",
+        "intact_package",
+        "external_dependency",
+        "blocked",
+        "unchanged",
+        "retirement_candidate"
+      ],
+      "description": "Machine-produced coverage classification, review decision stored independently."
+    },
+    "projection_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Staged owner command projection fingerprint."
+    }
+  },
+  "required": [
+    "id",
+    "job_id",
+    "source_scope",
+    "object_kind",
+    "source_key",
+    "source_revision",
+    "source_locator",
+    "source_fingerprint",
+    "dependency_record_ids",
+    "disposition"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "job_id",
+      "source_scope",
+      "object_kind",
+      "source_key",
+      "source_revision"
+    ]
+  ],
+  "x-invariants": [
+    "References stay within the job graph or an explicit authorized external map.",
+    "Protected drafts are not visible to learners.",
+    "Every processed or blocked source object contributes to the reconciliation totals."
+  ]
+}

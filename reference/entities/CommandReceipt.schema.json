@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CommandReceipt",
+  "description": "Response replay authority for a retryable external or internal command.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Original effective actor. Recheck actor eligibility when replaying.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "operation_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Stable command contract."
+    },
+    "request_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Client idempotency key scoped to actor, operation and target."
+    },
+    "target_scope_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Canonical target type and ID or collection scope."
+    },
+    "request_digest": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical payload and precondition fingerprint."
+    },
+    "result_status": {
+      "type": "integer",
+      "minimum": 200,
+      "maximum": 599,
+      "description": "Recorded committed HTTP result status."
+    },
+    "result_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Protected minimal replayable response or result reference."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Replay lifetime. Default 7 days for ordinary writes."
+    },
+    "correlation_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Original accepted request workflow identifier."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "principal_id",
+    "operation_key",
+    "request_key",
+    "target_scope_key",
+    "request_digest",
+    "result_status",
+    "expires_at",
+    "correlation_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "principal_id",
+      "operation_key",
+      "target_scope_key",
+      "request_key"
+    ]
+  ],
+  "x-invariants": [
+    "Exam submission and other irreversible domain commands preserve durable business-level uniqueness beyond the transport receipt's expiry.",
+    "Do not replay a protected response after its resource access is revoked."
+  ]
+}

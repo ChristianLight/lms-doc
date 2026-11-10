@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExternalResourceMap",
+  "description": "Live synchronization binding to a provider resource.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "connection_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Connector that owns the mapping.",
+      "x-entity-reference": "IntegrationConnection",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "local_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Canonical resource kind."
+    },
+    "local_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution-local resource UUID."
+    },
+    "external_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Provider model type."
+    },
+    "external_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Stable provider identifier."
+    },
+    "external_version": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Last acknowledged provider revision or ETag."
+    },
+    "local_desired_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Local version reconciliation seeks."
+    },
+    "reconciled_local_version": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Most recent successfully acknowledged local version."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "linked",
+        "pending_removal",
+        "removed",
+        "conflict"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "connection_id",
+    "local_type",
+    "local_id",
+    "external_type",
+    "external_id",
+    "local_desired_version",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "connection_id",
+      "local_type",
+      "local_id"
+    ],
+    [
+      "institution_id",
+      "connection_id",
+      "external_type",
+      "external_id"
+    ]
+  ],
+  "x-invariants": [
+    "No automatic rebinding after removal or collision. Content transfer provenance belongs to ExternalObjectMap.",
+    "Authority rule and connector version govern each field mutation."
+  ]
+}

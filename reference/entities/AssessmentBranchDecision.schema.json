@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentBranchDecision",
+  "description": "Immutable authorized route choice from a sealed section boundary.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AssessmentBranchDecision identifier."
+    },
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact active practice attempt that allows conditional routing.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Exact active practice attempt that allows conditional routing."
+    },
+    "from_section_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Resolved origin section in pinned assessment."
+    },
+    "route_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Positive sequence for candidate progression."
+    },
+    "response_manifest_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Sealed subset of acknowledged response heads for predecessor section."
+    },
+    "rule_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Pinned reviewed branch rule and fallback profile."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "resolved",
+        "pending",
+        "blocked"
+      ],
+      "description": "Resolved, pending or blocked route."
+    },
+    "target_section_key": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Resolved next approved section when successful."
+    },
+    "effective_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative route evaluation or decision time."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_id",
+    "from_section_key",
+    "route_revision",
+    "response_manifest_digest",
+    "rule_key",
+    "status",
+    "effective_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "attempt_id",
+      "from_section_key",
+      "route_revision"
+    ]
+  ],
+  "x-invariants": [
+    "No cycles.",
+    "A resolved route survives reload, reevaluation and correction.",
+    "Evaluator unavailability never implies an incorrect answer."
+  ]
+}

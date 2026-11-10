@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PeerReviewRevision",
+  "description": "Sealed external peer rubric and feedback scoped to one assigned review.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique PeerReviewRevision identifier."
+    },
+    "assignment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact peer review edge and eligible evaluator.",
+      "x-entity-reference": "PeerReviewAssignment",
+      "x-reference-scope": "Exact peer review edge and eligible evaluator."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Positive assignment-level revision."
+    },
+    "rubric_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Pinned approved criterion definitions.",
+      "x-entity-reference": "RubricVersion",
+      "x-reference-scope": "Pinned approved criterion definitions."
+    },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "points": {
+            "type": "string",
+            "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+          },
+          "maximum": {
+            "type": "string",
+            "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+          },
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "scored",
+              "blank",
+              "invalid",
+              "manual_review",
+              "excused"
+            ]
+          },
+          "feedback_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          }
+        },
+        "required": [
+          "criterion_key",
+          "maximum",
+          "disposition"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "description": "Typed criterion marks, states and safe codes."
+    },
+    "comments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "candidate",
+              "marker_only"
+            ]
+          }
+        },
+        "required": [
+          "criterion_key",
+          "text",
+          "visibility"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "description": "Private and candidate-facing feedback."
+    },
+    "evidence_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Exact assessed immutable work digest."
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative accepted review time."
+    }
+  },
+  "required": [
+    "id",
+    "assignment_id",
+    "revision",
+    "rubric_version_id",
+    "criteria",
+    "comments",
+    "evidence_digest",
+    "submitted_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "assignment_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "A submitted revision is immutable.",
+    "Publication requires the configured moderation gate."
+  ]
+}

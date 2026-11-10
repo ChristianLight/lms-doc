@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentDelivery",
+  "description": "Offering and curriculum placement binding for an assessment.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AssessmentDelivery identifier."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering authorized to host delivery.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering authorized to host delivery."
+    },
+    "content_placement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Placement in the pinned CourseVersion authorized for this offering.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Placement in the pinned CourseVersion authorized for this offering."
+    },
+    "assessment_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Current published revision for new starts.",
+      "x-entity-reference": "AssessmentVersion",
+      "x-reference-scope": "Current published revision for new starts."
+    },
+    "policy_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Current published policy for this delivery.",
+      "x-entity-reference": "DeliveryPolicyVersion",
+      "x-reference-scope": "Current published policy for this delivery."
+    },
+    "grade_item_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional academic item scoped to this offering and placement.",
+      "x-entity-reference": "GradeItem",
+      "x-reference-scope": "Optional academic item scoped to this offering and placement."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "suspended",
+        "closed",
+        "archived"
+      ],
+      "description": "Offering delivery lifecycle. Archived is a restricted retention disposition after closure."
+    },
+    "write_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Concurrent publisher guard."
+    },
+    "audience_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Approved offering eligibility and audience definition snapshot digest."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "content_placement_id",
+    "assessment_version_id",
+    "state",
+    "write_version",
+    "audience_digest"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "offering_id",
+      "content_placement_id"
+    ]
+  ],
+  "x-invariants": [
+    "An in-progress attempt keeps captured version after change.",
+    "Grade item must be authorized by academic records."
+  ]
+}

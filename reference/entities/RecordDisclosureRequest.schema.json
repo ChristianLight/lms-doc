@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RecordDisclosureRequest",
+  "description": "Purpose-scoped approval and delivery request for an academic document.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique RecordDisclosureRequest identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Educational identity within the same institution.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Educational identity within the same institution."
+    },
+    "report_revision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Requested report revision, if chosen.",
+      "x-entity-reference": "ReportCardRevision",
+      "x-reference-scope": "Requested report revision, if chosen."
+    },
+    "transcript_revision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Requested transcript revision, if chosen.",
+      "x-entity-reference": "TranscriptRevision",
+      "x-reference-scope": "Requested transcript revision, if chosen."
+    },
+    "destination": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 320,
+      "description": "Approved institutional recipient identifier or self-access code."
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "self",
+        "transfer",
+        "admission",
+        "employer",
+        "authorized_other"
+      ],
+      "description": "Authorized disclosure purpose."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "approved",
+        "delivered",
+        "denied",
+        "expired",
+        "revoked"
+      ],
+      "default": "requested",
+      "description": "Disclosure workflow."
+    },
+    "requested_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authenticated learner, delegate or registrar.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authenticated learner, delegate or registrar."
+    },
+    "approved_by": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Authorized approver or null before decision.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized approver or null before decision."
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive approved delivery expiry."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "person_id",
+    "report_revision_id",
+    "transcript_revision_id",
+    "destination",
+    "purpose",
+    "state",
+    "requested_by",
+    "approved_by",
+    "expires_at",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Current authorization at generation and download.",
+    "Exactly one document reference after approval."
+  ]
+}

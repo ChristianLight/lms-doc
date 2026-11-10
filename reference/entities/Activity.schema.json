@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Activity",
+  "description": "Stable reusable interaction definition.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Must resolve to an authorized Institution in the owning institution."
+    },
+    "owner_unit_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning curriculum unit.",
+      "x-entity-reference": "OrganizationUnit",
+      "x-reference-scope": "Must resolve to an authorized OrganizationUnit in the owning institution."
+    },
+    "activity_kind": {
+      "type": "string",
+      "enum": [
+        "acknowledgment",
+        "self_check",
+        "quiz",
+        "exam",
+        "assignment",
+        "survey",
+        "live_session",
+        "collaboration",
+        "package",
+        "external_tool"
+      ],
+      "description": "Registered interaction."
+    },
+    "created_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Creator.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "owner_unit_id",
+    "activity_kind",
+    "created_by",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Grade evidence and learner state are excluded."
+  ]
+}

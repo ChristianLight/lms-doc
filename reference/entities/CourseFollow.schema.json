@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CourseFollow",
+  "description": "Learner preference for course discovery or notifications independent of enrollment.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Preference owner.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Must resolve to an authorized Person in the owning institution."
+    },
+    "course_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Visible followed catalog identity.",
+      "x-entity-reference": "Course",
+      "x-reference-scope": "Must resolve to an authorized Course in the owning institution."
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether discovery notifications are enabled."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Optimistic preference token."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server preference time."
+    }
+  },
+  "required": [
+    "id",
+    "person_id",
+    "course_id",
+    "active",
+    "revision",
+    "updated_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "person_id",
+      "course_id"
+    ]
+  ],
+  "x-invariants": [
+    "Follow never grants learner or roster access."
+  ]
+}

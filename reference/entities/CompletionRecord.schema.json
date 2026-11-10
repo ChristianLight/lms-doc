@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CompletionRecord",
+  "description": "Immutable earned, exempt or corrective completion decision.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "enrollment_release_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact participation release.",
+      "x-entity-reference": "EnrollmentRelease",
+      "x-reference-scope": "Must resolve to an authorized EnrollmentRelease in the owning institution."
+    },
+    "content_placement_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exact occurrence; null means offering scope.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Exact placement must belong to the course version in the cited EnrollmentRelease."
+    },
+    "rule_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact decision basis.",
+      "x-entity-reference": "LearningRuleVersion",
+      "x-reference-scope": "Must resolve to an authorized LearningRuleVersion in the owning institution."
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "earned",
+        "exempt",
+        "revoked"
+      ],
+      "description": "Decision type."
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 2000,
+      "minItems": 0,
+      "description": "Accepted LearningEvidence identifiers or lineage through projector."
+    },
+    "supersedes_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Prior decision for same scope.",
+      "x-entity-reference": "CompletionRecord",
+      "x-reference-scope": "Must resolve to an authorized CompletionRecord in the owning institution."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Trusted service or human approval actor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "earned_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Learning completion instant."
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative append time."
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Machine decision basis."
+    },
+    "decision_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Immutable rule and evidence checksum."
+    }
+  },
+  "required": [
+    "id",
+    "enrollment_release_id",
+    "rule_version_id",
+    "decision",
+    "evidence_ids",
+    "actor_id",
+    "earned_at",
+    "recorded_at",
+    "reason_code",
+    "decision_digest"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "enrollment_release_id",
+      "decision_digest"
+    ]
+  ],
+  "x-invariants": [
+    "Supersession stays within exact scope.",
+    "No destructive overwrite or silent revocation."
+  ]
+}

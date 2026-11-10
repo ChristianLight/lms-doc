@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AdmissionHold",
+  "description": "Effective registrar-controlled restriction to normal enrollment eligibility.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Restricted offering.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Learner subject.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Person must belong to the same institution as the offering."
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Restricted internal classification."
+    },
+    "safe_explanation": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "description": "Learner-safe next action."
+    },
+    "issued_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Accountable authorized registrar.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive start."
+    },
+    "effective_to": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive end when finite."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Lifecycle compare-and-swap token."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "person_id",
+    "reason_code",
+    "safe_explanation",
+    "issued_by",
+    "effective_from",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "offering_id",
+      "person_id",
+      "effective_from",
+      "reason_code"
+    ]
+  ],
+  "x-invariants": [
+    "Hold blocks new normal admission; existing enrollment state changes separately.",
+    "Private justification is retained in an authorized audit record only."
+  ]
+}

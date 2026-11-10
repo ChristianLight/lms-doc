@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradePeriodSealed",
+  "description": "Ordinary period closure or correction reseal committed.",
+  "type": "object",
+  "properties": {
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "period_close_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "academic_period_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "closed",
+        "resealed"
+      ]
+    },
+    "guard_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "offering_id",
+    "period_close_id",
+    "academic_period_id",
+    "state",
+    "guard_version"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per period closure guard.",
+  "x-deduplication": "period_close_id plus guard_version.",
+  "x-privacy": "No grades or personal details."
+}

@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Library",
+  "description": "Scoped content and template collection.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owner institution.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Must resolve to an authorized Institution in the owning institution."
+    },
+    "owner_unit_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owner unit.",
+      "x-entity-reference": "OrganizationUnit",
+      "x-reference-scope": "Must resolve to an authorized OrganizationUnit in the owning institution."
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Normalized library business code."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Library display title."
+    },
+    "sharing_mode": {
+      "type": "string",
+      "enum": [
+        "public",
+        "institution",
+        "restricted"
+      ],
+      "default": "restricted",
+      "description": "Discovery scope."
+    },
+    "license_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Registered permitted use policy."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Metadata revision."
+    },
+    "archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Retired from new use."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "owner_unit_id",
+    "code",
+    "title",
+    "sharing_mode",
+    "license_key",
+    "revision",
+    "archived"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "code"
+    ]
+  ],
+  "x-invariants": [
+    "Discovery and reuse authorization are independent."
+  ]
+}

@@ -1,0 +1,6 @@
+[collection]
+title = "Fraction resources"
+key = "fractions"
+description = "One unit and one reusable page."
+created = 2026-02-01T08:00:00Z
+entities = ["unit-sample", "xblock.v1:html:fractions"]

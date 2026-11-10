@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CourseOffering",
+  "description": "Delivery instance of one stable course in one academic period.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Must resolve to an authorized Institution in the owning institution."
+    },
+    "owner_unit_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Delegated owning unit.",
+      "x-entity-reference": "OrganizationUnit",
+      "x-reference-scope": "Must resolve to an authorized OrganizationUnit in the owning institution."
+    },
+    "course_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Logical course.",
+      "x-entity-reference": "Course",
+      "x-reference-scope": "Must resolve to an authorized Course in the owning institution."
+    },
+    "academic_period_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Reporting period.",
+      "x-entity-reference": "AcademicPeriod",
+      "x-reference-scope": "Must resolve to an authorized AcademicPeriod in the owning institution."
+    },
+    "default_course_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Default for future enrollments.",
+      "x-entity-reference": "CourseVersion",
+      "x-reference-scope": "Published version must belong to this offering course."
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Display offering code."
+    },
+    "normalized_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Case-folded uniqueness key."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Delivery display title."
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "self_paced",
+        "teacher_led",
+        "blended"
+      ],
+      "default": "teacher_led",
+      "description": "Delivery mode."
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "IANA time zone identifier."
+    },
+    "capacity": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Null is unbounded offering capacity."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "active",
+        "closed",
+        "archived",
+        "cancelled"
+      ],
+      "default": "draft",
+      "description": "Offering lifecycle."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Compare-and-swap token."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation instant."
+    },
+    "activated_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Actual activation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "owner_unit_id",
+    "course_id",
+    "academic_period_id",
+    "default_course_version_id",
+    "code",
+    "normalized_code",
+    "title",
+    "mode",
+    "timezone",
+    "state",
+    "revision",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "academic_period_id",
+      "normalized_code"
+    ]
+  ],
+  "x-invariants": [
+    "Default release changes affect future admissions only.",
+    "Current calendar and admission policy required to activate."
+  ]
+}

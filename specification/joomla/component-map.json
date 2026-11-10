@@ -1,0 +1,3168 @@
+{
+  "manifest_version": "1.0.0",
+  "allocation_status": "design",
+  "package_code": "pkg_lms",
+  "component_admin_view_limit": 5,
+  "custom_admin_view_default": "none",
+  "persistence_policy": {
+    "catalog_entity_storage": "one_authoritative_jcb_admin_view_and_table_per_entity",
+    "application_id_column": "guid",
+    "local_joomla_primary_key": "id",
+    "reserved_generated_columns": [
+      "access",
+      "asset_id",
+      "checked_out",
+      "checked_out_time",
+      "created",
+      "created_by",
+      "guid",
+      "hits",
+      "id",
+      "modified",
+      "modified_by",
+      "ordering",
+      "published",
+      "version"
+    ],
+    "reserved_domain_column_prefix": "lms_",
+    "default_exposure": "internal",
+    "default_attached_admin_flags": {
+      "mainmenu": 0,
+      "submenu": 0,
+      "dashboard_add": 0,
+      "dashboard_list": 0,
+      "add_api": 0,
+      "edit_create_site_view": "",
+      "port": 0
+    },
+    "workspace_override": {
+      "submenu": 1
+    },
+    "schema_and_routes_require_compile_verification": true,
+    "sql_prefix_budget": 12,
+    "runtime_dependency_type": "owner_service_contract",
+    "cross_component_fk_default": "logical_with_owner_validation"
+  },
+  "components": [
+    {
+      "code": "com_lmsassessmentresults",
+      "domain": "assessment",
+      "title": "Assessment evidence and feedback",
+      "purpose": "Publish the exact mark evidence consumed by Academic Records and the exact released feedback visible to an authorized candidate.",
+      "workspace_entity": "AssessmentFeedbackRelease",
+      "admin_views": [
+        {
+          "entity": "GradeEvidence",
+          "definition_key": "com_lmsassessmentresults.grade_evidence",
+          "single_code": "grade_evidence",
+          "list_code": "grade_evidence_rows",
+          "table": "#__lmsassessmentresults_grade_evidence",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AssessmentFeedbackRelease",
+          "definition_key": "com_lmsassessmentresults.assessment_feedback_release",
+          "single_code": "assessment_feedback_release",
+          "list_code": "assessment_feedback_releases",
+          "table": "#__lmsassessmentresults_assessment_feedback_release",
+          "visibility": "workspace"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsenrollments",
+        "com_lmsexamdelivery",
+        "com_lmsexamforms",
+        "com_lmsgradelines",
+        "com_lmsidentity",
+        "com_lmsmarking",
+        "com_lmsofferings",
+        "com_lmssittings"
+      ]
+    },
+    {
+      "code": "com_lmsattemptwork",
+      "domain": "assessment",
+      "title": "Supplemental attempt evidence",
+      "purpose": "Accept private scanned uploads and authorized formative checks against the exact active attempt evidence.",
+      "workspace_entity": "AssessmentUpload",
+      "admin_views": [
+        {
+          "entity": "AssessmentUpload",
+          "definition_key": "com_lmsattemptwork.assessment_upload",
+          "single_code": "assessment_upload",
+          "list_code": "assessment_uploads",
+          "table": "#__lmsattemptwork_assessment_upload",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "PracticeCheck",
+          "definition_key": "com_lmsattemptwork.practice_check",
+          "single_code": "practice_check",
+          "list_code": "practice_checks",
+          "table": "#__lmsattemptwork_practice_check",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsassets",
+        "com_lmsidentity",
+        "com_lmssittings"
+      ]
+    },
+    {
+      "code": "com_lmscoursework",
+      "domain": "assessment",
+      "title": "Coursework and peer review",
+      "purpose": "Maintain peer and self-review policy, allocation, assignment and sealed coursework review evidence.",
+      "workspace_entity": "PeerReviewPolicyVersion",
+      "admin_views": [
+        {
+          "entity": "PeerReviewPolicyVersion",
+          "definition_key": "com_lmscoursework.peer_review_policy_version",
+          "single_code": "peer_review_policy_version",
+          "list_code": "peer_review_policy_versions",
+          "table": "#__lmscoursework_peer_review_policy_version",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "PeerReviewAllocationRun",
+          "definition_key": "com_lmscoursework.peer_review_allocation_run",
+          "single_code": "peer_review_allocation_run",
+          "list_code": "peer_review_allocation_runs",
+          "table": "#__lmscoursework_peer_review_allocation_run",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PeerReviewAssignment",
+          "definition_key": "com_lmscoursework.peer_review_assignment",
+          "single_code": "peer_review_assignment",
+          "list_code": "peer_review_assignments",
+          "table": "#__lmscoursework_peer_review_assignment",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PeerReviewRevision",
+          "definition_key": "com_lmscoursework.peer_review_revision",
+          "single_code": "peer_review_revision",
+          "list_code": "peer_review_revisions",
+          "table": "#__lmscoursework_peer_review_revision",
+          "visibility": "internal"
+        },
+        {
+          "entity": "SelfReviewRevision",
+          "definition_key": "com_lmscoursework.self_review_revision",
+          "single_code": "self_review_revision",
+          "list_code": "self_review_revisions",
+          "table": "#__lmscoursework_self_review_revision",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsenrollments",
+        "com_lmsexamdelivery",
+        "com_lmsidentity",
+        "com_lmsrubrics",
+        "com_lmssittings"
+      ]
+    },
+    {
+      "code": "com_lmsexamcontrol",
+      "domain": "assessment",
+      "title": "Exam admission and interventions",
+      "purpose": "Manage single-use admission grants, bounded sitting allowances, timing adjustments and durable branch decisions.",
+      "workspace_entity": "ExamAccessGrant",
+      "admin_views": [
+        {
+          "entity": "ExamAccessGrant",
+          "definition_key": "com_lmsexamcontrol.exam_access_grant",
+          "single_code": "exam_access_grant",
+          "list_code": "exam_access_grants",
+          "table": "#__lmsexamcontrol_exam_access_grant",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "AttemptAllowance",
+          "definition_key": "com_lmsexamcontrol.attempt_allowance",
+          "single_code": "attempt_allowance",
+          "list_code": "attempt_allowances",
+          "table": "#__lmsexamcontrol_attempt_allowance",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AttemptTimingAdjustment",
+          "definition_key": "com_lmsexamcontrol.attempt_timing_adjustment",
+          "single_code": "attempt_timing_adjustment",
+          "list_code": "attempt_timing_adjustments",
+          "table": "#__lmsexamcontrol_attempt_timing_adjustment",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AssessmentBranchDecision",
+          "definition_key": "com_lmsexamcontrol.assessment_branch_decision",
+          "single_code": "assessment_branch_decision",
+          "list_code": "assessment_branch_decisions",
+          "table": "#__lmsexamcontrol_assessment_branch_decision",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsenrollments",
+        "com_lmsexamdelivery",
+        "com_lmsidentity",
+        "com_lmssections",
+        "com_lmssittings"
+      ]
+    },
+    {
+      "code": "com_lmsexamdelivery",
+      "domain": "assessment",
+      "title": "Assessment delivery",
+      "purpose": "Bind published forms to offerings and hold their exam policy, approved accommodations, team snapshots and incident interventions.",
+      "workspace_entity": "AssessmentDelivery",
+      "admin_views": [
+        {
+          "entity": "AssessmentDelivery",
+          "definition_key": "com_lmsexamdelivery.assessment_delivery",
+          "single_code": "assessment_delivery",
+          "list_code": "assessment_deliveries",
+          "table": "#__lmsexamdelivery_assessment_delivery",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "DeliveryPolicyVersion",
+          "definition_key": "com_lmsexamdelivery.delivery_policy_version",
+          "single_code": "delivery_policy_version",
+          "list_code": "delivery_policy_versions",
+          "table": "#__lmsexamdelivery_delivery_policy_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AssessmentOverride",
+          "definition_key": "com_lmsexamdelivery.assessment_override",
+          "single_code": "assessment_override",
+          "list_code": "assessment_overrides",
+          "table": "#__lmsexamdelivery_assessment_override",
+          "visibility": "internal"
+        },
+        {
+          "entity": "TeamSnapshot",
+          "definition_key": "com_lmsexamdelivery.team_snapshot",
+          "single_code": "team_snapshot",
+          "list_code": "team_snapshots",
+          "table": "#__lmsexamdelivery_team_snapshot",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ExamIncident",
+          "definition_key": "com_lmsexamdelivery.exam_incident",
+          "single_code": "exam_incident",
+          "list_code": "exam_incidents",
+          "table": "#__lmsexamdelivery_exam_incident",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsassets",
+        "com_lmsexamforms",
+        "com_lmsgradelines",
+        "com_lmsidentity",
+        "com_lmsofferings",
+        "com_lmspublications",
+        "com_lmssections",
+        "com_lmssittings"
+      ]
+    },
+    {
+      "code": "com_lmsexamforms",
+      "domain": "assessment",
+      "title": "Assessment forms",
+      "purpose": "Own assessment form versions, section structure and slot placement.",
+      "workspace_entity": "Assessment",
+      "admin_views": [
+        {
+          "entity": "Assessment",
+          "definition_key": "com_lmsexamforms.assessment",
+          "single_code": "assessment",
+          "list_code": "assessments",
+          "table": "#__lmsexamforms_assessment",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "AssessmentVersion",
+          "definition_key": "com_lmsexamforms.assessment_version",
+          "single_code": "assessment_version",
+          "list_code": "assessment_versions",
+          "table": "#__lmsexamforms_assessment_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AssessmentSectionVersion",
+          "definition_key": "com_lmsexamforms.assessment_section_version",
+          "single_code": "assessment_section_version",
+          "list_code": "assessment_section_versions",
+          "table": "#__lmsexamforms_assessment_section_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AssessmentSlot",
+          "definition_key": "com_lmsexamforms.assessment_slot",
+          "single_code": "assessment_slot",
+          "list_code": "assessment_slots",
+          "table": "#__lmsexamforms_assessment_slot",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AssessmentAssemblyReview",
+          "definition_key": "com_lmsexamforms.assessment_assembly_review",
+          "single_code": "assessment_assembly_review",
+          "list_code": "assessment_assembly_reviews",
+          "table": "#__lmsexamforms_assessment_assembly_review",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [
+        {
+          "parent_entity": "AssessmentVersion",
+          "child_entities": [
+            "AssessmentSectionVersion",
+            "AssessmentSlot"
+          ],
+          "mutation_authority": "owner_command"
+        }
+      ],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsitembank",
+        "com_lmsorganization",
+        "com_lmsoutlines",
+        "com_lmsvariants"
+      ]
+    },
+    {
+      "code": "com_lmsinteractions",
+      "domain": "assessment",
+      "title": "Assessment interactions",
+      "purpose": "Maintain the reusable stimulus and typed interaction records, localized renderings and the precise link from item response to scoring criterion.",
+      "workspace_entity": "ItemStimulusVersion",
+      "admin_views": [
+        {
+          "entity": "ItemStimulusVersion",
+          "definition_key": "com_lmsinteractions.item_stimulus_version",
+          "single_code": "item_stimulus_version",
+          "list_code": "item_stimulus_versions",
+          "table": "#__lmsinteractions_item_stimulus_version",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "InteractionDefinition",
+          "definition_key": "com_lmsinteractions.interaction_definition",
+          "single_code": "interaction_definition",
+          "list_code": "interaction_definitions",
+          "table": "#__lmsinteractions_interaction_definition",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ItemCriterionBinding",
+          "definition_key": "com_lmsinteractions.item_criterion_binding",
+          "single_code": "item_criterion_binding",
+          "list_code": "item_criterion_bindings",
+          "table": "#__lmsinteractions_item_criterion_binding",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ItemTranslation",
+          "definition_key": "com_lmsinteractions.item_translation",
+          "single_code": "item_translation",
+          "list_code": "item_translations",
+          "table": "#__lmsinteractions_item_translation",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsassets",
+        "com_lmsidentity",
+        "com_lmsitembank",
+        "com_lmsorganization",
+        "com_lmsrubrics"
+      ]
+    },
+    {
+      "code": "com_lmsitembank",
+      "domain": "assessment",
+      "title": "Item banks and review",
+      "purpose": "Manage item banks, stable item identity, immutable item revisions, scoped bank grants and publication review evidence.",
+      "workspace_entity": "ItemBank",
+      "admin_views": [
+        {
+          "entity": "ItemBank",
+          "definition_key": "com_lmsitembank.item_bank",
+          "single_code": "item_bank",
+          "list_code": "item_banks",
+          "table": "#__lmsitembank_item_bank",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "Item",
+          "definition_key": "com_lmsitembank.item",
+          "single_code": "item",
+          "list_code": "items",
+          "table": "#__lmsitembank_item",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ItemVersion",
+          "definition_key": "com_lmsitembank.item_version",
+          "single_code": "item_version",
+          "list_code": "item_versions",
+          "table": "#__lmsitembank_item_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ItemBankGrant",
+          "definition_key": "com_lmsitembank.item_bank_grant",
+          "single_code": "item_bank_grant",
+          "list_code": "item_bank_grants",
+          "table": "#__lmsitembank_item_bank_grant",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ItemReviewDecision",
+          "definition_key": "com_lmsitembank.item_review_decision",
+          "single_code": "item_review_decision",
+          "list_code": "item_review_decisions",
+          "table": "#__lmsitembank_item_review_decision",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsassets",
+        "com_lmsidentity",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsmarking",
+      "domain": "assessment",
+      "title": "Marking and moderation",
+      "purpose": "Preserve evaluator runs and human assignment, mark revisions and independent moderation under scoped access.",
+      "workspace_entity": "MarkingAssignment",
+      "admin_views": [
+        {
+          "entity": "EvaluationRun",
+          "definition_key": "com_lmsmarking.evaluation_run",
+          "single_code": "evaluation_run",
+          "list_code": "evaluation_runs",
+          "table": "#__lmsmarking_evaluation_run",
+          "visibility": "internal"
+        },
+        {
+          "entity": "MarkingAssignment",
+          "definition_key": "com_lmsmarking.marking_assignment",
+          "single_code": "marking_assignment",
+          "list_code": "marking_assignments",
+          "table": "#__lmsmarking_marking_assignment",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "MarkDraftRevision",
+          "definition_key": "com_lmsmarking.mark_draft_revision",
+          "single_code": "mark_draft_revision",
+          "list_code": "mark_draft_revisions",
+          "table": "#__lmsmarking_mark_draft_revision",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ItemMarkRevision",
+          "definition_key": "com_lmsmarking.item_mark_revision",
+          "single_code": "item_mark_revision",
+          "list_code": "item_mark_revisions",
+          "table": "#__lmsmarking_item_mark_revision",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ModerationDecision",
+          "definition_key": "com_lmsmarking.moderation_decision",
+          "single_code": "moderation_decision",
+          "list_code": "moderation_decisions",
+          "table": "#__lmsmarking_moderation_decision",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsrubrics",
+        "com_lmssittings"
+      ]
+    },
+    {
+      "code": "com_lmsregrades",
+      "domain": "assessment",
+      "title": "Regrades and appeals",
+      "purpose": "Track approved replacement rules, per-attempt reconciliation, scoped appeals and decisions without rewriting previous evidence.",
+      "workspace_entity": "RegradeJob",
+      "admin_views": [
+        {
+          "entity": "RegradeJob",
+          "definition_key": "com_lmsregrades.regrade_job",
+          "single_code": "regrade_job",
+          "list_code": "regrade_jobs",
+          "table": "#__lmsregrades_regrade_job",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "RegradeCase",
+          "definition_key": "com_lmsregrades.regrade_case",
+          "single_code": "regrade_case",
+          "list_code": "regrade_cases",
+          "table": "#__lmsregrades_regrade_case",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AssessmentAppeal",
+          "definition_key": "com_lmsregrades.assessment_appeal",
+          "single_code": "assessment_appeal",
+          "list_code": "assessment_appeals",
+          "table": "#__lmsregrades_assessment_appeal",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsassets",
+        "com_lmsenrollments",
+        "com_lmsexamdelivery",
+        "com_lmsidentity",
+        "com_lmsmarking",
+        "com_lmsrubrics",
+        "com_lmssittings"
+      ]
+    },
+    {
+      "code": "com_lmsrubrics",
+      "domain": "assessment",
+      "title": "Rubrics and evaluators",
+      "purpose": "Maintain evaluator releases, rules and sealed rubrics with their criterion definitions.",
+      "workspace_entity": "RubricVersion",
+      "admin_views": [
+        {
+          "entity": "EvaluatorRelease",
+          "definition_key": "com_lmsrubrics.evaluator_release",
+          "single_code": "evaluator_release",
+          "list_code": "evaluator_releases",
+          "table": "#__lmsrubrics_evaluator_release",
+          "visibility": "internal"
+        },
+        {
+          "entity": "MarkingRuleVersion",
+          "definition_key": "com_lmsrubrics.marking_rule_version",
+          "single_code": "marking_rule_version",
+          "list_code": "marking_rule_versions",
+          "table": "#__lmsrubrics_marking_rule_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "RubricVersion",
+          "definition_key": "com_lmsrubrics.rubric_version",
+          "single_code": "rubric_version",
+          "list_code": "rubric_versions",
+          "table": "#__lmsrubrics_rubric_version",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "RubricCriterion",
+          "definition_key": "com_lmsrubrics.rubric_criterion",
+          "single_code": "rubric_criterion",
+          "list_code": "rubric_criterions",
+          "table": "#__lmsrubrics_rubric_criterion",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [
+        {
+          "parent_entity": "RubricVersion",
+          "child_entities": [
+            "RubricCriterion"
+          ],
+          "mutation_authority": "owner_command"
+        }
+      ],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmssittings",
+      "domain": "assessment",
+      "title": "Attempts and submissions",
+      "purpose": "Keep one transactional owner for attempt admission, writer fencing, resolved forms, accepted response revisions and the final submission seal.",
+      "workspace_entity": "Attempt",
+      "admin_views": [
+        {
+          "entity": "Attempt",
+          "definition_key": "com_lmssittings.attempt",
+          "single_code": "attempt",
+          "list_code": "attempts",
+          "table": "#__lmssittings_attempt",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "AttemptLease",
+          "definition_key": "com_lmssittings.attempt_lease",
+          "single_code": "attempt_lease",
+          "list_code": "attempt_leases",
+          "table": "#__lmssittings_attempt_lease",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AttemptItem",
+          "definition_key": "com_lmssittings.attempt_item",
+          "single_code": "attempt_item",
+          "list_code": "attempt_items",
+          "table": "#__lmssittings_attempt_item",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ResponseRevision",
+          "definition_key": "com_lmssittings.response_revision",
+          "single_code": "response_revision",
+          "list_code": "response_revisions",
+          "table": "#__lmssittings_response_revision",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AttemptSubmission",
+          "definition_key": "com_lmssittings.attempt_submission",
+          "single_code": "attempt_submission",
+          "list_code": "attempt_submissions",
+          "table": "#__lmssittings_attempt_submission",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsenrollments",
+        "com_lmsexamdelivery",
+        "com_lmsexamforms",
+        "com_lmsidentity",
+        "com_lmsitembank",
+        "com_lmspublications",
+        "com_lmsvariants"
+      ]
+    },
+    {
+      "code": "com_lmsvariants",
+      "domain": "assessment",
+      "title": "Pools and variants",
+      "purpose": "Maintain reviewed item pool snapshots and pinned parameter derivation profiles.",
+      "workspace_entity": "ItemPoolVersion",
+      "admin_views": [
+        {
+          "entity": "ItemPoolVersion",
+          "definition_key": "com_lmsvariants.item_pool_version",
+          "single_code": "item_pool_version",
+          "list_code": "item_pool_versions",
+          "table": "#__lmsvariants_item_pool_version",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "VariantProfileVersion",
+          "definition_key": "com_lmsvariants.variant_profile_version",
+          "single_code": "variant_profile_version",
+          "list_code": "variant_profile_versions",
+          "table": "#__lmsvariants_variant_profile_version",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsassets",
+      "domain": "curriculum",
+      "title": "Curriculum assets",
+      "purpose": "Manage resource identity, rights and versioned media metadata that refers to private content or approved provider resources.",
+      "workspace_entity": "Asset",
+      "admin_views": [
+        {
+          "entity": "Asset",
+          "definition_key": "com_lmsassets.asset",
+          "single_code": "asset",
+          "list_code": "assets",
+          "table": "#__lmsassets_asset",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "AssetVersion",
+          "definition_key": "com_lmsassets.asset_version",
+          "single_code": "asset_version",
+          "list_code": "asset_versions",
+          "table": "#__lmsassets_asset_version",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsproviders",
+        "com_lmsstorage"
+      ]
+    },
+    {
+      "code": "com_lmscontent",
+      "domain": "curriculum",
+      "title": "Reusable content and activities",
+      "purpose": "Manage stable authoring identities and typed immutable content and activity versions.",
+      "workspace_entity": "ContentNode",
+      "admin_views": [
+        {
+          "entity": "ContentNode",
+          "definition_key": "com_lmscontent.content_node",
+          "single_code": "content_node",
+          "list_code": "content_nodes",
+          "table": "#__lmscontent_content_node",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "ContentNodeVersion",
+          "definition_key": "com_lmscontent.content_node_version",
+          "single_code": "content_node_version",
+          "list_code": "content_node_versions",
+          "table": "#__lmscontent_content_node_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "Activity",
+          "definition_key": "com_lmscontent.activity",
+          "single_code": "activity",
+          "list_code": "activities",
+          "table": "#__lmscontent_activity",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ActivityVersion",
+          "definition_key": "com_lmscontent.activity_version",
+          "single_code": "activity_version",
+          "list_code": "activity_versions",
+          "table": "#__lmscontent_activity_version",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsexamforms",
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmspackagemanifest"
+      ]
+    },
+    {
+      "code": "com_lmslibraries",
+      "domain": "curriculum",
+      "title": "Libraries and templates",
+      "purpose": "Own reusable entry publication, source adoption and reviewed template update decisions.",
+      "workspace_entity": "Library",
+      "admin_views": [
+        {
+          "entity": "Library",
+          "definition_key": "com_lmslibraries.library",
+          "single_code": "library",
+          "list_code": "libraries",
+          "table": "#__lmslibraries_library",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "LibraryEntry",
+          "definition_key": "com_lmslibraries.library_entry",
+          "single_code": "library_entry",
+          "list_code": "library_entries",
+          "table": "#__lmslibraries_library_entry",
+          "visibility": "internal"
+        },
+        {
+          "entity": "LibraryEntryVersion",
+          "definition_key": "com_lmslibraries.library_entry_version",
+          "single_code": "library_entry_version",
+          "list_code": "library_entry_versions",
+          "table": "#__lmslibraries_library_entry_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "LibraryAdoption",
+          "definition_key": "com_lmslibraries.library_adoption",
+          "single_code": "library_adoption",
+          "list_code": "library_adoptions",
+          "table": "#__lmslibraries_library_adoption",
+          "visibility": "internal"
+        },
+        {
+          "entity": "TemplateMergePlan",
+          "definition_key": "com_lmslibraries.template_merge_plan",
+          "single_code": "template_merge_plan",
+          "list_code": "template_merge_plans",
+          "table": "#__lmslibraries_template_merge_plan",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmscontent",
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsoutlines",
+        "com_lmspublications"
+      ]
+    },
+    {
+      "code": "com_lmsoutlines",
+      "domain": "curriculum",
+      "title": "Course drafting",
+      "purpose": "Own course identity, draft revisions, editable outline ordering and review against the exact draft and rule revision.",
+      "workspace_entity": "CourseDraft",
+      "admin_views": [
+        {
+          "entity": "Course",
+          "definition_key": "com_lmsoutlines.course",
+          "single_code": "course",
+          "list_code": "courses",
+          "table": "#__lmsoutlines_course",
+          "visibility": "internal"
+        },
+        {
+          "entity": "CourseDraft",
+          "definition_key": "com_lmsoutlines.course_draft",
+          "single_code": "course_draft",
+          "list_code": "course_drafts",
+          "table": "#__lmsoutlines_course_draft",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "DraftPlacement",
+          "definition_key": "com_lmsoutlines.draft_placement",
+          "single_code": "draft_placement",
+          "list_code": "draft_placements",
+          "table": "#__lmsoutlines_draft_placement",
+          "visibility": "internal"
+        },
+        {
+          "entity": "DraftReview",
+          "definition_key": "com_lmsoutlines.draft_review",
+          "single_code": "draft_review",
+          "list_code": "draft_reviews",
+          "table": "#__lmsoutlines_draft_review",
+          "visibility": "internal"
+        },
+        {
+          "entity": "LearningRuleVersion",
+          "definition_key": "com_lmsoutlines.learning_rule_version",
+          "single_code": "learning_rule_version",
+          "list_code": "learning_rule_versions",
+          "table": "#__lmsoutlines_learning_rule_version",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [
+        {
+          "parent_entity": "CourseDraft",
+          "child_entities": [
+            "DraftPlacement"
+          ],
+          "mutation_authority": "owner_command"
+        }
+      ],
+      "referenced_components": [
+        "com_lmscontent",
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmspublications"
+      ]
+    },
+    {
+      "code": "com_lmspublications",
+      "domain": "curriculum",
+      "title": "Published course releases",
+      "purpose": "Store immutable course versions and their placement trees for enrolment pinning and authorized previews.",
+      "workspace_entity": "CourseVersion",
+      "admin_views": [
+        {
+          "entity": "CourseVersion",
+          "definition_key": "com_lmspublications.course_version",
+          "single_code": "course_version",
+          "list_code": "course_versions",
+          "table": "#__lmspublications_course_version",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "ContentPlacement",
+          "definition_key": "com_lmspublications.content_placement",
+          "single_code": "content_placement",
+          "list_code": "content_placements",
+          "table": "#__lmspublications_content_placement",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmscontent",
+        "com_lmsidentity",
+        "com_lmsoutlines"
+      ]
+    },
+    {
+      "code": "com_lmslearningexchange",
+      "domain": "interoperability",
+      "title": "Learning-record exchange",
+      "purpose": "Manage authorized exchange profiles, statements sent to learning-record stores and cmi5 registration and launch sessions.",
+      "workspace_entity": "ExchangeProfile",
+      "admin_views": [
+        {
+          "entity": "ExchangeProfile",
+          "definition_key": "com_lmslearningexchange.exchange_profile",
+          "single_code": "exchange_profile",
+          "list_code": "exchange_profiles",
+          "table": "#__lmslearningexchange_exchange_profile",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "LearningRecordDelivery",
+          "definition_key": "com_lmslearningexchange.learning_record_delivery",
+          "single_code": "learning_record_delivery",
+          "list_code": "learning_record_deliveries",
+          "table": "#__lmslearningexchange_learning_record_delivery",
+          "visibility": "internal"
+        },
+        {
+          "entity": "Cmi5Registration",
+          "definition_key": "com_lmslearningexchange.cmi_five_registration",
+          "single_code": "cmi_five_registration",
+          "list_code": "cmi_five_registrations",
+          "table": "#__lmslearningexchange_cmi_five_registration",
+          "visibility": "internal"
+        },
+        {
+          "entity": "Cmi5LaunchSession",
+          "definition_key": "com_lmslearningexchange.cmi_five_launch_session",
+          "single_code": "cmi_five_launch_session",
+          "list_code": "cmi_five_launch_sessions",
+          "table": "#__lmslearningexchange_cmi_five_launch_session",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmscontent",
+        "com_lmsenrollments",
+        "com_lmsorganization",
+        "com_lmspackagemanifest",
+        "com_lmspublications"
+      ]
+    },
+    {
+      "code": "com_lmspackagelaunch",
+      "domain": "interoperability",
+      "title": "Package registrations and launches",
+      "purpose": "Own learner package registration and launch grants fenced to the exact pinned occurrence.",
+      "workspace_entity": "PackageRegistration",
+      "admin_views": [
+        {
+          "entity": "PackageRegistration",
+          "definition_key": "com_lmspackagelaunch.package_registration",
+          "single_code": "package_registration",
+          "list_code": "package_registrations",
+          "table": "#__lmspackagelaunch_package_registration",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "PackageLaunchSession",
+          "definition_key": "com_lmspackagelaunch.package_launch_session",
+          "single_code": "package_launch_session",
+          "list_code": "package_launch_sessions",
+          "table": "#__lmspackagelaunch_package_launch_session",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmscontent",
+        "com_lmsenrollments",
+        "com_lmsorganization",
+        "com_lmspackagemanifest",
+        "com_lmspackageoutline",
+        "com_lmspackageruntime",
+        "com_lmspackagesequence",
+        "com_lmspublications"
+      ]
+    },
+    {
+      "code": "com_lmspackagemanifest",
+      "domain": "interoperability",
+      "title": "Package resources",
+      "purpose": "Hold the validated package version, organizations and resource/file/dependency projection before launch approval.",
+      "workspace_entity": "PackageVersion",
+      "admin_views": [
+        {
+          "entity": "PackageVersion",
+          "definition_key": "com_lmspackagemanifest.package_version",
+          "single_code": "package_version",
+          "list_code": "package_versions",
+          "table": "#__lmspackagemanifest_package_version",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "PackageOrganization",
+          "definition_key": "com_lmspackagemanifest.package_organization",
+          "single_code": "package_organization",
+          "list_code": "package_organizations",
+          "table": "#__lmspackagemanifest_package_organization",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PackageResource",
+          "definition_key": "com_lmspackagemanifest.package_resource",
+          "single_code": "package_resource",
+          "list_code": "package_resources",
+          "table": "#__lmspackagemanifest_package_resource",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PackageResourceFile",
+          "definition_key": "com_lmspackagemanifest.package_resource_file",
+          "single_code": "package_resource_file",
+          "list_code": "package_resource_files",
+          "table": "#__lmspackagemanifest_package_resource_file",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PackageResourceDependency",
+          "definition_key": "com_lmspackagemanifest.package_resource_dependency",
+          "single_code": "package_resource_dependency",
+          "list_code": "package_resource_dependencies",
+          "table": "#__lmspackagemanifest_package_resource_dependency",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmstransfers"
+      ]
+    },
+    {
+      "code": "com_lmspackageoutline",
+      "domain": "interoperability",
+      "title": "Package activity graph",
+      "purpose": "Hold manifest occurrences and version-specific sequencing rules and objective mappings with exact source locators.",
+      "workspace_entity": "PackageActivity",
+      "admin_views": [
+        {
+          "entity": "PackageActivity",
+          "definition_key": "com_lmspackageoutline.package_activity",
+          "single_code": "package_activity",
+          "list_code": "package_activities",
+          "table": "#__lmspackageoutline_package_activity",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "PackageSequencingRule",
+          "definition_key": "com_lmspackageoutline.package_sequencing_rule",
+          "single_code": "package_sequencing_rule",
+          "list_code": "package_sequencing_rules",
+          "table": "#__lmspackageoutline_package_sequencing_rule",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PackageObjectiveMapping",
+          "definition_key": "com_lmspackageoutline.package_objective_mapping",
+          "single_code": "package_objective_mapping",
+          "list_code": "package_objective_mappings",
+          "table": "#__lmspackageoutline_package_objective_mapping",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmspackagemanifest"
+      ]
+    },
+    {
+      "code": "com_lmspackageruntime",
+      "domain": "interoperability",
+      "title": "Package commit and state",
+      "purpose": "Own confirmed SCO state, serialized commit receipts and per-mutation replay evidence.",
+      "workspace_entity": "PackageScoState",
+      "admin_views": [
+        {
+          "entity": "PackageScoState",
+          "definition_key": "com_lmspackageruntime.package_sco_state",
+          "single_code": "package_sco_state",
+          "list_code": "package_sco_states",
+          "table": "#__lmspackageruntime_package_sco_state",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "PackageRuntimeElement",
+          "definition_key": "com_lmspackageruntime.package_runtime_element",
+          "single_code": "package_runtime_element",
+          "list_code": "package_runtime_elements",
+          "table": "#__lmspackageruntime_package_runtime_element",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PackageCommit",
+          "definition_key": "com_lmspackageruntime.package_commit",
+          "single_code": "package_commit",
+          "list_code": "package_commits",
+          "table": "#__lmspackageruntime_package_commit",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PackageRuntimeMutation",
+          "definition_key": "com_lmspackageruntime.package_runtime_mutation",
+          "single_code": "package_runtime_mutation",
+          "list_code": "package_runtime_mutations",
+          "table": "#__lmspackageruntime_package_runtime_mutation",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmspackagelaunch",
+        "com_lmspackageoutline",
+        "com_lmspackagesequence"
+      ]
+    },
+    {
+      "code": "com_lmspackagesequence",
+      "domain": "interoperability",
+      "title": "Package sequencing",
+      "purpose": "Maintain the frozen sequencing tree, per-occurrence and objective state, shared data and durable navigation receipts.",
+      "workspace_entity": "PackageSequencingState",
+      "admin_views": [
+        {
+          "entity": "PackageActivityAttempt",
+          "definition_key": "com_lmspackagesequence.package_activity_attempt",
+          "single_code": "package_activity_attempt",
+          "list_code": "package_activity_attempts",
+          "table": "#__lmspackagesequence_package_activity_attempt",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PackageObjectiveState",
+          "definition_key": "com_lmspackagesequence.package_objective_state",
+          "single_code": "package_objective_state",
+          "list_code": "package_objective_states",
+          "table": "#__lmspackagesequence_package_objective_state",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PackageNavigationReceipt",
+          "definition_key": "com_lmspackagesequence.package_navigation_receipt",
+          "single_code": "package_navigation_receipt",
+          "list_code": "package_navigation_receipts",
+          "table": "#__lmspackagesequence_package_navigation_receipt",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PackageSharedDataStore",
+          "definition_key": "com_lmspackagesequence.package_shared_data_store",
+          "single_code": "package_shared_data_store",
+          "list_code": "package_shared_data_stores",
+          "table": "#__lmspackagesequence_package_shared_data_store",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PackageSequencingState",
+          "definition_key": "com_lmspackagesequence.package_sequencing_state",
+          "single_code": "package_sequencing_state",
+          "list_code": "package_sequencing_states",
+          "table": "#__lmspackagesequence_package_sequencing_state",
+          "visibility": "workspace"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmspackagelaunch",
+        "com_lmspackagemanifest",
+        "com_lmspackageoutline",
+        "com_lmspackageruntime"
+      ]
+    },
+    {
+      "code": "com_lmsrostersync",
+      "domain": "interoperability",
+      "title": "Roster exchange",
+      "purpose": "Manage authorized roster source feeds and exact staged snapshots for owner reconciliation.",
+      "workspace_entity": "RosterFeed",
+      "admin_views": [
+        {
+          "entity": "RosterFeed",
+          "definition_key": "com_lmsrostersync.roster_feed",
+          "single_code": "roster_feed",
+          "list_code": "roster_feeds",
+          "table": "#__lmsrostersync_roster_feed",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "RosterSnapshot",
+          "definition_key": "com_lmsrostersync.roster_snapshot",
+          "single_code": "roster_snapshot",
+          "list_code": "roster_snapshots",
+          "table": "#__lmsrostersync_roster_snapshot",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsorganization",
+        "com_lmstransfers"
+      ]
+    },
+    {
+      "code": "com_lmstoollaunch",
+      "domain": "interoperability",
+      "title": "External tools",
+      "purpose": "Maintain a registered external tool trust relationship, context-scoped placements, launch nonces and grade-service bindings.",
+      "workspace_entity": "ExternalToolDeployment",
+      "admin_views": [
+        {
+          "entity": "ExternalToolDeployment",
+          "definition_key": "com_lmstoollaunch.external_tool_deployment",
+          "single_code": "external_tool_deployment",
+          "list_code": "external_tool_deployments",
+          "table": "#__lmstoollaunch_external_tool_deployment",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "ExternalToolResourceLink",
+          "definition_key": "com_lmstoollaunch.external_tool_resource_link",
+          "single_code": "external_tool_resource_link",
+          "list_code": "external_tool_resource_links",
+          "table": "#__lmstoollaunch_external_tool_resource_link",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ExternalToolLaunch",
+          "definition_key": "com_lmstoollaunch.external_tool_launch",
+          "single_code": "external_tool_launch",
+          "list_code": "external_tool_launches",
+          "table": "#__lmstoollaunch_external_tool_launch",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ExternalGradeBinding",
+          "definition_key": "com_lmstoollaunch.external_grade_binding",
+          "single_code": "external_grade_binding",
+          "list_code": "external_grade_bindings",
+          "table": "#__lmstoollaunch_external_grade_binding",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmscontent",
+        "com_lmsgradelines",
+        "com_lmsidentity",
+        "com_lmsofferings",
+        "com_lmsorganization",
+        "com_lmspublications"
+      ]
+    },
+    {
+      "code": "com_lmstransferreview",
+      "domain": "interoperability",
+      "title": "Transfer mapping and review",
+      "purpose": "Own staged records, exact mapping and reviewer decisions before owner commands promote an approved transfer.",
+      "workspace_entity": "TransferIssue",
+      "admin_views": [
+        {
+          "entity": "TransferRecord",
+          "definition_key": "com_lmstransferreview.transfer_record",
+          "single_code": "transfer_record",
+          "list_code": "transfer_records",
+          "table": "#__lmstransferreview_transfer_record",
+          "visibility": "internal"
+        },
+        {
+          "entity": "TransferIssue",
+          "definition_key": "com_lmstransferreview.transfer_issue",
+          "single_code": "transfer_issue",
+          "list_code": "transfer_issues",
+          "table": "#__lmstransferreview_transfer_issue",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "ExternalObjectMap",
+          "definition_key": "com_lmstransferreview.external_object_map",
+          "single_code": "external_object_map",
+          "list_code": "external_object_maps",
+          "table": "#__lmstransferreview_external_object_map",
+          "visibility": "internal"
+        },
+        {
+          "entity": "TransferApproval",
+          "definition_key": "com_lmstransferreview.transfer_approval",
+          "single_code": "transfer_approval",
+          "list_code": "transfer_approvals",
+          "table": "#__lmstransferreview_transfer_approval",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmstransfers"
+      ]
+    },
+    {
+      "code": "com_lmstransfers",
+      "domain": "interoperability",
+      "title": "Transfer archive intake",
+      "purpose": "Own the immutable transfer artifact, byte range receipts and durable transfer orchestration.",
+      "workspace_entity": "TransferJob",
+      "admin_views": [
+        {
+          "entity": "TransferArtifact",
+          "definition_key": "com_lmstransfers.transfer_artifact",
+          "single_code": "transfer_artifact",
+          "list_code": "transfer_artifacts",
+          "table": "#__lmstransfers_transfer_artifact",
+          "visibility": "internal"
+        },
+        {
+          "entity": "TransferUploadPart",
+          "definition_key": "com_lmstransfers.transfer_upload_part",
+          "single_code": "transfer_upload_part",
+          "list_code": "transfer_upload_parts",
+          "table": "#__lmstransfers_transfer_upload_part",
+          "visibility": "internal"
+        },
+        {
+          "entity": "TransferJob",
+          "definition_key": "com_lmstransfers.transfer_job",
+          "single_code": "transfer_job",
+          "list_code": "transfer_jobs",
+          "table": "#__lmstransfers_transfer_job",
+          "visibility": "workspace"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsstorage"
+      ]
+    },
+    {
+      "code": "com_lmsadmissions",
+      "domain": "participation",
+      "title": "Applications and seat reservations",
+      "purpose": "Own versioned admission policy, applicant queues, single-use invitations, holds and expiring reservations.",
+      "workspace_entity": "EnrollmentApplication",
+      "admin_views": [
+        {
+          "entity": "AdmissionPolicyVersion",
+          "definition_key": "com_lmsadmissions.admission_policy_version",
+          "single_code": "admission_policy_version",
+          "list_code": "admission_policy_versions",
+          "table": "#__lmsadmissions_admission_policy_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "EnrollmentApplication",
+          "definition_key": "com_lmsadmissions.enrollment_application",
+          "single_code": "enrollment_application",
+          "list_code": "enrollment_applications",
+          "table": "#__lmsadmissions_enrollment_application",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "EnrollmentInvitation",
+          "definition_key": "com_lmsadmissions.enrollment_invitation",
+          "single_code": "enrollment_invitation",
+          "list_code": "enrollment_invitations",
+          "table": "#__lmsadmissions_enrollment_invitation",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AdmissionHold",
+          "definition_key": "com_lmsadmissions.admission_hold",
+          "single_code": "admission_hold",
+          "list_code": "admission_holds",
+          "table": "#__lmsadmissions_admission_hold",
+          "visibility": "internal"
+        },
+        {
+          "entity": "SeatReservation",
+          "definition_key": "com_lmsadmissions.seat_reservation",
+          "single_code": "seat_reservation",
+          "list_code": "seat_reservations",
+          "table": "#__lmsadmissions_seat_reservation",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsofferings",
+        "com_lmssections"
+      ]
+    },
+    {
+      "code": "com_lmsclassupdates",
+      "domain": "participation",
+      "title": "Class updates and collaboration",
+      "purpose": "Manage academic announcements, private instructor interventions and class collaboration links while provider sync remains a platform operation.",
+      "workspace_entity": "Announcement",
+      "admin_views": [
+        {
+          "entity": "CollaborationSpaceLink",
+          "definition_key": "com_lmsclassupdates.collaboration_space_link",
+          "single_code": "collaboration_space_link",
+          "list_code": "collaboration_space_links",
+          "table": "#__lmsclassupdates_collaboration_space_link",
+          "visibility": "internal"
+        },
+        {
+          "entity": "Announcement",
+          "definition_key": "com_lmsclassupdates.announcement",
+          "single_code": "announcement",
+          "list_code": "announcements",
+          "table": "#__lmsclassupdates_announcement",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "ParticipationIntervention",
+          "definition_key": "com_lmsclassupdates.participation_intervention",
+          "single_code": "participation_intervention",
+          "list_code": "participation_interventions",
+          "table": "#__lmsclassupdates_participation_intervention",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsenrollments",
+        "com_lmsidentity",
+        "com_lmsofferings",
+        "com_lmsproviders"
+      ]
+    },
+    {
+      "code": "com_lmscohorts",
+      "domain": "participation",
+      "title": "Institutional cohorts",
+      "purpose": "Maintain reusable institutional audiences and their effective-dated learner membership.",
+      "workspace_entity": "Cohort",
+      "admin_views": [
+        {
+          "entity": "Cohort",
+          "definition_key": "com_lmscohorts.cohort",
+          "single_code": "cohort",
+          "list_code": "cohorts",
+          "table": "#__lmscohorts_cohort",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "CohortMembership",
+          "definition_key": "com_lmscohorts.cohort_membership",
+          "single_code": "cohort_membership",
+          "list_code": "cohort_memberships",
+          "table": "#__lmscohorts_cohort_membership",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsenrollments",
+      "domain": "participation",
+      "title": "Enrollment and release assignment",
+      "purpose": "Own enrolled participation, independent source grants and exact release bindings and rollout results.",
+      "workspace_entity": "Enrollment",
+      "admin_views": [
+        {
+          "entity": "Enrollment",
+          "definition_key": "com_lmsenrollments.enrollment",
+          "single_code": "enrollment",
+          "list_code": "enrollments",
+          "table": "#__lmsenrollments_enrollment",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "EnrollmentSourceGrant",
+          "definition_key": "com_lmsenrollments.enrollment_source_grant",
+          "single_code": "enrollment_source_grant",
+          "list_code": "enrollment_source_grants",
+          "table": "#__lmsenrollments_enrollment_source_grant",
+          "visibility": "internal"
+        },
+        {
+          "entity": "EnrollmentRelease",
+          "definition_key": "com_lmsenrollments.enrollment_release",
+          "single_code": "enrollment_release",
+          "list_code": "enrollment_releases",
+          "table": "#__lmsenrollments_enrollment_release",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ReleaseRollout",
+          "definition_key": "com_lmsenrollments.release_rollout",
+          "single_code": "release_rollout",
+          "list_code": "release_rollouts",
+          "table": "#__lmsenrollments_release_rollout",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ReleaseRolloutRow",
+          "definition_key": "com_lmsenrollments.release_rollout_row",
+          "single_code": "release_rollout_row",
+          "list_code": "release_rollout_rows",
+          "table": "#__lmsenrollments_release_rollout_row",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsofferings",
+        "com_lmspublications"
+      ]
+    },
+    {
+      "code": "com_lmslearnernav",
+      "domain": "participation",
+      "title": "Learner navigation preferences",
+      "purpose": "Maintain private resume, bookmark and course-follow records independently of completion and enrollment.",
+      "workspace_entity": "LearnerBookmark",
+      "admin_views": [
+        {
+          "entity": "ProgressResume",
+          "definition_key": "com_lmslearnernav.progress_resume",
+          "single_code": "progress_resume",
+          "list_code": "progress_resumes",
+          "table": "#__lmslearnernav_progress_resume",
+          "visibility": "internal"
+        },
+        {
+          "entity": "LearnerBookmark",
+          "definition_key": "com_lmslearnernav.learner_bookmark",
+          "single_code": "learner_bookmark",
+          "list_code": "learner_bookmarks",
+          "table": "#__lmslearnernav_learner_bookmark",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "CourseFollow",
+          "definition_key": "com_lmslearnernav.course_follow",
+          "single_code": "course_follow",
+          "list_code": "course_follows",
+          "table": "#__lmslearnernav_course_follow",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsenrollments",
+        "com_lmsidentity",
+        "com_lmsofferings",
+        "com_lmsoutlines",
+        "com_lmspublications"
+      ]
+    },
+    {
+      "code": "com_lmsmeetings",
+      "domain": "participation",
+      "title": "Meetings and attendance",
+      "purpose": "Maintain meeting series, materialized occurrences and attendance with immutable corrections.",
+      "workspace_entity": "MeetingSeries",
+      "admin_views": [
+        {
+          "entity": "MeetingSeries",
+          "definition_key": "com_lmsmeetings.meeting_series",
+          "single_code": "meeting_series",
+          "list_code": "meeting_serieses",
+          "table": "#__lmsmeetings_meeting_series",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "MeetingOccurrence",
+          "definition_key": "com_lmsmeetings.meeting_occurrence",
+          "single_code": "meeting_occurrence",
+          "list_code": "meeting_occurrences",
+          "table": "#__lmsmeetings_meeting_occurrence",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AttendanceEntry",
+          "definition_key": "com_lmsmeetings.attendance_entry",
+          "single_code": "attendance_entry",
+          "list_code": "attendance_entries",
+          "table": "#__lmsmeetings_attendance_entry",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AttendanceRevision",
+          "definition_key": "com_lmsmeetings.attendance_revision",
+          "single_code": "attendance_revision",
+          "list_code": "attendance_revisions",
+          "table": "#__lmsmeetings_attendance_revision",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsenrollments",
+        "com_lmsidentity",
+        "com_lmsofferings"
+      ]
+    },
+    {
+      "code": "com_lmsofferings",
+      "domain": "participation",
+      "title": "Course offerings and calendars",
+      "purpose": "Manage the offering root, versioned academic calendar and scoped schedule overrides.",
+      "workspace_entity": "CourseOffering",
+      "admin_views": [
+        {
+          "entity": "CourseOffering",
+          "definition_key": "com_lmsofferings.course_offering",
+          "single_code": "course_offering",
+          "list_code": "course_offerings",
+          "table": "#__lmsofferings_course_offering",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "OfferingCalendarVersion",
+          "definition_key": "com_lmsofferings.offering_calendar_version",
+          "single_code": "offering_calendar_version",
+          "list_code": "offering_calendar_versions",
+          "table": "#__lmsofferings_offering_calendar_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ScheduleOverride",
+          "definition_key": "com_lmsofferings.schedule_override",
+          "single_code": "schedule_override",
+          "list_code": "schedule_overrides",
+          "table": "#__lmsofferings_schedule_override",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsoutlines",
+        "com_lmspublications"
+      ]
+    },
+    {
+      "code": "com_lmsprogress",
+      "domain": "participation",
+      "title": "Learning progress and completion",
+      "purpose": "Record authorized learning evidence, progress projections, completion revisions and pinned availability decisions.",
+      "workspace_entity": "LearningProgress",
+      "admin_views": [
+        {
+          "entity": "LearningEvidence",
+          "definition_key": "com_lmsprogress.learning_evidence",
+          "single_code": "learning_evidence",
+          "list_code": "learning_evidences",
+          "table": "#__lmsprogress_learning_evidence",
+          "visibility": "internal"
+        },
+        {
+          "entity": "LearningProgress",
+          "definition_key": "com_lmsprogress.learning_progress",
+          "single_code": "learning_progress",
+          "list_code": "learning_progresses",
+          "table": "#__lmsprogress_learning_progress",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "CompletionRecord",
+          "definition_key": "com_lmsprogress.completion_record",
+          "single_code": "completion_record",
+          "list_code": "completion_records",
+          "table": "#__lmsprogress_completion_record",
+          "visibility": "internal"
+        },
+        {
+          "entity": "GateOverrideDecision",
+          "definition_key": "com_lmsprogress.gate_override_decision",
+          "single_code": "gate_override_decision",
+          "list_code": "gate_override_decisions",
+          "table": "#__lmsprogress_gate_override_decision",
+          "visibility": "internal"
+        },
+        {
+          "entity": "StickyGateDecision",
+          "definition_key": "com_lmsprogress.sticky_gate_decision",
+          "single_code": "sticky_gate_decision",
+          "list_code": "sticky_gate_decisions",
+          "table": "#__lmsprogress_sticky_gate_decision",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsenrollments",
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsoutlines",
+        "com_lmspublications"
+      ]
+    },
+    {
+      "code": "com_lmsrosterreview",
+      "domain": "participation",
+      "title": "Academic roster review",
+      "purpose": "Keep validated roster staging and per-row decisions applied to authoritative person and offering scope.",
+      "workspace_entity": "RosterSyncRun",
+      "admin_views": [
+        {
+          "entity": "RosterSyncRun",
+          "definition_key": "com_lmsrosterreview.roster_sync_run",
+          "single_code": "roster_sync_run",
+          "list_code": "roster_sync_runs",
+          "table": "#__lmsrosterreview_roster_sync_run",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "RosterSyncRow",
+          "definition_key": "com_lmsrosterreview.roster_sync_row",
+          "single_code": "roster_sync_row",
+          "list_code": "roster_sync_rows",
+          "table": "#__lmsrosterreview_roster_sync_row",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsofferings",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmssections",
+      "domain": "participation",
+      "title": "Sections and learning groups",
+      "purpose": "Maintain offering-local sections and teams and their effective-dated membership assignments.",
+      "workspace_entity": "Section",
+      "admin_views": [
+        {
+          "entity": "Section",
+          "definition_key": "com_lmssections.section",
+          "single_code": "section",
+          "list_code": "sections",
+          "table": "#__lmssections_section",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "LearningGroup",
+          "definition_key": "com_lmssections.learning_group",
+          "single_code": "learning_group",
+          "list_code": "learning_groups",
+          "table": "#__lmssections_learning_group",
+          "visibility": "internal"
+        },
+        {
+          "entity": "SectionMembership",
+          "definition_key": "com_lmssections.section_membership",
+          "single_code": "section_membership",
+          "list_code": "section_memberships",
+          "table": "#__lmssections_section_membership",
+          "visibility": "internal"
+        },
+        {
+          "entity": "GroupMembership",
+          "definition_key": "com_lmssections.group_membership",
+          "single_code": "group_membership",
+          "list_code": "group_memberships",
+          "table": "#__lmssections_group_membership",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsenrollments",
+        "com_lmsidentity",
+        "com_lmsofferings"
+      ]
+    },
+    {
+      "code": "com_lmsaudit",
+      "domain": "platform",
+      "title": "Audit and recovery",
+      "purpose": "Preserve protected audit evidence and record independently approved recovery exercises.",
+      "workspace_entity": "RecoveryExercise",
+      "admin_views": [
+        {
+          "entity": "AuditEvent",
+          "definition_key": "com_lmsaudit.audit_event",
+          "single_code": "audit_event",
+          "list_code": "audit_events",
+          "table": "#__lmsaudit_audit_event",
+          "visibility": "internal"
+        },
+        {
+          "entity": "RecoveryExercise",
+          "definition_key": "com_lmsaudit.recovery_exercise",
+          "single_code": "recovery_exercise",
+          "list_code": "recovery_exercises",
+          "table": "#__lmsaudit_recovery_exercise",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "BackupSet",
+          "definition_key": "com_lmsaudit.backup_set",
+          "single_code": "backup_set",
+          "list_code": "backup_sets",
+          "table": "#__lmsaudit_backup_set",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsauthority",
+        "com_lmsidentity",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsauthority",
+      "domain": "platform",
+      "title": "Academic authority",
+      "purpose": "Manage versioned role definitions, scoped grants, verified guardian rights and safeguarded access exceptions.",
+      "workspace_entity": "RoleAssignment",
+      "admin_views": [
+        {
+          "entity": "RoleDefinitionVersion",
+          "definition_key": "com_lmsauthority.role_definition_version",
+          "single_code": "role_definition_version",
+          "list_code": "role_definition_versions",
+          "table": "#__lmsauthority_role_definition_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "RoleAssignment",
+          "definition_key": "com_lmsauthority.role_assignment",
+          "single_code": "role_assignment",
+          "list_code": "role_assignments",
+          "table": "#__lmsauthority_role_assignment",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "GuardianRelationship",
+          "definition_key": "com_lmsauthority.guardian_relationship",
+          "single_code": "guardian_relationship",
+          "list_code": "guardian_relationships",
+          "table": "#__lmsauthority_guardian_relationship",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AccessRestriction",
+          "definition_key": "com_lmsauthority.access_restriction",
+          "single_code": "access_restriction",
+          "list_code": "access_restrictions",
+          "table": "#__lmsauthority_access_restriction",
+          "visibility": "internal"
+        },
+        {
+          "entity": "EmergencyAccessGrant",
+          "definition_key": "com_lmsauthority.emergency_access_grant",
+          "single_code": "emergency_access_grant",
+          "list_code": "emergency_access_grants",
+          "table": "#__lmsauthority_emergency_access_grant",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmscontact",
+      "domain": "platform",
+      "title": "Contact and verification",
+      "purpose": "Protect verified contact values and single-use verification challenges behind authorized identity workflows.",
+      "workspace_entity": "PersonContact",
+      "admin_views": [
+        {
+          "entity": "PersonContact",
+          "definition_key": "com_lmscontact.person_contact",
+          "single_code": "person_contact",
+          "list_code": "person_contacts",
+          "table": "#__lmscontact_person_contact",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "VerificationChallenge",
+          "definition_key": "com_lmscontact.verification_challenge",
+          "single_code": "verification_challenge",
+          "list_code": "verification_challenges",
+          "table": "#__lmscontact_verification_challenge",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsproviders"
+      ]
+    },
+    {
+      "code": "com_lmsdurability",
+      "domain": "platform",
+      "title": "Command and event durability",
+      "purpose": "Provide transaction-local command receipts and outbox records plus the consumer receipt and checkpoint boundary.",
+      "workspace_entity": "EventDeliveryCheckpoint",
+      "admin_views": [
+        {
+          "entity": "OutboxEvent",
+          "definition_key": "com_lmsdurability.outbox_event",
+          "single_code": "outbox_event",
+          "list_code": "outbox_events",
+          "table": "#__lmsdurability_outbox_event",
+          "visibility": "internal"
+        },
+        {
+          "entity": "InboxReceipt",
+          "definition_key": "com_lmsdurability.inbox_receipt",
+          "single_code": "inbox_receipt",
+          "list_code": "inbox_receipts",
+          "table": "#__lmsdurability_inbox_receipt",
+          "visibility": "internal"
+        },
+        {
+          "entity": "CommandReceipt",
+          "definition_key": "com_lmsdurability.command_receipt",
+          "single_code": "command_receipt",
+          "list_code": "command_receipts",
+          "table": "#__lmsdurability_command_receipt",
+          "visibility": "internal"
+        },
+        {
+          "entity": "EventDeliveryCheckpoint",
+          "definition_key": "com_lmsdurability.event_delivery_checkpoint",
+          "single_code": "event_delivery_checkpoint",
+          "list_code": "event_delivery_checkpoints",
+          "table": "#__lmsdurability_event_delivery_checkpoint",
+          "visibility": "workspace"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsproviders"
+      ]
+    },
+    {
+      "code": "com_lmsidentity",
+      "domain": "platform",
+      "title": "People and sign-in bindings",
+      "purpose": "Manage the institutional person, verified contact and principal identity lifecycle with privileged resolution of provider subjects.",
+      "workspace_entity": "Person",
+      "admin_views": [
+        {
+          "entity": "Person",
+          "definition_key": "com_lmsidentity.person",
+          "single_code": "person",
+          "list_code": "people",
+          "table": "#__lmsidentity_person",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "Principal",
+          "definition_key": "com_lmsidentity.principal",
+          "single_code": "principal",
+          "list_code": "principals",
+          "table": "#__lmsidentity_principal",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ExternalIdentity",
+          "definition_key": "com_lmsidentity.external_identity",
+          "single_code": "external_identity",
+          "list_code": "external_identities",
+          "table": "#__lmsidentity_external_identity",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ServicePrincipalProfileVersion",
+          "definition_key": "com_lmsidentity.service_principal_profile_version",
+          "single_code": "service_principal_profile_version",
+          "list_code": "service_principal_profile_versions",
+          "table": "#__lmsidentity_service_principal_profile_version",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsorganization",
+        "com_lmsproviders"
+      ]
+    },
+    {
+      "code": "com_lmsnotifications",
+      "domain": "platform",
+      "title": "Notifications",
+      "purpose": "Manage consent-aware channel preferences and provider-specific delivery retries.",
+      "workspace_entity": "NotificationDelivery",
+      "admin_views": [
+        {
+          "entity": "NotificationPreference",
+          "definition_key": "com_lmsnotifications.notification_preference",
+          "single_code": "notification_preference",
+          "list_code": "notification_preferences",
+          "table": "#__lmsnotifications_notification_preference",
+          "visibility": "internal"
+        },
+        {
+          "entity": "NotificationDelivery",
+          "definition_key": "com_lmsnotifications.notification_delivery",
+          "single_code": "notification_delivery",
+          "list_code": "notification_deliveries",
+          "table": "#__lmsnotifications_notification_delivery",
+          "visibility": "workspace"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsproviders"
+      ]
+    },
+    {
+      "code": "com_lmsorganization",
+      "domain": "platform",
+      "title": "Institutions and periods",
+      "purpose": "Own the institution tree and the calendar roots from which academic roles and offerings resolve scope.",
+      "workspace_entity": "Institution",
+      "admin_views": [
+        {
+          "entity": "Institution",
+          "definition_key": "com_lmsorganization.institution",
+          "single_code": "institution",
+          "list_code": "institutions",
+          "table": "#__lmsorganization_institution",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "OrganizationUnit",
+          "definition_key": "com_lmsorganization.organization_unit",
+          "single_code": "organization_unit",
+          "list_code": "organization_units",
+          "table": "#__lmsorganization_organization_unit",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AcademicPeriod",
+          "definition_key": "com_lmsorganization.academic_period",
+          "single_code": "academic_period",
+          "list_code": "academic_periods",
+          "table": "#__lmsorganization_academic_period",
+          "visibility": "internal"
+        },
+        {
+          "entity": "InstitutionPolicyVersion",
+          "definition_key": "com_lmsorganization.institution_policy_version",
+          "single_code": "institution_policy_version",
+          "list_code": "institution_policy_versions",
+          "table": "#__lmsorganization_institution_policy_version",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity"
+      ]
+    },
+    {
+      "code": "com_lmsprivacy",
+      "domain": "platform",
+      "title": "Privacy and retention",
+      "purpose": "Coordinate retention policy, legal holds, verified rights requests and durable disposition steps.",
+      "workspace_entity": "PrivacyRequest",
+      "admin_views": [
+        {
+          "entity": "RetentionPolicy",
+          "definition_key": "com_lmsprivacy.retention_policy",
+          "single_code": "retention_policy",
+          "list_code": "retention_policies",
+          "table": "#__lmsprivacy_retention_policy",
+          "visibility": "internal"
+        },
+        {
+          "entity": "LegalHold",
+          "definition_key": "com_lmsprivacy.legal_hold",
+          "single_code": "legal_hold",
+          "list_code": "legal_holds",
+          "table": "#__lmsprivacy_legal_hold",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PrivacyRequest",
+          "definition_key": "com_lmsprivacy.privacy_request",
+          "single_code": "privacy_request",
+          "list_code": "privacy_requests",
+          "table": "#__lmsprivacy_privacy_request",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "DispositionTask",
+          "definition_key": "com_lmsprivacy.disposition_task",
+          "single_code": "disposition_task",
+          "list_code": "disposition_tasks",
+          "table": "#__lmsprivacy_disposition_task",
+          "visibility": "internal"
+        },
+        {
+          "entity": "PrivacyCaseStep",
+          "definition_key": "com_lmsprivacy.privacy_case_step",
+          "single_code": "privacy_case_step",
+          "list_code": "privacy_case_steps",
+          "table": "#__lmsprivacy_privacy_case_step",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsproviders",
+      "domain": "platform",
+      "title": "Provider synchronization",
+      "purpose": "Own configured connectors, field authority, live bindings and staged reconciliation.",
+      "workspace_entity": "IntegrationConnection",
+      "admin_views": [
+        {
+          "entity": "IntegrationConnection",
+          "definition_key": "com_lmsproviders.integration_connection",
+          "single_code": "integration_connection",
+          "list_code": "integration_connections",
+          "table": "#__lmsproviders_integration_connection",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "IntegrationAuthorityRule",
+          "definition_key": "com_lmsproviders.integration_authority_rule",
+          "single_code": "integration_authority_rule",
+          "list_code": "integration_authority_rules",
+          "table": "#__lmsproviders_integration_authority_rule",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ExternalResourceMap",
+          "definition_key": "com_lmsproviders.external_resource_map",
+          "single_code": "external_resource_map",
+          "list_code": "external_resource_maps",
+          "table": "#__lmsproviders_external_resource_map",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsprovidersync",
+      "domain": "platform",
+      "title": "Provider reconciliation",
+      "purpose": "Own staged synchronization changes and durable receipts for a verified provider batch or page.",
+      "workspace_entity": "SyncRun",
+      "admin_views": [
+        {
+          "entity": "SyncRun",
+          "definition_key": "com_lmsprovidersync.sync_run",
+          "single_code": "sync_run",
+          "list_code": "sync_runs",
+          "table": "#__lmsprovidersync_sync_run",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "SyncChange",
+          "definition_key": "com_lmsprovidersync.sync_change",
+          "single_code": "sync_change",
+          "list_code": "sync_changes",
+          "table": "#__lmsprovidersync_sync_change",
+          "visibility": "internal"
+        },
+        {
+          "entity": "SyncPageReceipt",
+          "definition_key": "com_lmsprovidersync.sync_page_receipt",
+          "single_code": "sync_page_receipt",
+          "list_code": "sync_page_receipts",
+          "table": "#__lmsprovidersync_sync_page_receipt",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsorganization",
+        "com_lmsproviders"
+      ]
+    },
+    {
+      "code": "com_lmsstorage",
+      "domain": "platform",
+      "title": "Private objects",
+      "purpose": "Own immutable private storage objects, scanner decisions and purpose-limited access tickets.",
+      "workspace_entity": "StorageObject",
+      "admin_views": [
+        {
+          "entity": "StorageObject",
+          "definition_key": "com_lmsstorage.storage_object",
+          "single_code": "storage_object",
+          "list_code": "storage_objects",
+          "table": "#__lmsstorage_storage_object",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "StorageScanResult",
+          "definition_key": "com_lmsstorage.storage_scan_result",
+          "single_code": "storage_scan_result",
+          "list_code": "storage_scan_results",
+          "table": "#__lmsstorage_storage_scan_result",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AccessTicket",
+          "definition_key": "com_lmsstorage.access_ticket",
+          "single_code": "access_ticket",
+          "list_code": "access_tickets",
+          "table": "#__lmsstorage_access_ticket",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsworkers",
+      "domain": "platform",
+      "title": "Jobs and outbound effects",
+      "purpose": "Manage job scheduling and fenced leases, and persist externally visible effects for uncertain outcome reconciliation.",
+      "workspace_entity": "PlatformJob",
+      "admin_views": [
+        {
+          "entity": "PlatformJob",
+          "definition_key": "com_lmsworkers.platform_job",
+          "single_code": "platform_job",
+          "list_code": "platform_jobs",
+          "table": "#__lmsworkers_platform_job",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "JobLease",
+          "definition_key": "com_lmsworkers.job_lease",
+          "single_code": "job_lease",
+          "list_code": "job_leases",
+          "table": "#__lmsworkers_job_lease",
+          "visibility": "internal"
+        },
+        {
+          "entity": "OutboundEffect",
+          "definition_key": "com_lmsworkers.outbound_effect",
+          "single_code": "outbound_effect",
+          "list_code": "outbound_effects",
+          "table": "#__lmsworkers_outbound_effect",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsproviders"
+      ]
+    },
+    {
+      "code": "com_lmscompetencies",
+      "domain": "records",
+      "title": "Competency frameworks",
+      "purpose": "Maintain stable competencies, exact framework definitions and approved typed academic alignment.",
+      "workspace_entity": "CompetencyFrameworkVersion",
+      "admin_views": [
+        {
+          "entity": "CompetencyFrameworkVersion",
+          "definition_key": "com_lmscompetencies.competency_framework_version",
+          "single_code": "competency_framework_version",
+          "list_code": "competency_framework_versions",
+          "table": "#__lmscompetencies_competency_framework_version",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "Competency",
+          "definition_key": "com_lmscompetencies.competency",
+          "single_code": "competency",
+          "list_code": "competencies",
+          "table": "#__lmscompetencies_competency",
+          "visibility": "internal"
+        },
+        {
+          "entity": "CompetencyVersion",
+          "definition_key": "com_lmscompetencies.competency_version",
+          "single_code": "competency_version",
+          "list_code": "competency_versions",
+          "table": "#__lmscompetencies_competency_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "CompetencyAlignment",
+          "definition_key": "com_lmscompetencies.competency_alignment",
+          "single_code": "competency_alignment",
+          "list_code": "competency_alignments",
+          "table": "#__lmscompetencies_competency_alignment",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmscontent",
+        "com_lmsgradelines",
+        "com_lmsidentity",
+        "com_lmsitembank",
+        "com_lmsorganization",
+        "com_lmsrubrics"
+      ]
+    },
+    {
+      "code": "com_lmscredentials",
+      "domain": "records",
+      "title": "Credentials",
+      "purpose": "Maintain reviewed credential definitions, immutable issued claims and their authorized status changes.",
+      "workspace_entity": "Credential",
+      "admin_views": [
+        {
+          "entity": "CredentialDefinitionVersion",
+          "definition_key": "com_lmscredentials.credential_definition_version",
+          "single_code": "credential_definition_version",
+          "list_code": "credential_definition_versions",
+          "table": "#__lmscredentials_credential_definition_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "Credential",
+          "definition_key": "com_lmscredentials.credential",
+          "single_code": "credential",
+          "list_code": "credentials",
+          "table": "#__lmscredentials_credential",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "CredentialStatusEvent",
+          "definition_key": "com_lmscredentials.credential_status_event",
+          "single_code": "credential_status_event",
+          "list_code": "credential_status_events",
+          "table": "#__lmscredentials_credential_status_event",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsidentity",
+        "com_lmsmastery",
+        "com_lmsorganization",
+        "com_lmsprogramaudit",
+        "com_lmsstorage"
+      ]
+    },
+    {
+      "code": "com_lmscredits",
+      "domain": "records",
+      "title": "Academic credit and recognition",
+      "purpose": "Maintain approved credit scales and retain reviewed recognition, credit and requirement exceptions with provenance.",
+      "workspace_entity": "RecognitionRequest",
+      "admin_views": [
+        {
+          "entity": "CreditUnitSchemeVersion",
+          "definition_key": "com_lmscredits.credit_unit_scheme_version",
+          "single_code": "credit_unit_scheme_version",
+          "list_code": "credit_unit_scheme_versions",
+          "table": "#__lmscredits_credit_unit_scheme_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "RecognitionRequest",
+          "definition_key": "com_lmscredits.recognition_request",
+          "single_code": "recognition_request",
+          "list_code": "recognition_requests",
+          "table": "#__lmscredits_recognition_request",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "RecognitionDecision",
+          "definition_key": "com_lmscredits.recognition_decision",
+          "single_code": "recognition_decision",
+          "list_code": "recognition_decisions",
+          "table": "#__lmscredits_recognition_decision",
+          "visibility": "internal"
+        },
+        {
+          "entity": "CreditDecision",
+          "definition_key": "com_lmscredits.credit_decision",
+          "single_code": "credit_decision",
+          "list_code": "credit_decisions",
+          "table": "#__lmscredits_credit_decision",
+          "visibility": "internal"
+        },
+        {
+          "entity": "RequirementDecision",
+          "definition_key": "com_lmscredits.requirement_decision",
+          "single_code": "requirement_decision",
+          "list_code": "requirement_decisions",
+          "table": "#__lmscredits_requirement_decision",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsassets",
+        "com_lmsenrollments",
+        "com_lmsgraderelease",
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsoutlines",
+        "com_lmsprograms"
+      ]
+    },
+    {
+      "code": "com_lmsgradecalc",
+      "domain": "records",
+      "title": "Grade calculation and lineage",
+      "purpose": "Accept authoritative source receipts, freeze the coverage inputs and preserve a result and its exact calculation contributions.",
+      "workspace_entity": "GradeResult",
+      "admin_views": [
+        {
+          "entity": "GradeEvidenceReceipt",
+          "definition_key": "com_lmsgradecalc.grade_evidence_receipt",
+          "single_code": "grade_evidence_receipt",
+          "list_code": "grade_evidence_receipts",
+          "table": "#__lmsgradecalc_grade_evidence_receipt",
+          "visibility": "internal"
+        },
+        {
+          "entity": "GradeCoverageSnapshot",
+          "definition_key": "com_lmsgradecalc.grade_coverage_snapshot",
+          "single_code": "grade_coverage_snapshot",
+          "list_code": "grade_coverage_snapshots",
+          "table": "#__lmsgradecalc_grade_coverage_snapshot",
+          "visibility": "internal"
+        },
+        {
+          "entity": "GradeResult",
+          "definition_key": "com_lmsgradecalc.grade_result",
+          "single_code": "grade_result",
+          "list_code": "grade_results",
+          "table": "#__lmsgradecalc_grade_result",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "GradeResultRevision",
+          "definition_key": "com_lmsgradecalc.grade_result_revision",
+          "single_code": "grade_result_revision",
+          "list_code": "grade_result_revisions",
+          "table": "#__lmsgradecalc_grade_result_revision",
+          "visibility": "internal"
+        },
+        {
+          "entity": "GradeContribution",
+          "definition_key": "com_lmsgradecalc.grade_contribution",
+          "single_code": "grade_contribution",
+          "list_code": "grade_contributions",
+          "table": "#__lmsgradecalc_grade_contribution",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsassessmentresults",
+        "com_lmsenrollments",
+        "com_lmsgradechanges",
+        "com_lmsgradelines",
+        "com_lmsgradepolicy",
+        "com_lmsofferings",
+        "com_lmsorganization",
+        "com_lmsprogress"
+      ]
+    },
+    {
+      "code": "com_lmsgradechanges",
+      "domain": "records",
+      "title": "Grade review and corrections",
+      "purpose": "Review overrides and appeals and schedule repeatable recalculation with independently tracked target decisions.",
+      "workspace_entity": "RecalculationRun",
+      "admin_views": [
+        {
+          "entity": "GradeOverrideRequest",
+          "definition_key": "com_lmsgradechanges.grade_override_request",
+          "single_code": "grade_override_request",
+          "list_code": "grade_override_requests",
+          "table": "#__lmsgradechanges_grade_override_request",
+          "visibility": "internal"
+        },
+        {
+          "entity": "GradeOverrideDecision",
+          "definition_key": "com_lmsgradechanges.grade_override_decision",
+          "single_code": "grade_override_decision",
+          "list_code": "grade_override_decisions",
+          "table": "#__lmsgradechanges_grade_override_decision",
+          "visibility": "internal"
+        },
+        {
+          "entity": "GradeAppeal",
+          "definition_key": "com_lmsgradechanges.grade_appeal",
+          "single_code": "grade_appeal",
+          "list_code": "grade_appeals",
+          "table": "#__lmsgradechanges_grade_appeal",
+          "visibility": "internal"
+        },
+        {
+          "entity": "RecalculationRun",
+          "definition_key": "com_lmsgradechanges.recalculation_run",
+          "single_code": "recalculation_run",
+          "list_code": "recalculation_runs",
+          "table": "#__lmsgradechanges_recalculation_run",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "RecalculationTarget",
+          "definition_key": "com_lmsgradechanges.recalculation_target",
+          "single_code": "recalculation_target",
+          "list_code": "recalculation_targets",
+          "table": "#__lmsgradechanges_recalculation_target",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsassets",
+        "com_lmsenrollments",
+        "com_lmsgradecalc",
+        "com_lmsgradepolicy",
+        "com_lmsgraderelease",
+        "com_lmsidentity",
+        "com_lmsofferings",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsgradelines",
+      "domain": "records",
+      "title": "Gradebook lines",
+      "purpose": "Maintain a stable gradebook line and its exact source, hierarchy, maximum and deadline policy under a published grade policy.",
+      "workspace_entity": "GradeItem",
+      "admin_views": [
+        {
+          "entity": "GradeItem",
+          "definition_key": "com_lmsgradelines.grade_item",
+          "single_code": "grade_item",
+          "list_code": "grade_items",
+          "table": "#__lmsgradelines_grade_item",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "GradeItemVersion",
+          "definition_key": "com_lmsgradelines.grade_item_version",
+          "single_code": "grade_item_version",
+          "list_code": "grade_item_versions",
+          "table": "#__lmsgradelines_grade_item_version",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsexamdelivery",
+        "com_lmsgradepolicy",
+        "com_lmsofferings",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsgradepolicy",
+      "domain": "records",
+      "title": "Grade policies and scales",
+      "purpose": "Own the reviewed grading scale, exact policy tree, scoped policy assignments and their atomic adoption batch.",
+      "workspace_entity": "GradePolicyVersion",
+      "admin_views": [
+        {
+          "entity": "GradeScaleVersion",
+          "definition_key": "com_lmsgradepolicy.grade_scale_version",
+          "single_code": "grade_scale_version",
+          "list_code": "grade_scale_versions",
+          "table": "#__lmsgradepolicy_grade_scale_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "GradePolicyVersion",
+          "definition_key": "com_lmsgradepolicy.grade_policy_version",
+          "single_code": "grade_policy_version",
+          "list_code": "grade_policy_versions",
+          "table": "#__lmsgradepolicy_grade_policy_version",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "GradeCategoryVersion",
+          "definition_key": "com_lmsgradepolicy.grade_category_version",
+          "single_code": "grade_category_version",
+          "list_code": "grade_category_versions",
+          "table": "#__lmsgradepolicy_grade_category_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "GradePolicyAssignment",
+          "definition_key": "com_lmsgradepolicy.grade_policy_assignment",
+          "single_code": "grade_policy_assignment",
+          "list_code": "grade_policy_assignments",
+          "table": "#__lmsgradepolicy_grade_policy_assignment",
+          "visibility": "internal"
+        },
+        {
+          "entity": "GradePolicyAdoptionBatch",
+          "definition_key": "com_lmsgradepolicy.grade_policy_adoption_batch",
+          "single_code": "grade_policy_adoption_batch",
+          "list_code": "grade_policy_adoption_batches",
+          "table": "#__lmsgradepolicy_grade_policy_adoption_batch",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsenrollments",
+        "com_lmsidentity",
+        "com_lmsofferings",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsgraderelease",
+      "domain": "records",
+      "title": "Grade release and closure",
+      "purpose": "Stage and approve grade release entries and protect closed-period records with narrow correction windows.",
+      "workspace_entity": "GradeRelease",
+      "admin_views": [
+        {
+          "entity": "GradeRelease",
+          "definition_key": "com_lmsgraderelease.grade_release",
+          "single_code": "grade_release",
+          "list_code": "grade_releases",
+          "table": "#__lmsgraderelease_grade_release",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "GradeReleaseEntry",
+          "definition_key": "com_lmsgraderelease.grade_release_entry",
+          "single_code": "grade_release_entry",
+          "list_code": "grade_release_entries",
+          "table": "#__lmsgraderelease_grade_release_entry",
+          "visibility": "internal"
+        },
+        {
+          "entity": "GradePeriodClose",
+          "definition_key": "com_lmsgraderelease.grade_period_close",
+          "single_code": "grade_period_close",
+          "list_code": "grade_period_closes",
+          "table": "#__lmsgraderelease_grade_period_close",
+          "visibility": "internal"
+        },
+        {
+          "entity": "GradeCorrectionWindow",
+          "definition_key": "com_lmsgraderelease.grade_correction_window",
+          "single_code": "grade_correction_window",
+          "list_code": "grade_correction_windows",
+          "table": "#__lmsgraderelease_grade_correction_window",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsenrollments",
+        "com_lmsgradecalc",
+        "com_lmsidentity",
+        "com_lmsofferings",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsinterventions",
+      "domain": "records",
+      "title": "Learner support interventions",
+      "purpose": "Maintain reviewed intervention rules, scoped cases and independently audited case actions.",
+      "workspace_entity": "InterventionCase",
+      "admin_views": [
+        {
+          "entity": "InterventionRuleVersion",
+          "definition_key": "com_lmsinterventions.intervention_rule_version",
+          "single_code": "intervention_rule_version",
+          "list_code": "intervention_rule_versions",
+          "table": "#__lmsinterventions_intervention_rule_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "InterventionCase",
+          "definition_key": "com_lmsinterventions.intervention_case",
+          "single_code": "intervention_case",
+          "list_code": "intervention_cases",
+          "table": "#__lmsinterventions_intervention_case",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "InterventionAction",
+          "definition_key": "com_lmsinterventions.intervention_action",
+          "single_code": "intervention_action",
+          "list_code": "intervention_actions",
+          "table": "#__lmsinterventions_intervention_action",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsenrollments",
+        "com_lmsidentity",
+        "com_lmsofferings",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsmastery",
+      "domain": "records",
+      "title": "Competency evidence and mastery",
+      "purpose": "Accept observed competency evidence and retain authorized learner mastery decisions.",
+      "workspace_entity": "CompetencyDecision",
+      "admin_views": [
+        {
+          "entity": "CompetencyEvidence",
+          "definition_key": "com_lmsmastery.competency_evidence",
+          "single_code": "competency_evidence",
+          "list_code": "competency_evidences",
+          "table": "#__lmsmastery_competency_evidence",
+          "visibility": "internal"
+        },
+        {
+          "entity": "CompetencyDecision",
+          "definition_key": "com_lmsmastery.competency_decision",
+          "single_code": "competency_decision",
+          "list_code": "competency_decisions",
+          "table": "#__lmsmastery_competency_decision",
+          "visibility": "workspace"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmscompetencies",
+        "com_lmscredits",
+        "com_lmsenrollments",
+        "com_lmsgraderelease",
+        "com_lmsidentity",
+        "com_lmsmarking",
+        "com_lmsorganization"
+      ]
+    },
+    {
+      "code": "com_lmsmetrics",
+      "domain": "records",
+      "title": "Academic metrics and exports",
+      "purpose": "Publish a metric definition and preserve exact aggregate snapshots and permitted report export artifacts.",
+      "workspace_entity": "MetricDefinitionVersion",
+      "admin_views": [
+        {
+          "entity": "MetricDefinitionVersion",
+          "definition_key": "com_lmsmetrics.metric_definition_version",
+          "single_code": "metric_definition_version",
+          "list_code": "metric_definition_versions",
+          "table": "#__lmsmetrics_metric_definition_version",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "MetricSnapshot",
+          "definition_key": "com_lmsmetrics.metric_snapshot",
+          "single_code": "metric_snapshot",
+          "list_code": "metric_snapshots",
+          "table": "#__lmsmetrics_metric_snapshot",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AcademicReportExport",
+          "definition_key": "com_lmsmetrics.academic_report_export",
+          "single_code": "academic_report_export",
+          "list_code": "academic_report_exports",
+          "table": "#__lmsmetrics_academic_report_export",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsassets",
+        "com_lmsidentity",
+        "com_lmsofferings",
+        "com_lmsorganization",
+        "com_lmsstorage"
+      ]
+    },
+    {
+      "code": "com_lmsprogramaudit",
+      "domain": "records",
+      "title": "Programme audits and qualifications",
+      "purpose": "Calculate an immutable audit of programme requirements and record the independent institutional qualification decision.",
+      "workspace_entity": "ProgramAuditResult",
+      "admin_views": [
+        {
+          "entity": "ProgramAuditResult",
+          "definition_key": "com_lmsprogramaudit.program_audit_result",
+          "single_code": "program_audit_result",
+          "list_code": "program_audit_results",
+          "table": "#__lmsprogramaudit_program_audit_result",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "ProgramAuditRuleResult",
+          "definition_key": "com_lmsprogramaudit.program_audit_rule_result",
+          "single_code": "program_audit_rule_result",
+          "list_code": "program_audit_rule_results",
+          "table": "#__lmsprogramaudit_program_audit_rule_result",
+          "visibility": "internal"
+        },
+        {
+          "entity": "QualificationDecision",
+          "definition_key": "com_lmsprogramaudit.qualification_decision",
+          "single_code": "qualification_decision",
+          "list_code": "qualification_decisions",
+          "table": "#__lmsprogramaudit_qualification_decision",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmscredits",
+        "com_lmsidentity",
+        "com_lmsmastery",
+        "com_lmsorganization",
+        "com_lmsprograms"
+      ]
+    },
+    {
+      "code": "com_lmsprograms",
+      "domain": "records",
+      "title": "Programs and requirements",
+      "purpose": "Own programme identity, versioned requirement trees and approved programme enrollment and rule bindings.",
+      "workspace_entity": "Program",
+      "admin_views": [
+        {
+          "entity": "Program",
+          "definition_key": "com_lmsprograms.program",
+          "single_code": "program",
+          "list_code": "programs",
+          "table": "#__lmsprograms_program",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "ProgramRequirementVersion",
+          "definition_key": "com_lmsprograms.program_requirement_version",
+          "single_code": "program_requirement_version",
+          "list_code": "program_requirement_versions",
+          "table": "#__lmsprograms_program_requirement_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ProgramRequirement",
+          "definition_key": "com_lmsprograms.program_requirement",
+          "single_code": "program_requirement",
+          "list_code": "program_requirements",
+          "table": "#__lmsprograms_program_requirement",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ProgramEnrollment",
+          "definition_key": "com_lmsprograms.program_enrollment",
+          "single_code": "program_enrollment",
+          "list_code": "program_enrollments",
+          "table": "#__lmsprograms_program_enrollment",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [
+        {
+          "parent_entity": "ProgramRequirementVersion",
+          "child_entities": [
+            "ProgramRequirement"
+          ],
+          "mutation_authority": "owner_command"
+        }
+      ],
+      "referenced_components": [
+        "com_lmscompetencies",
+        "com_lmscredits",
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsoutlines"
+      ]
+    },
+    {
+      "code": "com_lmsrecorddocuments",
+      "domain": "records",
+      "title": "Official document delivery",
+      "purpose": "Preserve immutable document artifacts and verification status and manage approved scoped disclosures.",
+      "workspace_entity": "RecordDisclosureRequest",
+      "admin_views": [
+        {
+          "entity": "RecordDocumentArtifact",
+          "definition_key": "com_lmsrecorddocuments.record_document_artifact",
+          "single_code": "record_document_artifact",
+          "list_code": "record_document_artifacts",
+          "table": "#__lmsrecorddocuments_record_document_artifact",
+          "visibility": "internal"
+        },
+        {
+          "entity": "RecordDocumentStatusEvent",
+          "definition_key": "com_lmsrecorddocuments.record_document_status_event",
+          "single_code": "record_document_status_event",
+          "list_code": "record_document_status_events",
+          "table": "#__lmsrecorddocuments_record_document_status_event",
+          "visibility": "internal"
+        },
+        {
+          "entity": "RecordDisclosureRequest",
+          "definition_key": "com_lmsrecorddocuments.record_disclosure_request",
+          "single_code": "record_disclosure_request",
+          "list_code": "record_disclosure_requests",
+          "table": "#__lmsrecorddocuments_record_disclosure_request",
+          "visibility": "workspace"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsassets",
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsreportcards",
+        "com_lmstranscripts"
+      ]
+    },
+    {
+      "code": "com_lmsreportcards",
+      "domain": "records",
+      "title": "Report cards and narrative",
+      "purpose": "Maintain report card templates and immutable issued snapshots with approved academic comments.",
+      "workspace_entity": "ReportCard",
+      "admin_views": [
+        {
+          "entity": "ReportTemplateVersion",
+          "definition_key": "com_lmsreportcards.report_template_version",
+          "single_code": "report_template_version",
+          "list_code": "report_template_versions",
+          "table": "#__lmsreportcards_report_template_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "ReportCard",
+          "definition_key": "com_lmsreportcards.report_card",
+          "single_code": "report_card",
+          "list_code": "report_cards",
+          "table": "#__lmsreportcards_report_card",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "ReportCardRevision",
+          "definition_key": "com_lmsreportcards.report_card_revision",
+          "single_code": "report_card_revision",
+          "list_code": "report_card_revisions",
+          "table": "#__lmsreportcards_report_card_revision",
+          "visibility": "internal"
+        },
+        {
+          "entity": "AcademicCommentRevision",
+          "definition_key": "com_lmsreportcards.academic_comment_revision",
+          "single_code": "academic_comment_revision",
+          "list_code": "academic_comment_revisions",
+          "table": "#__lmsreportcards_academic_comment_revision",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmsgraderelease",
+        "com_lmsidentity",
+        "com_lmsmeetings",
+        "com_lmsofferings",
+        "com_lmsorganization",
+        "com_lmsstorage"
+      ]
+    },
+    {
+      "code": "com_lmstranscripts",
+      "domain": "records",
+      "title": "Transcripts",
+      "purpose": "Maintain approved transcript templates, person transcript series and exact revisions with credit and grade cutoffs.",
+      "workspace_entity": "Transcript",
+      "admin_views": [
+        {
+          "entity": "TranscriptTemplateVersion",
+          "definition_key": "com_lmstranscripts.transcript_template_version",
+          "single_code": "transcript_template_version",
+          "list_code": "transcript_template_versions",
+          "table": "#__lmstranscripts_transcript_template_version",
+          "visibility": "internal"
+        },
+        {
+          "entity": "Transcript",
+          "definition_key": "com_lmstranscripts.transcript",
+          "single_code": "transcript",
+          "list_code": "transcripts",
+          "table": "#__lmstranscripts_transcript",
+          "visibility": "workspace"
+        },
+        {
+          "entity": "TranscriptRevision",
+          "definition_key": "com_lmstranscripts.transcript_revision",
+          "single_code": "transcript_revision",
+          "list_code": "transcript_revisions",
+          "table": "#__lmstranscripts_transcript_revision",
+          "visibility": "internal"
+        }
+      ],
+      "custom_admin_views": [],
+      "normalized_edit_groups": [],
+      "referenced_components": [
+        "com_lmscredits",
+        "com_lmsgraderelease",
+        "com_lmsidentity",
+        "com_lmsorganization",
+        "com_lmsprogramaudit",
+        "com_lmsstorage"
+      ]
+    }
+  ],
+  "counts": {
+    "domains": 6,
+    "components": 66,
+    "persisted_entities": 240,
+    "admin_view_definitions": 240,
+    "custom_admin_view_definitions": 0,
+    "maximum_attached_per_component": 5,
+    "by_domain": {
+      "assessment": {
+        "components": 13,
+        "entities": 51
+      },
+      "curriculum": {
+        "components": 5,
+        "entities": 18
+      },
+      "interoperability": {
+        "components": 10,
+        "entities": 36
+      },
+      "participation": {
+        "components": 10,
+        "entities": 36
+      },
+      "platform": {
+        "components": 12,
+        "entities": 41
+      },
+      "records": {
+        "components": 16,
+        "entities": 58
+      }
+    }
+  }
+}

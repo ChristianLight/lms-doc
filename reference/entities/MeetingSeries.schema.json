@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MeetingSeries",
+  "description": "Scoped recurring or single live learning plan.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning delivery.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "audience": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "offering",
+            "section",
+            "learning_group",
+            "enrollment"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "additionalProperties": false,
+      "description": "Authorized offering-local participants."
+    },
+    "organizer_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized teacher or organizer.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Learner-visible meeting title."
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Named recurrence zone."
+    },
+    "first_local_datetime": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Validated local civil date and time with explicit DST resolution."
+    },
+    "rrule": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved recurrence subset."
+    },
+    "duration_minutes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1440,
+      "description": "Planned duration."
+    },
+    "venue_kind": {
+      "type": "string",
+      "enum": [
+        "physical",
+        "online",
+        "hybrid"
+      ],
+      "description": "Delivery venue classification."
+    },
+    "alternative_placement_key": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved alternative participation."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "ended",
+        "cancelled"
+      ],
+      "default": "draft",
+      "description": "Series state."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Calendar mutation token."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "audience",
+    "organizer_id",
+    "title",
+    "timezone",
+    "first_local_datetime",
+    "duration_minutes",
+    "venue_kind",
+    "state",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Default horizon is 120 days.",
+    "Occurrence identity survives exception."
+  ]
+}

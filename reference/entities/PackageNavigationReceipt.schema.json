@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageNavigationReceipt",
+  "description": "Immutable result of one edition-specific navigation request.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "registration_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Sequencing instance.",
+      "x-entity-reference": "PackageRegistration",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "from_occurrence_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Current activity at input, when applicable.",
+      "x-entity-reference": "PackageActivity",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "target_occurrence_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Validated target for choice or jump when present.",
+      "x-entity-reference": "PackageActivity",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "delivery_occurrence_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "New leaf selected by edition sequencing engine.",
+      "x-entity-reference": "PackageActivity",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "request_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Scoped idempotency identifier."
+    },
+    "request_kind": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Edition navigation request token."
+    },
+    "request_source": {
+      "type": "string",
+      "enum": [
+        "host_ui",
+        "sco",
+        "system"
+      ],
+      "description": "Which authenticated command source initiated navigation."
+    },
+    "prior_sequence_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "State revision compared before process execution."
+    },
+    "delivery_attempt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Attempt selected by successful delivery.",
+      "x-entity-reference": "PackageActivityAttempt",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "transition_trace": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "process_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "outcome": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "occurrence_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "process_id",
+          "outcome"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 256,
+      "minItems": 0,
+      "uniqueItems": false,
+      "description": "Bounded ordered normative process trace with protected values excluded."
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "deliver",
+        "no_delivery",
+        "suspend",
+        "end",
+        "rejected"
+      ],
+      "description": "Authoritative outcome."
+    },
+    "reason_code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Edition result or rejected prerequisite reason."
+    },
+    "sequence_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    }
+  },
+  "required": [
+    "id",
+    "registration_id",
+    "request_key",
+    "request_kind",
+    "request_source",
+    "prior_sequence_revision",
+    "transition_trace",
+    "result",
+    "reason_code",
+    "sequence_revision",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "registration_id",
+      "request_key"
+    ]
+  ],
+  "x-invariants": [
+    "Each successful request serializes against authoritative sequencing revision.",
+    "Replay never starts a duplicate activity attempt."
+  ]
+}

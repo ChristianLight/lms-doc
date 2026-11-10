@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ScheduleChanged",
+  "description": "Calendar or scoped date policy published.",
+  "type": "object",
+  "properties": {
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "schedule_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "offering_id",
+    "schedule_revision",
+    "effective_from"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By offering schedule revision.",
+  "x-deduplication": "Offering and schedule revision.",
+  "x-privacy": "No individual accommodation rationale or data."
+}

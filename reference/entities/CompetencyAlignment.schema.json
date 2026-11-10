@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CompetencyAlignment",
+  "description": "Approved typed mapping from academic evidence to one competency version.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique CompetencyAlignment identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "competency_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Target competency in same institution.",
+      "x-entity-reference": "CompetencyVersion",
+      "x-reference-scope": "Target competency in same institution."
+    },
+    "activity_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved activity source where applicable.",
+      "x-entity-reference": "ActivityVersion",
+      "x-reference-scope": "Approved activity source where applicable."
+    },
+    "item_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact assessment item where applicable.",
+      "x-entity-reference": "ItemVersion",
+      "x-reference-scope": "Exact assessment item where applicable."
+    },
+    "rubric_criterion_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact criterion where applicable.",
+      "x-entity-reference": "RubricCriterion",
+      "x-reference-scope": "Exact criterion where applicable."
+    },
+    "grade_item_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved grade line where applicable.",
+      "x-entity-reference": "GradeItem",
+      "x-reference-scope": "Approved grade line where applicable."
+    },
+    "source_kind": {
+      "type": "string",
+      "enum": [
+        "activity",
+        "item",
+        "rubric",
+        "grade",
+        "recognition",
+        "observed"
+      ],
+      "description": "Which authoritative evidence type can map."
+    },
+    "relation": {
+      "type": "string",
+      "enum": [
+        "demonstrates",
+        "supports",
+        "prerequisite"
+      ],
+      "description": "Semantic alignment type."
+    },
+    "conversion": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+          },
+          "level_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+          }
+        },
+        "required": [
+          "source_code",
+          "level_code"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 64,
+      "minItems": 0,
+      "description": "Explicit code conversion when applicable."
+    },
+    "source_family": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Independence family used during evidence aggregation."
+    },
+    "active_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive approved alignment validity start."
+    },
+    "active_to": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive end, null for ongoing."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "competency_version_id",
+    "activity_version_id",
+    "item_version_id",
+    "rubric_criterion_id",
+    "grade_item_id",
+    "source_kind",
+    "relation",
+    "conversion",
+    "source_family",
+    "active_from",
+    "active_to",
+    "actor_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Exactly one applicable source reference when kind requires it.",
+    "Labeling an activity alone never grants mastery."
+  ]
+}

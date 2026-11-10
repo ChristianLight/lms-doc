@@ -1,0 +1,519 @@
+# ResponseRevision
+
+Append-only accepted response or explicit clear marker.
+
+Owned by **assessment**.
+
+## Fields
+
+### id
+
+Stable globally unique ResponseRevision identifier.
+
+Required. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "format": "uuid"
+}
+```
+
+### attempt_item_id
+
+Item occurrence in caller-authorized sitting.
+
+Required. Null is rejected.
+
+References [AttemptItem](AttemptItem.md). Item occurrence in caller-authorized sitting.
+
+```json
+{
+  "type": "string",
+  "format": "uuid"
+}
+```
+
+### interaction_key
+
+Known response slot in item version.
+
+Required. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+}
+```
+
+### revision
+
+Per-field monotonic sequence.
+
+Required. Null is rejected.
+
+```json
+{
+  "type": "integer",
+  "minimum": 1,
+  "maximum": 2147483647
+}
+```
+
+### writer_id
+
+Authorized candidate or team editor.
+
+Required. Null is rejected.
+
+References [Principal](Principal.md). Authorized candidate or team editor.
+
+```json
+{
+  "type": "string",
+  "format": "uuid"
+}
+```
+
+### operation_key_hash
+
+Fingerprint of the idempotent save operation.
+
+Required. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "pattern": "^[a-f0-9]{64}$"
+}
+```
+
+### state
+
+Accepted response, explicit clear or formally captured invalid value.
+
+Required. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "enum": [
+    "valid",
+    "cleared",
+    "invalid_captured"
+  ]
+}
+```
+
+### value
+
+Original typed value when present.
+
+Optional. Nullable.
+
+```json
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "single_choice"
+          ]
+        },
+        "choice": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        }
+      },
+      "required": [
+        "kind",
+        "choice"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "multiple_choice"
+          ]
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "choices"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "short_text"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "kind",
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "long_text"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 50000
+        }
+      },
+      "required": [
+        "kind",
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "matching"
+          ]
+        },
+        "pairs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "left": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "right": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              }
+            },
+            "required": [
+              "left",
+              "right"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "kind",
+        "pairs"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "ordering"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "categorization"
+          ]
+        },
+        "placements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "item": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              },
+              "category": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+              }
+            },
+            "required": [
+              "item",
+              "category"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "kind",
+        "placements"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "math"
+          ]
+        },
+        "input": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "locale": {
+          "type": "string",
+          "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8}){0,6}$"
+        }
+      },
+      "required": [
+        "kind",
+        "input",
+        "locale"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "quantity"
+          ]
+        },
+        "input": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "locale": {
+          "type": "string",
+          "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8}){0,6}$"
+        }
+      },
+      "required": [
+        "kind",
+        "input",
+        "unit",
+        "locale"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "files"
+          ]
+        },
+        "asset_version_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 0,
+          "maxItems": 10,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "asset_version_ids"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "points"
+          ]
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "type": "string",
+                "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+              },
+              "y": {
+                "type": "string",
+                "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "kind",
+        "points"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+### canonical_digest
+
+Private digest of normalized form and state.
+
+Required. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "pattern": "^[a-f0-9]{64}$"
+}
+```
+
+### accepted_at
+
+Authoritative admission instant.
+
+Required. Null is rejected.
+
+```json
+{
+  "type": "string",
+  "format": "date-time"
+}
+```
+
+### diagnostic_code
+
+Safe parse or validation state code.
+
+Optional. Nullable.
+
+```json
+{
+  "type": "string",
+  "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+}
+```
+
+### canonical_value_ref
+
+Scoped protected reference to validated typed AST or canonical response when distinct from original.
+
+Optional. Nullable.
+
+```json
+{
+  "type": "string",
+  "format": "uuid"
+}
+```
+
+### parser_profile_version
+
+Pinned response parser version when a typed parser is used.
+
+Optional. Nullable.
+
+```json
+{
+  "type": "integer",
+  "minimum": 1,
+  "maximum": 2147483647
+}
+```
+
+## Integrity
+
+- Value and response state agree.
+- Only admitted responses can become sealed evidence.
+- Revisions are immutable.
+
+## Unique keys
+
+- `id`
+- `attempt_item_id, interaction_key, revision`
+
+## Query indexes
+
+| Fields | Query purpose |
+| --- | --- |
+| attempt_item_id, interaction_key, revision | Resolve last accepted response and audit versions. |
+
+## Retention
+
+Retain sealed response evidence through institution assessment and appeal policy. Unsealed historical edits may expire sooner after holds.

@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SyncChange",
+  "description": "One staged reconciliation decision for an exact provider record and canonical local identity.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "sync_run_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Run owning this proposed effect.",
+      "x-entity-reference": "SyncRun",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "local_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Current local record, if mapped."
+    },
+    "external_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Provider model type."
+    },
+    "external_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Stable provider identity."
+    },
+    "input_digest": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of normalized mapped input."
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "noop",
+        "upsert",
+        "explicit_remove",
+        "absence_review",
+        "conflict",
+        "invalid"
+      ],
+      "description": "Proposed connector outcome."
+    },
+    "protected_diff_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Reviewed restricted diff evidence."
+    },
+    "applied_version": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Committed local record revision, if applied."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "staged",
+        "applied",
+        "skipped",
+        "review"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "sync_run_id",
+    "external_type",
+    "external_id",
+    "input_digest",
+    "decision",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "sync_run_id",
+      "external_type",
+      "external_id"
+    ]
+  ],
+  "x-invariants": [
+    "Same external key with changed digest during one snapshot is a conflict, not last-write-wins.",
+    "Explicit removal uses the canonical domain's transition, including access revocation and retention."
+  ]
+}

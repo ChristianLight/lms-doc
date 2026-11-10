@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PeerReviewPolicyVersion",
+  "description": "Immutable reviewer eligibility, anonymity and aggregation policy.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique PeerReviewPolicyVersion identifier."
+    },
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering-bound delivery requiring peer review.",
+      "x-entity-reference": "AssessmentDelivery",
+      "x-reference-scope": "Offering-bound delivery requiring peer review."
+    },
+    "rubric_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved rubric pinned for all round assignments.",
+      "x-entity-reference": "RubricVersion",
+      "x-reference-scope": "Approved rubric pinned for all round assignments."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Policy revision."
+    },
+    "incoming_required": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Minimum valid received reviews before graded aggregation."
+    },
+    "outgoing_required": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Requested outgoing tasks per reviewer."
+    },
+    "opens_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Earliest assignment and reviewer opening."
+    },
+    "closes_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive final review deadline."
+    },
+    "anonymous": {
+      "type": "boolean",
+      "description": "Whether audience-specific anonymized projections are required."
+    },
+    "graded": {
+      "type": "boolean",
+      "description": "Independent approval to use peer marks as scoring evidence."
+    },
+    "no_reciprocals": {
+      "type": "boolean",
+      "description": "Whether opposite review edges are forbidden."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Allocation, eligibility and aggregation profile digest."
+    }
+  },
+  "required": [
+    "id",
+    "delivery_id",
+    "rubric_version_id",
+    "revision",
+    "incoming_required",
+    "outgoing_required",
+    "opens_at",
+    "closes_at",
+    "anonymous",
+    "graded",
+    "no_reciprocals",
+    "digest"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "delivery_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Formal graded mode defaults to at least three valid marks per assessed criterion.",
+    "Missing reviews trigger staff fallback."
+  ]
+}

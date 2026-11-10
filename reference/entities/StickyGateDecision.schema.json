@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StickyGateDecision",
+  "description": "Evidence snapshot retained after an eligible activity first started with sticky continuity.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "enrollment_release_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact learner publication assignment.",
+      "x-entity-reference": "EnrollmentRelease",
+      "x-reference-scope": "Must resolve to an authorized EnrollmentRelease in the owning institution."
+    },
+    "content_placement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact activity placement.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Exact placement must belong to the version pinned to the EnrollmentRelease."
+    },
+    "rule_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved continuity policy.",
+      "x-entity-reference": "LearningRuleVersion",
+      "x-reference-scope": "Must resolve to an authorized LearningRuleVersion in the owning institution."
+    },
+    "basis_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical safe evidence and decision snapshot."
+    },
+    "source_record_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 200,
+      "minItems": 0,
+      "description": "Authorized authoritative evidence, result or approval references."
+    },
+    "first_started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server action instant."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "withdrawn"
+      ],
+      "default": "active",
+      "description": "Sticky decision availability."
+    }
+  },
+  "required": [
+    "id",
+    "enrollment_release_id",
+    "content_placement_id",
+    "rule_version_id",
+    "basis_digest",
+    "source_record_ids",
+    "first_started_at",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "enrollment_release_id",
+      "content_placement_id",
+      "rule_version_id"
+    ]
+  ],
+  "x-invariants": [
+    "Only eligible native non-assessment activity can create ordinary sticky authorization.",
+    "Withdrawal or safety can supersede without deleting decision basis."
+  ]
+}

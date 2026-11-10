@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RosterSnapshot",
+  "description": "Privately staged authoritative or delta roster data and reconciliation baseline.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "feed_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning feed.",
+      "x-entity-reference": "RosterFeed",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "artifact_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Input bytes or canonical API collection snapshot.",
+      "x-entity-reference": "TransferArtifact",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Source or connector monotonic snapshot generation."
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "bulk",
+        "delta"
+      ],
+      "description": "Normative feed effect semantics."
+    },
+    "scope_complete": {
+      "type": "boolean",
+      "description": "True only after full declared file or page set validation."
+    },
+    "record_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5000000,
+      "description": "Total verified source records."
+    },
+    "proposed_withdrawal_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5000000,
+      "description": "Count from approved baseline, awaiting explicit review where required."
+    },
+    "projection_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Exact reconciled graph and baseline digest."
+    },
+    "baseline_feed_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Revision before stage."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "staged",
+        "review",
+        "applied",
+        "failed"
+      ],
+      "description": "Authoritative lifecycle state advanced only through owner commands."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    }
+  },
+  "required": [
+    "id",
+    "feed_id",
+    "artifact_id",
+    "sequence",
+    "mode",
+    "scope_complete",
+    "record_count",
+    "proposed_withdrawal_count",
+    "projection_digest",
+    "baseline_feed_revision",
+    "state",
+    "revision",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "feed_id",
+      "sequence"
+    ]
+  ],
+  "x-invariants": [
+    "Bulk deletes are never inferred until scope completeness and source authority are proven.",
+    "Apply owner changes and feed watermark together."
+  ]
+}

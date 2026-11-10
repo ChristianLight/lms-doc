@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Competency",
+  "description": "Stable academic outcome identity within one framework family.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique Competency identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "framework_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable framework family within institution."
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+      "description": "Stable competency code."
+    },
+    "archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Exclude from new framework versions when retired."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "framework_key",
+    "code",
+    "archived",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "framework_key",
+      "code"
+    ]
+  ],
+  "x-invariants": [
+    "Archive cannot delete published competency evidence."
+  ]
+}

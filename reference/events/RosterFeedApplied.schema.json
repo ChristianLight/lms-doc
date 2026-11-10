@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RosterFeedApplied",
+  "description": "Verified partition reconciliation checkpoint advanced.",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "applied_rows": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "unresolved_rows": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    }
+  },
+  "required": [
+    "run_id",
+    "sequence",
+    "applied_rows",
+    "unresolved_rows"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By source partition sequence.",
+  "x-deduplication": "Run ID and sequence.",
+  "x-privacy": "No external person identity in event."
+}

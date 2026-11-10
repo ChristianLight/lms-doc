@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageSequencingRule",
+  "description": "Edition-specific typed control or rule with a verified manifest locator.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "activity_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Activity or cluster owning the rule.",
+      "x-entity-reference": "PackageActivity",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "control",
+        "pre",
+        "exit",
+        "post",
+        "rollup",
+        "objective",
+        "selection",
+        "randomization",
+        "presentation"
+      ],
+      "description": "Sequencing evaluation phase."
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "description": "Stable evaluation order within its phase."
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Approved action token in edition's vocabulary."
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "operator": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "operand": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "threshold": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "operator",
+          "operand"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "uniqueItems": false,
+      "description": "Typed ordered conditions interpreted by phase."
+    },
+    "combination": {
+      "type": "string",
+      "enum": [
+        "all",
+        "any",
+        "none"
+      ],
+      "description": "How rule conditions combine."
+    },
+    "source_locator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Exact XML node location for diagnostics."
+    }
+  },
+  "required": [
+    "id",
+    "activity_id",
+    "phase",
+    "ordinal",
+    "action",
+    "conditions",
+    "combination",
+    "source_locator"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "activity_id",
+      "phase",
+      "ordinal"
+    ]
+  ],
+  "x-invariants": [
+    "Unknown mandatory rule types cannot be silently interpreted.",
+    "Raw source retains edition schema context."
+  ]
+}

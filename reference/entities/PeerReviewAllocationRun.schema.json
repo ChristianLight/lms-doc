@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PeerReviewAllocationRun",
+  "description": "Frozen peer graph, algorithm and assignment set for one round.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique PeerReviewAllocationRun identifier."
+    },
+    "policy_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved policy used for this allocation.",
+      "x-entity-reference": "PeerReviewPolicyVersion",
+      "x-reference-scope": "Approved policy used for this allocation."
+    },
+    "round": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Ordinal review round under policy."
+    },
+    "cohort_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Sealed reviewer, submission and exclusion inputs."
+    },
+    "assignment_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Canonical assignment graph and shortfall manifest."
+    },
+    "cutoff_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Roster and sealed work snapshot time."
+    },
+    "allocated_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized coordinator or approved service.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized coordinator or approved service."
+    },
+    "allocated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative publication time."
+    }
+  },
+  "required": [
+    "id",
+    "policy_version_id",
+    "round",
+    "cohort_digest",
+    "assignment_digest",
+    "cutoff_at",
+    "allocated_by",
+    "allocated_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "policy_version_id",
+      "round"
+    ]
+  ],
+  "x-invariants": [
+    "Allocation retries reproduce same eligible edges.",
+    "Freeze submitted evidence reference per edge."
+  ]
+}

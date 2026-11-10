@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AuditEvent",
+  "description": "Durable event for a sensitive action, access decision or disclosure.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "actor_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Authenticating actor or null for system actor without a local principal.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "authority_assignment_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Grant used where applicable.",
+      "x-entity-reference": "RoleAssignment",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "subject_person_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Restricted affected person identity when required for access reports."
+    },
+    "scope_type": {
+      "type": "string",
+      "enum": [
+        "Institution",
+        "OrganizationUnit",
+        "AcademicPeriod",
+        "Program",
+        "Course",
+        "CourseOffering",
+        "Section",
+        "LearningGroup",
+        "Cohort",
+        "Library",
+        "Person",
+        "IntegrationConnection",
+        "AssessmentDelivery",
+        "ExternalToolDeployment",
+        "RosterFeed"
+      ],
+      "description": "Nearest assignable authority context type used or evaluated. The exact owner target is stored separately."
+    },
+    "scope_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Nearest assignable authority context ID. Use Institution when a registered mandate has no more specific grant."
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Stable permission or audited domain action key."
+    },
+    "target_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Opaque target class."
+    },
+    "target_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Opaque target ID."
+    },
+    "target_version": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Committed record version when applicable."
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "allowed",
+        "denied",
+        "committed",
+        "failed",
+        "disclosed"
+      ],
+      "description": "Semantics of the event without response payload."
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server UTC instant."
+    },
+    "correlation_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Request or job trace identifier."
+    },
+    "reason_code": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Safe normalized reason without freeform protected text."
+    },
+    "evidence_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Separate custody-controlled evidence object."
+    },
+    "stream_seq": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Ordered sequence within institution audit partition."
+    },
+    "record_hash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of canonical audit metadata and prior hash in the same partition."
+    },
+    "previous_hash": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Absent for the first event of a partition."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "scope_type",
+    "scope_id",
+    "action",
+    "target_type",
+    "target_id",
+    "outcome",
+    "occurred_at",
+    "correlation_id",
+    "stream_seq",
+    "record_hash"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "stream_seq"
+    ]
+  ],
+  "x-invariants": [
+    "Append only under audit custody. Retention removes a verified segment with a separately protected segment receipt.",
+    "Academic mutation and its audit or authoritative event are atomic. Whole responses, answer keys and secrets are excluded."
+  ]
+}

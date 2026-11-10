@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RubricVersion",
+  "description": "Immutable scoring rubric with criterion and point policy.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique RubricVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution within which the rubric can be shared.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Institution within which the rubric can be shared."
+    },
+    "rubric_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Institution-scoped rubric series key."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Positive version ordinal."
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Human-readable rubric title."
+    },
+    "maximum": {
+      "type": "string",
+      "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])",
+      "description": "Published total maximum before combining with other criteria."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Digest over ordered criteria, level and display settings."
+    },
+    "published_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Rubric publisher.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Rubric publisher."
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Release instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "rubric_key",
+    "revision",
+    "label",
+    "maximum",
+    "digest",
+    "published_by",
+    "published_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "rubric_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Sum criterion maxima to rubric total.",
+    "Published rubric graph immutable."
+  ]
+}

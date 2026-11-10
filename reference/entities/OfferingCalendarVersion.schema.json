@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OfferingCalendarVersion",
+  "description": "Published offering-wide hard dates with exact civil-time context.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Calendar owner.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic calendar revision."
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "IANA zone used for calendar arithmetic."
+    },
+    "tzdb_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Time zone database release."
+    },
+    "windows": {
+      "type": "object",
+      "properties": {
+        "enroll_open_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "enroll_close_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "learn_open_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "learn_close_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "review_open_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "review_close_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "enroll_open_at",
+        "enroll_close_at",
+        "learn_open_at",
+        "learn_close_at",
+        "review_open_at",
+        "review_close_at"
+      ],
+      "additionalProperties": false,
+      "description": "Resolved UTC bounds with explicit nulls."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Activation boundary."
+    },
+    "approved_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Calendar approving principal.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Durable publish instant."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "revision",
+    "timezone",
+    "tzdb_version",
+    "windows",
+    "effective_from",
+    "approved_by",
+    "published_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "offering_id",
+      "revision"
+    ],
+    [
+      "offering_id",
+      "effective_from"
+    ]
+  ],
+  "x-invariants": [
+    "All present windows have inclusive starts and exclusive ends.",
+    "Prior calendars stay pinned to already issued contexts."
+  ]
+}

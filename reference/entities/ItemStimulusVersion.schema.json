@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ItemStimulusVersion",
+  "description": "Immutable shared stimulus independently reusable across assessment items.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ItemStimulusVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution that owns this content.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Institution that owns this content."
+    },
+    "stimulus_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Institution-scoped reusable stimulus series key."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic revision for the series."
+    },
+    "locale": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8}){0,6}$",
+      "description": "Canonical stimulus language."
+    },
+    "content": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "sanitized_html",
+              "text",
+              "asset",
+              "math"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50000
+          }
+        },
+        "required": [
+          "key",
+          "format",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 256,
+      "description": "Safe rich media or text blocks."
+    },
+    "asset_version_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Permitted immutable asset references.",
+      "x-entity-reference": "AssetVersion",
+      "x-reference-scope": "Permitted immutable asset references."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Canonical stimulus content and accessibility manifest digest."
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Release time."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "stimulus_key",
+    "revision",
+    "locale",
+    "content",
+    "asset_version_ids",
+    "digest",
+    "published_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "stimulus_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Only published stimuli may be pinned to published items."
+  ]
+}

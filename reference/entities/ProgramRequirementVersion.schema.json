@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProgramRequirementVersion",
+  "description": "Immutable academic requirements for a programme entry or approved transfer.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ProgramRequirementVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "program_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Programme within institution.",
+      "x-entity-reference": "Program",
+      "x-reference-scope": "Programme within institution."
+    },
+    "credit_scheme_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Published unit scheme for awards in this version.",
+      "x-entity-reference": "CreditUnitSchemeVersion",
+      "x-reference-scope": "Published unit scheme for awards in this version."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic immutable revision number within its stable identity."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "superseded",
+        "retired"
+      ],
+      "default": "draft",
+      "description": "Academic requirement publication."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Version label for academic planners."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date",
+      "description": "Inclusive academic calendar date."
+    },
+    "effective_to": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive academic cutoff if any."
+    },
+    "minimum_total_credits": {
+      "type": "string",
+      "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$",
+      "default": "0",
+      "description": "Required distinct credit sum."
+    },
+    "minimum_resident_credits": {
+      "type": "string",
+      "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$",
+      "default": "0",
+      "description": "Required institutional residency credits."
+    },
+    "maximum_transfer_credits": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Maximum accepted transfer units for completion, null if uncapped."
+    },
+    "minimum_gpa": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exact GPA requirement."
+    },
+    "gpa_repeat_basis": {
+      "type": "string",
+      "enum": [
+        "all",
+        "latest",
+        "highest"
+      ],
+      "default": "all",
+      "description": "GPA repeat treatment."
+    },
+    "credit_repeat_basis": {
+      "type": "string",
+      "enum": [
+        "earliest_pass",
+        "latest_pass",
+        "highest_pass"
+      ],
+      "default": "earliest_pass",
+      "description": "One awarded course credit selection."
+    },
+    "qualification_valid_days": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 36500
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Credential qualification lifetime or null for no expiry."
+    },
+    "renewal_opens_days": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 36500,
+      "default": 0,
+      "description": "Calendar-day renewal opening before expiry."
+    },
+    "publication_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Canonical requirement graph digest."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "program_id",
+    "credit_scheme_id",
+    "revision",
+    "created_at",
+    "state",
+    "name",
+    "effective_from",
+    "effective_to",
+    "minimum_total_credits",
+    "minimum_resident_credits",
+    "maximum_transfer_credits",
+    "minimum_gpa",
+    "gpa_repeat_basis",
+    "credit_repeat_basis",
+    "qualification_valid_days",
+    "renewal_opens_days",
+    "publication_digest"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "program_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Minimum residency cannot exceed minimum total where total positive.",
+    "Requirements acyclic, typed and bounded before publication.",
+    "Version changes never alter prior audit."
+  ]
+}

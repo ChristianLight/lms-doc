@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LibraryEntry",
+  "description": "Stable library item for a shared resource, activity or template.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "library_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning library.",
+      "x-entity-reference": "Library",
+      "x-reference-scope": "Must resolve to an authorized Library in the owning institution."
+    },
+    "item_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Normalized stable entry key."
+    },
+    "entry_kind": {
+      "type": "string",
+      "enum": [
+        "resource",
+        "activity",
+        "template"
+      ],
+      "description": "Payload family."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Discovery title."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+      },
+      "maxItems": 40,
+      "minItems": 0,
+      "description": "Approved search keywords."
+    },
+    "archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Retired from new use."
+    }
+  },
+  "required": [
+    "id",
+    "library_id",
+    "item_key",
+    "entry_kind",
+    "title",
+    "tags",
+    "archived"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "library_id",
+      "item_key"
+    ]
+  ],
+  "x-invariants": [
+    "Archive does not remove authorized historic pinned versions."
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LegalHold",
+  "description": "Approved institution case that prevents disposition of specified records.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "case_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Unique institution case key."
+    },
+    "target_kind": {
+      "type": "string",
+      "enum": [
+        "person",
+        "record",
+        "offering",
+        "record_class"
+      ],
+      "description": "Type of selector. Resolve against trusted institutional records."
+    },
+    "target_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Required for person, record and offering selectors. Null for an institution-wide record-class hold."
+    },
+    "record_class": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "identity_contact",
+            "enrollment_history",
+            "academic_official",
+            "submissions",
+            "drafts",
+            "exam_telemetry",
+            "audit",
+            "connector_message",
+            "communication",
+            "backup",
+            "private_export",
+            "asset_bytes"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Required for class selector. Otherwise narrows the named target if supplied."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive instant from which destruction is forbidden."
+    },
+    "authorized_by_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Records authority imposing hold.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "released_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Time of independent authorized release."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "released"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "case_key",
+    "target_kind",
+    "effective_from",
+    "authorized_by_id",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "case_key"
+    ]
+  ],
+  "x-invariants": [
+    "No expiration by default. Only an authorized records reviewer can release a hold.",
+    "Use shared scope locking against destruction so an approved hold cannot pass through a race."
+  ]
+}

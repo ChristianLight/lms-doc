@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EmergencyAccessGrant",
+  "description": "Short-lived additional individual authority for an incident.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Individually attributable named actor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "approved_by_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Independent security approver.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "scope_type": {
+      "type": "string",
+      "enum": [
+        "Institution",
+        "OrganizationUnit",
+        "AcademicPeriod",
+        "Program",
+        "Course",
+        "CourseOffering",
+        "Section",
+        "LearningGroup",
+        "Cohort",
+        "Library",
+        "Person",
+        "IntegrationConnection",
+        "AssessmentDelivery",
+        "ExternalToolDeployment",
+        "RosterFeed"
+      ],
+      "description": "Exact scope type. No implicit descendants."
+    },
+    "scope_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Validated scope target."
+    },
+    "capability_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+      },
+      "minItems": 1,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "description": "Narrow pre-approved emergency capabilities."
+    },
+    "incident_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Existing institution incident ticket identifier."
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive expiry. Required when active and max 60 minutes after activation."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "active",
+        "revoked",
+        "denied"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "principal_id",
+    "scope_type",
+    "scope_id",
+    "capability_keys",
+    "incident_ref",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Actor, approver and requester must be attributable. Recipient cannot approve. Every use has an audit event and alert.",
+    "Emergency authority cannot bypass restriction, academic release policy or legal hold."
+  ]
+}

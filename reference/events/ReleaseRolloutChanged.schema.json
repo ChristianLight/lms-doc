@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReleaseRolloutChanged",
+  "description": "A scoped rollout plan or work state changed.",
+  "type": "object",
+  "properties": {
+    "rollout_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved",
+        "applying",
+        "completed",
+        "partial",
+        "cancelled"
+      ]
+    }
+  },
+  "required": [
+    "rollout_id",
+    "offering_id",
+    "revision",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "participation",
+  "x-ordering": "By rollout revision.",
+  "x-deduplication": "Rollout plus revision.",
+  "x-privacy": "No affected learner list."
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InterventionCaseChanged",
+  "description": "Scoped support case changed for authorized staff queue.",
+  "type": "object",
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "open",
+        "assigned",
+        "waiting",
+        "resolved",
+        "dismissed"
+      ]
+    },
+    "pointer_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "case_id",
+    "offering_id",
+    "state",
+    "pointer_version"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per intervention case pointer.",
+  "x-deduplication": "case_id plus pointer_version.",
+  "x-privacy": "No learner notes, grade or sensitive rationale."
+}

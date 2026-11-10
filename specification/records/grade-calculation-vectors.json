@@ -1,0 +1,126 @@
+{
+  "vector_version": "1.0.0",
+  "algorithm": "grade-calc-v1",
+  "vectors": [
+    {
+      "id": "points-not-equal",
+      "kind": "category",
+      "input": {"mode": "points", "children": [{"key": "a", "earned": "8", "maximum": "10"}, {"key": "b", "earned": "45", "maximum": "90"}]},
+      "expected": {"status": "graded", "ratio": "53/100", "dropped": []}
+    },
+    {
+      "id": "equal-normalized-items",
+      "kind": "category",
+      "input": {"mode": "equal", "children": [{"key": "a", "earned": "8", "maximum": "10"}, {"key": "b", "earned": "45", "maximum": "90"}]},
+      "expected": {"status": "graded", "ratio": "13/20", "dropped": []}
+    },
+    {
+      "id": "weights-renormalize-excusal",
+      "kind": "category",
+      "input": {"mode": "weighted", "children": [{"key": "home", "earned": "8", "maximum": "10", "weight": 4000}, {"key": "exam", "status": "excused", "weight": 6000}]},
+      "expected": {"status": "graded", "ratio": "4/5", "dropped": []}
+    },
+    {
+      "id": "pending-official-versus-current",
+      "kind": "category",
+      "input": {"mode": "points", "purpose": "final", "children": [{"key": "a", "earned": "8", "maximum": "10"}, {"key": "b", "status": "pending", "required": true}]},
+      "expected": {"status": "pending", "ratio": null, "dropped": []}
+    },
+    {
+      "id": "confirmed-missing-zero",
+      "kind": "category",
+      "input": {"mode": "points", "purpose": "final", "children": [{"key": "a", "earned": "8", "maximum": "10"}, {"key": "b", "status": "missing_zero", "maximum": "10"}, {"key": "c", "status": "excused"}]},
+      "expected": {"status": "graded", "ratio": "2/5", "dropped": []}
+    },
+    {
+      "id": "missing-excluded-current-scored-zero-counted",
+      "kind": "category",
+      "input": {"mode": "points", "purpose": "current", "children": [{"key": "a", "earned": "8", "maximum": "10"}, {"key": "b", "status": "missing_zero", "maximum": "10"}, {"key": "c", "earned": "0", "maximum": "10"}]},
+      "expected": {"status": "graded", "ratio": "2/5", "dropped": []}
+    },
+    {
+      "id": "drop-lowest-ratio",
+      "kind": "category",
+      "input": {"mode": "points", "drop": "drop_lowest_ratio", "drop_count": 1, "children": [{"key": "a", "earned": "50", "maximum": "50"}, {"key": "b", "earned": "65", "maximum": "100"}, {"key": "c", "earned": "12", "maximum": "24"}]},
+      "expected": {"status": "graded", "ratio": "23/30", "dropped": ["c"]}
+    },
+    {
+      "id": "drop-lowest-sequential-impact",
+      "kind": "category",
+      "input": {"mode": "points", "drop": "drop_lowest_impact", "drop_count": 1, "children": [{"key": "a", "earned": "50", "maximum": "50"}, {"key": "b", "earned": "65", "maximum": "100"}, {"key": "c", "earned": "12", "maximum": "24"}]},
+      "expected": {"status": "graded", "ratio": "31/37", "dropped": ["b"]}
+    },
+    {
+      "id": "protected-and-exact-tiebreak",
+      "kind": "category",
+      "input": {"mode": "points", "drop": "drop_lowest_ratio", "drop_count": 1, "children": [{"key": "c", "earned": "0", "maximum": "10", "protected": true}, {"key": "b", "earned": "4", "maximum": "8"}, {"key": "a", "earned": "5", "maximum": "10"}]},
+      "expected": {"status": "graded", "ratio": "2/9", "dropped": ["a"]}
+    },
+    {
+      "id": "bonus-preserves-denominator",
+      "kind": "category",
+      "input": {"mode": "points", "bonus_mode": "points", "cap": "21/20", "children": [{"key": "a", "earned": "90", "maximum": "100"}, {"key": "b", "kind": "bonus", "earned": "12", "maximum": "15"}]},
+      "expected": {"status": "graded", "ratio": "51/50", "dropped": []}
+    },
+    {
+      "id": "bonus-alone-cannot-create-grade",
+      "kind": "category",
+      "input": {"mode": "points", "bonus_mode": "points", "children": [{"key": "a", "status": "excused"}, {"key": "b", "kind": "bonus", "earned": "12", "maximum": "15"}]},
+      "expected": {"status": "not_applicable", "ratio": null, "dropped": []}
+    },
+    {
+      "id": "bonus-cap-applies-after-calculation",
+      "kind": "category",
+      "input": {"mode": "points", "bonus_mode": "points", "cap": "1", "children": [{"key": "a", "earned": "90", "maximum": "100"}, {"key": "b", "kind": "bonus", "earned": "12", "maximum": "15"}]},
+      "expected": {"status": "graded", "ratio": "1", "dropped": []}
+    },
+    {
+      "id": "weighted-period-aggregation",
+      "kind": "category",
+      "input": {"mode": "weighted", "children": [{"key": "term1", "earned": "72", "maximum": "100", "weight": 4000}, {"key": "term2", "earned": "86", "maximum": "100", "weight": 6000}]},
+      "expected": {"status": "graded", "ratio": "201/250", "dropped": []}
+    },
+    {
+      "id": "grace-and-ceiling-per-interval",
+      "kind": "late",
+      "input": {"earned": "33", "maximum": "40", "mode": "interval_points", "elapsed_ms": 4260000, "grace_ms": 600000, "interval_ms": 3600000, "deduction": "1", "cap": "8", "floor": "0"},
+      "expected": {"units": 2, "deducted": "2", "adjusted": "31"}
+    },
+    {
+      "id": "late-floor-cannot-increase-original-mark",
+      "kind": "late",
+      "input": {"earned": "2", "maximum": "40", "mode": "fixed_max_fraction", "elapsed_ms": 1, "grace_ms": 0, "interval_ms": 1, "deduction": "0.1", "cap": "8", "floor": "3"},
+      "expected": {"units": 1, "deducted": "0", "adjusted": "2"}
+    },
+    {
+      "id": "before-grace-no-penalty",
+      "kind": "late",
+      "input": {"earned": "33", "maximum": "40", "mode": "interval_points", "elapsed_ms": 600000, "grace_ms": 600000, "interval_ms": 3600000, "deduction": "1", "cap": "8", "floor": "0"},
+      "expected": {"units": 0, "deducted": "0", "adjusted": "33"}
+    },
+    {
+      "id": "exact-threshold-is-independent-of-display-rounding",
+      "kind": "band",
+      "input": {"ratio": "4999/10000", "threshold": "1/2", "places": 1, "rounding": "half_up", "basis": "exact", "required_gate_met": true},
+      "expected": {"display_percent": "50.0", "passed": false}
+    },
+    {
+      "id": "mandatory-practical-gate",
+      "kind": "band",
+      "input": {"ratio": "92/100", "threshold": "1/2", "places": 2, "rounding": "half_up", "basis": "exact", "required_gate_met": false},
+      "expected": {"display_percent": "92.00", "passed": false}
+    },
+    {
+      "id": "latest-graded-does-not-bypass-newer-pending",
+      "kind": "attempt",
+      "input": {"mode": "latest", "attempts": [{"key": "a", "ordinal": 1, "submitted": "2026-10-01T12:00:00Z", "adjusted_ratio": "31/40"}, {"key": "b", "ordinal": 2, "submitted": "2026-10-01T14:00:00Z", "status": "pending"}]},
+      "expected": {"status": "pending", "ratio": null, "selected": []}
+    },
+    {
+      "id": "average-attempts-includes-valid-zero",
+      "kind": "attempt",
+      "input": {"mode": "average", "attempts": [{"key": "a", "ordinal": 1, "submitted": "2026-10-01T12:00:00Z", "adjusted_ratio": "31/40"}, {"key": "b", "ordinal": 2, "submitted": "2026-10-01T14:00:00Z", "adjusted_ratio": "0"}, {"key": "c", "ordinal": 3, "submitted": "2026-10-01T15:00:00Z", "status": "voided"}]},
+      "expected": {"status": "graded", "ratio": "31/80", "selected": ["a", "b"]}
+    }
+  ]
+}

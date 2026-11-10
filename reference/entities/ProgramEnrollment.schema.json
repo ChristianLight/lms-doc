@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProgramEnrollment",
+  "description": "Person admission and immutable programme requirement assignment.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ProgramEnrollment identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Educational identity within the same institution.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Educational identity within the same institution."
+    },
+    "program_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved institutional programme.",
+      "x-entity-reference": "Program",
+      "x-reference-scope": "Approved institutional programme."
+    },
+    "requirement_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Pinned version in exact programme.",
+      "x-entity-reference": "ProgramRequirementVersion",
+      "x-reference-scope": "Pinned version in exact programme."
+    },
+    "entry_period_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institutional academic period of entry.",
+      "x-entity-reference": "AcademicPeriod",
+      "x-reference-scope": "Institutional academic period of entry."
+    },
+    "predecessor_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Previous programme admission or renewal for same person.",
+      "x-entity-reference": "ProgramEnrollment",
+      "x-reference-scope": "Previous programme admission or renewal for same person."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "withdrawn",
+        "completed",
+        "superseded"
+      ],
+      "default": "active",
+      "description": "Programme participation state."
+    },
+    "admitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Approved academic entry instant."
+    },
+    "expected_end_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Target completion if known."
+    },
+    "pointer_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Lifecycle guard."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "person_id",
+    "program_id",
+    "requirement_version_id",
+    "entry_period_id",
+    "predecessor_id",
+    "state",
+    "admitted_at",
+    "expected_end_at",
+    "pointer_version",
+    "actor_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "At most one active admission per person and programme by default unless explicit dual-award policy.",
+    "Renewal references predecessor and creates new stable identity."
+  ]
+}

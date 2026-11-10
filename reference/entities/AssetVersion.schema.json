@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssetVersion",
+  "description": "Versioned bytes or provider object, verified metadata and access policy.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "asset_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Logical owner.",
+      "x-entity-reference": "Asset",
+      "x-reference-scope": "Must resolve to an authorized Asset in the owning institution."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic version."
+    },
+    "storage_mode": {
+      "type": "string",
+      "enum": [
+        "managed",
+        "externally_hosted"
+      ],
+      "default": "managed",
+      "description": "Selects platform StorageObject or exact pinned provider resource."
+    },
+    "storage_object_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact platform-managed binary and custody record.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Same institution and owner_resource_type AssetVersion with owner_resource_id matching this version. Required to finalize a managed version."
+    },
+    "storage_scan_result_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Platform verdict supporting asset acceptance.",
+      "x-entity-reference": "StorageScanResult",
+      "x-reference-scope": "Must match the exact storage object, verified digest and current scanner policy. Required for approved managed bytes."
+    },
+    "external_resource_map_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Platform-owned mapping to an exact externally hosted provider version.",
+      "x-entity-reference": "ExternalResourceMap",
+      "x-reference-scope": "Map is in same institution, local type AssetVersion, and local ID equals this asset version. Provider must guarantee pinned version for publication."
+    },
+    "digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Verified bytes digest."
+    },
+    "bytes": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10737418240
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Verified size in bytes."
+    },
+    "media_type": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Detected media type."
+    },
+    "filename": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Sanitized display filename."
+    },
+    "rights_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Scoped rights policy."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "awaiting_upload",
+        "quarantined",
+        "scanning",
+        "approved",
+        "rejected",
+        "withdrawn"
+      ],
+      "default": "awaiting_upload",
+      "description": "Current safety state."
+    },
+    "created_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Uploading principal.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "asset_id",
+    "revision",
+    "storage_mode",
+    "filename",
+    "rights_key",
+    "state",
+    "created_by",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "asset_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Approved content pins exact AssetVersion.",
+    "Approved bytes and verified metadata are immutable.",
+    "Managed versions use a StorageObject and platform scan result. Externally hosted versions use a pinned ExternalResourceMap and cannot carry a managed storage object.",
+    "Approval follows the platform authoritative object or provider result. Withdrawal blocks this resource without modifying platform custody state.",
+    "Only explicitly hosted versions can use the hosted approval command. Managed bytes require a trusted platform scan verdict."
+  ]
+}

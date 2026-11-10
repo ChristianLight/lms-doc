@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AccessTicket",
+  "description": "Short-lived opaque delivery authority bound to one principal, binary and purpose.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authenticated requester.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "storage_object_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact immutable object.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "token_fingerprint": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Hash of a cryptographically random bearer token. Raw token never stored."
+    },
+    "resource_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Owner record version evaluated at issue."
+    },
+    "principal_epoch": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Principal authorization version at issue."
+    },
+    "institution_epoch": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Institution authorization version at issue."
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "download",
+        "stream",
+        "preview"
+      ],
+      "description": "Permitted delivery operation."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Absolute expiry. Default five minutes, capped by the approved access lifetime."
+    },
+    "revoked_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Explicit revocation when applicable."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "principal_id",
+    "storage_object_id",
+    "token_fingerprint",
+    "resource_version",
+    "principal_epoch",
+    "institution_epoch",
+    "purpose",
+    "expires_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "token_fingerprint"
+    ]
+  ],
+  "x-invariants": [
+    "Redeem against the same authenticated Principal and current domain decision. Restricted objects use gateway retrieval with revocation checks.",
+    "Streaming tickets are scoped to bounded resource and range requests. A ticket is never a backend storage key."
+  ]
+}

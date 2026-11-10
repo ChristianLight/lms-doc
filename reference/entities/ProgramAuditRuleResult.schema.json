@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProgramAuditRuleResult",
+  "description": "Source-traceable outcome of one named programme requirement.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ProgramAuditRuleResult identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Educational identity within the same institution.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Educational identity within the same institution."
+    },
+    "audit_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable exact programme audit.",
+      "x-entity-reference": "ProgramAuditResult",
+      "x-reference-scope": "Immutable exact programme audit."
+    },
+    "requirement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Rule in audited requirement version.",
+      "x-entity-reference": "ProgramRequirement",
+      "x-reference-scope": "Rule in audited requirement version."
+    },
+    "credit_decision_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 1000,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Exact source award revisions counted by this rule.",
+      "x-entity-reference": "CreditDecision",
+      "x-reference-scope": "Exact source award revisions counted by this rule."
+    },
+    "competency_decision_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 500,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Approved mastery inputs for gate.",
+      "x-entity-reference": "CompetencyDecision",
+      "x-reference-scope": "Approved mastery inputs for gate."
+    },
+    "requirement_decision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Explicit waiver or substitution used.",
+      "x-entity-reference": "RequirementDecision",
+      "x-reference-scope": "Explicit waiver or substitution used."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "fulfilled",
+        "shortfall",
+        "waived",
+        "blocked",
+        "needs_review"
+      ],
+      "description": "Rule-level outcome."
+    },
+    "used_credit": {
+      "type": "string",
+      "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$",
+      "description": "Exact credit used in rule, zero where not applicable."
+    },
+    "shortfall_credit": {
+      "type": "string",
+      "pattern": "^(?:(?:0|[1-9][0-9]{0,5})(?:\\.[0-9]{0,5}[1-9])?|1000000)$",
+      "description": "Remaining credits required, zero for other kinds."
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Localized explanation code."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "person_id",
+    "audit_id",
+    "requirement_id",
+    "credit_decision_ids",
+    "competency_decision_ids",
+    "requirement_decision_id",
+    "status",
+    "used_credit",
+    "shortfall_credit",
+    "reason_code"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "audit_id",
+      "requirement_id"
+    ]
+  ],
+  "x-invariants": [
+    "Source and requirement scope must match owning audit.",
+    "Waiver only satisfies named rule."
+  ]
+}

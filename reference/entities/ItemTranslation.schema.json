@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ItemTranslation",
+  "description": "Candidate-facing locale overlay for one item version.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ItemTranslation identifier."
+    },
+    "item_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Item version in the same bank and revision.",
+      "x-entity-reference": "ItemVersion",
+      "x-reference-scope": "Item version in the same bank and revision."
+    },
+    "locale": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8}){0,6}$",
+      "description": "Distinct requested localization."
+    },
+    "prompt": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "sanitized_html",
+              "text",
+              "asset",
+              "math"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50000
+          }
+        },
+        "required": [
+          "key",
+          "format",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 256,
+      "description": "Translated rich content with stable block keys."
+    },
+    "interaction_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+      },
+      "minItems": 0,
+      "maxItems": 1000,
+      "description": "Canonical key coverage in actual displayed order."
+    },
+    "option_keys": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "interaction_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "interaction_key",
+          "keys"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 32,
+      "description": "Versioned ordered keys grouped by interaction, where local option keys retain their original meaning."
+    },
+    "reviewed_by": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Reviewer with bank and locale capability.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Reviewer with bank and locale capability."
+    },
+    "approved_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Independent language approval time."
+    }
+  },
+  "required": [
+    "id",
+    "item_version_id",
+    "locale",
+    "prompt",
+    "interaction_keys",
+    "option_keys"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "item_version_id",
+      "locale"
+    ]
+  ],
+  "x-invariants": [
+    "Every canonical interaction and option key appears exactly once within its proper interaction.",
+    "Translation does not alter expected values."
+  ]
+}

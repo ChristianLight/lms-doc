@@ -1,0 +1,16 @@
+[entity]
+key = "unit-sample"
+can_stand_alone = true
+created = 2026-02-01T08:00:00Z
+
+[entity.published]
+version_num = 1
+
+[entity.container.unit]
+
+[[version]]
+title = "Sample unit"
+version_num = 1
+
+[version.container]
+children = ["xblock.v1:html:fractions"]

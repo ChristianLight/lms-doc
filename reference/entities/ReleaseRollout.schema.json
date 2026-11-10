@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReleaseRollout",
+  "description": "Authorized source-to-target publication and cohort snapshot.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning delivery.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "source_course_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact source version.",
+      "x-entity-reference": "CourseVersion",
+      "x-reference-scope": "Must resolve to an authorized CourseVersion in the owning institution."
+    },
+    "target_course_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact target version.",
+      "x-entity-reference": "CourseVersion",
+      "x-reference-scope": "Must resolve to an authorized CourseVersion in the owning institution."
+    },
+    "mapping": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_placement_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "target_placement_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "unchanged",
+              "equivalent",
+              "reset",
+              "removed"
+            ]
+          },
+          "evidence_types": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "acknowledgment",
+                "view",
+                "video_coverage",
+                "assessment_submission",
+                "assessment_result",
+                "attendance",
+                "package",
+                "accessible_equivalent",
+                "waiver",
+                "carry"
+              ]
+            },
+            "maxItems": 10,
+            "minItems": 0
+          },
+          "equivalence_basis": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1600
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "source_placement_id",
+          "target_placement_id",
+          "action",
+          "evidence_types",
+          "equivalence_basis"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 20000,
+      "minItems": 0,
+      "description": "Complete reviewed placement carry plan."
+    },
+    "plan_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical plan, audience and policy digest."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved",
+        "applying",
+        "completed",
+        "partial",
+        "cancelled"
+      ],
+      "default": "draft",
+      "description": "Rollout lifecycle."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Plan revision."
+    },
+    "approved_by": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Independent authorized reviewer.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "apply_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Earliest planned effective instant."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "source_course_version_id",
+    "target_course_version_id",
+    "mapping",
+    "plan_digest",
+    "state",
+    "revision",
+    "apply_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "offering_id",
+      "plan_digest"
+    ]
+  ],
+  "x-invariants": [
+    "Source and target belong to same course.",
+    "Map actions preserve historical attempts."
+  ]
+}

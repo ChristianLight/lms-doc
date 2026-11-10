@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LearningRuleVersion",
+  "description": "Immutable availability and completion policy for a placement or outline.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Rule owner.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Must resolve to an authorized Institution in the owning institution."
+    },
+    "course_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Course scope for placement resolution.",
+      "x-entity-reference": "Course",
+      "x-reference-scope": "Must resolve to an authorized Course in the owning institution."
+    },
+    "rule_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable policy identity."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic policy version."
+    },
+    "gate": {
+      "anyOf": [
+        {
+          "type": "object",
+          "maxProperties": 12
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Validated bounded typed gate expression."
+    },
+    "completion": {
+      "anyOf": [
+        {
+          "type": "object",
+          "maxProperties": 12
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Validated completion criterion and evidence set."
+    },
+    "show_locked": {
+      "type": "boolean",
+      "default": true,
+      "description": "Disclosure preference."
+    },
+    "continuity": {
+      "type": "string",
+      "enum": [
+        "live",
+        "sticky_after_start"
+      ],
+      "default": "live",
+      "description": "Gate continuity rule."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical policy SHA-256."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "course_id",
+    "rule_key",
+    "revision",
+    "gate",
+    "completion",
+    "show_locked",
+    "continuity",
+    "digest"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "course_id",
+      "rule_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Gate AST depth at most 12 and at most 100 nodes.",
+    "Exact references and safety checks remain mandatory."
+  ]
+}

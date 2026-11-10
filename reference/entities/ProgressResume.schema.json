@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProgressResume",
+  "description": "Private current navigation checkpoint, independent of evidence.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "enrollment_release_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Current release.",
+      "x-entity-reference": "EnrollmentRelease",
+      "x-reference-scope": "Must resolve to an authorized EnrollmentRelease in the owning institution."
+    },
+    "content_placement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Selected authorized exact placement.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Exact placement must belong to the course version in the cited EnrollmentRelease."
+    },
+    "anchor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional content block anchor."
+    },
+    "media_position_ms": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 86400000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional current playback position."
+    },
+    "session_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Client session token."
+    },
+    "session_sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Increasing per session."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Server compare-and-swap token."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative accepted instant."
+    }
+  },
+  "required": [
+    "id",
+    "enrollment_release_id",
+    "content_placement_id",
+    "session_id",
+    "session_sequence",
+    "revision",
+    "updated_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "enrollment_release_id"
+    ]
+  ],
+  "x-invariants": [
+    "Stale browser session cannot silently overwrite newer resume.",
+    "Never records learning completion."
+  ]
+}

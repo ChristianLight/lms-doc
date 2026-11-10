@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CourseVersionPublished",
+  "description": "Immutable course manifest became available for authorized selection.",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "course_version_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "manifest_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "course_id",
+    "course_version_id",
+    "version",
+    "manifest_digest",
+    "published_at"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "curriculum",
+  "x-ordering": "Monotonic by course publication.",
+  "x-deduplication": "Course version ID.",
+  "x-privacy": "No payload or official roster details."
+}

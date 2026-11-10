@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentAttemptTimingAdjusted",
+  "description": "Authorized intervention revised active sitting deadline.",
+  "type": "object",
+  "properties": {
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "draft_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "attempt_id",
+    "draft_version"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Per Attempt draft_version.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "No new deadline or private accommodation reason in event."
+}

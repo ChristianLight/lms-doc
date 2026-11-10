@@ -1,0 +1,286 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Attempt",
+  "description": "One realized sitting or submission cycle for an enrollment or team.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique Attempt identifier."
+    },
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized offering-bound activity.",
+      "x-entity-reference": "AssessmentDelivery",
+      "x-reference-scope": "Authorized offering-bound activity."
+    },
+    "assessment_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact realized definition revision.",
+      "x-entity-reference": "AssessmentVersion",
+      "x-reference-scope": "Exact realized definition revision."
+    },
+    "policy_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Pinned policy for this delivery.",
+      "x-entity-reference": "DeliveryPolicyVersion",
+      "x-reference-scope": "Pinned policy for this delivery."
+    },
+    "candidate_kind": {
+      "type": "string",
+      "enum": [
+        "enrollment",
+        "team"
+      ],
+      "description": "Enrollment or frozen team participant."
+    },
+    "candidate_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable Enrollment ID for individual work or stable LearningGroup ID for team work. Independent of versioned snapshots."
+    },
+    "enrollment_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Direct enrollment for individual sitting.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Direct enrollment for individual sitting."
+    },
+    "team_snapshot_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Frozen team for group sitting.",
+      "x-entity-reference": "TeamSnapshot",
+      "x-reference-scope": "Frozen team for group sitting."
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic start ordinal per delivery and candidate."
+    },
+    "previous_attempt_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Prior sitting for allowed retake or resubmission.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Prior sitting for allowed retake or resubmission."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "paused",
+        "submitted",
+        "expired",
+        "abandoned",
+        "voided"
+      ],
+      "description": "Candidate lifecycle independent of marking state."
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative start time."
+    },
+    "deadline_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Effective exclusive mutation cutoff."
+    },
+    "last_decision_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Latest persisted admission time for nondecreasing timing."
+    },
+    "draft_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Strong global draft and finalization validator."
+    },
+    "form_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Realized form and choice-order manifest hash."
+    },
+    "policy_snapshot_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Resolved policy, accommodation and deadline provenance."
+    },
+    "maximum": {
+      "type": "string",
+      "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])",
+      "description": "Total realized maximum on assessment scale."
+    },
+    "seed_key_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Version of protected key used to derive randomized form seed."
+    },
+    "encrypted_seed_reference": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Opaque protected seed storage reference."
+    },
+    "effective_policy": {
+      "type": "object",
+      "properties": {
+        "opens_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "due_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "hard_close_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "duration_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 604800
+        },
+        "pause_budget_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3600
+        },
+        "applied_override_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "alternate_version_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "require_exam_grant": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "pause_budget_seconds",
+        "applied_override_ids",
+        "require_exam_grant"
+      ],
+      "additionalProperties": false,
+      "description": "Captured time and authorized accommodations with no sensitive support context."
+    },
+    "active_section_key": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Current allowed section where linear navigation applies."
+    },
+    "enrollment_release_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact current offering course-version release pinned at individual start, null or omitted for a team.",
+      "x-entity-reference": "EnrollmentRelease",
+      "x-reference-scope": "Exact current offering course-version release pinned at individual start, null or omitted for a team."
+    },
+    "content_placement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact assessment placement within pinned release course version.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Exact assessment placement within pinned release course version."
+    }
+  },
+  "required": [
+    "id",
+    "delivery_id",
+    "assessment_version_id",
+    "policy_version_id",
+    "candidate_kind",
+    "candidate_id",
+    "ordinal",
+    "state",
+    "started_at",
+    "last_decision_at",
+    "draft_version",
+    "form_digest",
+    "policy_snapshot_digest",
+    "maximum",
+    "seed_key_version",
+    "encrypted_seed_reference",
+    "effective_policy",
+    "content_placement_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "delivery_id",
+      "candidate_kind",
+      "candidate_id",
+      "ordinal"
+    ]
+  ],
+  "x-invariants": [
+    "Exactly one of enrollment and team.",
+    "At most one writable attempt per candidate and delivery.",
+    "Submitted evidence is immutable.",
+    "Individual attempt requires enrollment_release_id from the same Enrollment and offering. Team attempt uses one pinned release per frozen member.",
+    "The exact ContentPlacement belongs to the CourseVersion of all captured EnrollmentRelease records and never changes after start.",
+    "Rollout reserves compatible release state before changing any enrollment with uncertain or active launch.",
+    "Team ordinal and writable-attempt uniqueness use stable LearningGroup ID. TeamSnapshot ID identifies the frozen version, never the quota identity."
+  ]
+}

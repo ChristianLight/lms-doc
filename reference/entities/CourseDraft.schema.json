@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CourseDraft",
+  "description": "Mutable outline workspace with a versioned review boundary.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "course_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Course being edited.",
+      "x-entity-reference": "Course",
+      "x-reference-scope": "Must resolve to an authorized Course in the owning institution."
+    },
+    "base_course_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional prior publication.",
+      "x-entity-reference": "CourseVersion",
+      "x-reference-scope": "Must resolve to an authorized CourseVersion in the owning institution."
+    },
+    "owner_principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Responsible author.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Draft compare-and-swap token."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "in_review",
+        "changes_requested",
+        "approved",
+        "published",
+        "abandoned"
+      ],
+      "default": "draft",
+      "description": "Authoring state."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Current canonical manifest input digest."
+    },
+    "approved_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact independently approved digest."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last authoritative mutation time."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Author-facing workspace name."
+    },
+    "default_locale": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 35,
+      "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+      "description": "Draft-specific default locale pinned by manifest at publication."
+    }
+  },
+  "required": [
+    "id",
+    "course_id",
+    "owner_principal_id",
+    "revision",
+    "state",
+    "digest",
+    "updated_at",
+    "name",
+    "default_locale"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "All accepted draft edits invalidate earlier approvals.",
+    "Base publication belongs to same course."
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageOrganization",
+  "description": "One ordered organization inside a verified package manifest.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "package_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning version.",
+      "x-entity-reference": "PackageVersion",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "external_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Exact manifest identifier."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "Sanitized localized default display name."
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "description": "Source order."
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "True only for the selected manifest default."
+    }
+  },
+  "required": [
+    "id",
+    "package_version_id",
+    "external_key",
+    "title",
+    "ordinal",
+    "is_default"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "package_version_id",
+      "external_key"
+    ],
+    [
+      "package_version_id",
+      "ordinal"
+    ]
+  ],
+  "x-invariants": [
+    "A deliverable package has exactly one approved default when required by the profile.",
+    "Every occurrence belongs to an organization in its own package."
+  ]
+}

@@ -1,0 +1,254 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvaluationRun",
+  "description": "Durable worker execution fact over exact sealed evidence.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique EvaluationRun identifier."
+    },
+    "attempt_item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Realized candidate item eligible for evaluation.",
+      "x-entity-reference": "AttemptItem",
+      "x-reference-scope": "Realized candidate item eligible for evaluation."
+    },
+    "submission_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Sealed evidence for same attempt.",
+      "x-entity-reference": "AttemptSubmission",
+      "x-reference-scope": "Sealed evidence for same attempt."
+    },
+    "evaluator_release_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved worker build.",
+      "x-entity-reference": "EvaluatorRelease",
+      "x-reference-scope": "Approved worker build."
+    },
+    "marking_rule_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Protected rule for this execution.",
+      "x-entity-reference": "MarkingRuleVersion",
+      "x-reference-scope": "Protected rule for this execution."
+    },
+    "input_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Exact grading inputs and pinned dependencies."
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "initial",
+        "regrade",
+        "preview",
+        "appeal"
+      ],
+      "description": "Initial, regrade, appeal or private preview purpose."
+    },
+    "run_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Intentional run revision independent of retries."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "leased",
+        "retry_wait",
+        "scored",
+        "manual_review",
+        "failed"
+      ],
+      "description": "Durable worker lifecycle."
+    },
+    "execution_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "description": "Number of leases issued."
+    },
+    "lease_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Opaque active worker lease."
+    },
+    "lease_expires_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive current lease cutoff."
+    },
+    "retry_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Next permitted claim time."
+    },
+    "outcome": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "scored",
+            "invalid_response",
+            "manual_review",
+            "retryable_error",
+            "terminal_error"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Verified worker response class."
+    },
+    "result_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Canonical verified output digest."
+    },
+    "safe_error_code": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Allowlisted operational diagnostic."
+    },
+    "result_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "points": {
+            "type": "string",
+            "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+          },
+          "maximum": {
+            "type": "string",
+            "pattern": "^(?!-0(?![\\s\\S]))-?(0|[1-9][0-9]{0,8})(\\.[0-9]{0,5}[1-9])?(?![\\s\\S])"
+          },
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "scored",
+              "blank",
+              "invalid",
+              "manual_review",
+              "excused"
+            ]
+          },
+          "feedback_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          }
+        },
+        "required": [
+          "criterion_key",
+          "maximum",
+          "disposition"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "description": "Verified typed criterion outcomes when accepted."
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Authoritative first worker claim time."
+    },
+    "completed_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Accepted terminal completion time."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_item_id",
+    "submission_id",
+    "evaluator_release_id",
+    "marking_rule_version_id",
+    "input_digest",
+    "purpose",
+    "run_revision",
+    "state",
+    "execution_count"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "attempt_item_id",
+      "input_digest",
+      "purpose",
+      "run_revision"
+    ]
+  ],
+  "x-invariants": [
+    "Accept result only for active lease, digest, approved scorer and bounded schema.",
+    "Error stays pending or review, never becomes zero by itself."
+  ]
+}

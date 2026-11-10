@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeReleaseWithdrawn",
+  "description": "Approved manifest visibility was withdrawn and dependent consumers reconcile.",
+  "type": "object",
+  "properties": {
+    "offering_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "release_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "withdrawal_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "offering_id",
+    "release_id",
+    "withdrawal_id"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per release visibility guard.",
+  "x-deduplication": "withdrawal_id.",
+  "x-privacy": "No scores or exposure rationale."
+}

@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NotificationDelivery",
+  "description": "A retryable channel-specific delivery record for one committed purpose.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Recipient of the logical message.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "connection_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "External delivery connector, if any.",
+      "x-entity-reference": "IntegrationConnection",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "source_event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Causative authoritative event identity."
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Allowlisted purpose."
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "in_app",
+        "email",
+        "sms",
+        "collaboration"
+      ],
+      "description": "Delivery channel."
+    },
+    "template_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Versioned localized message template family."
+    },
+    "template_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Exact approved wording version."
+    },
+    "locale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 35,
+      "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+      "description": "Resolved message language."
+    },
+    "delivery_key": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Per-recipient, channel, purpose and source deduplication key."
+    },
+    "provider_message_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Provider-issued opaque acknowledgement."
+    },
+    "next_delivery_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Earliest eligible delivery time."
+    },
+    "last_error_code": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Safe delivery failure class."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "sending",
+        "sent",
+        "suppressed",
+        "bounced",
+        "uncertain",
+        "failed"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "person_id",
+    "source_event_id",
+    "purpose",
+    "channel",
+    "template_key",
+    "template_version",
+    "locale",
+    "delivery_key",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "delivery_key"
+    ]
+  ],
+  "x-invariants": [
+    "External payload contains minimal generic notice and authenticated resource link, no official grades or sensitive learner information.",
+    "Provider failure never reverses a committed academic change. Recheck current audience and contact before send."
+  ]
+}

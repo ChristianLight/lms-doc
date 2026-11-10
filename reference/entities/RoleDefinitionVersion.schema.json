@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RoleDefinitionVersion",
+  "description": "Immutable set of permitted capabilities and allowed delegation for an institutional role key.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "role_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Stable role family code. Protected system keys cannot be redefined."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonically increasing version for this role family."
+    },
+    "capability_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+      },
+      "minItems": 1,
+      "maxItems": 200,
+      "uniqueItems": true,
+      "description": "Capability keys in reviewed stable catalog."
+    },
+    "allowed_scope_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Institution",
+          "OrganizationUnit",
+          "AcademicPeriod",
+          "Program",
+          "Course",
+          "CourseOffering",
+          "Section",
+          "LearningGroup",
+          "Cohort",
+          "Library",
+          "Person",
+          "IntegrationConnection",
+          "AssessmentDelivery",
+          "ExternalToolDeployment",
+          "RosterFeed"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 15,
+      "uniqueItems": true,
+      "description": "Scope kinds at which the role can be assigned."
+    },
+    "delegable_role_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+      },
+      "minItems": 0,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "description": "Role families the holder may propose where separately authorized."
+    },
+    "published_by_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Principal approving this definition.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "effective_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Earliest time at which a new assignment may reference this revision."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "role_key",
+    "revision",
+    "capability_keys",
+    "allowed_scope_types",
+    "delegable_role_keys",
+    "published_by_id",
+    "effective_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "role_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Existing grants retain their exact role revision until intentionally replaced. A new role version never silently broadens a grant.",
+    "Institution-defined roles cannot grant restricted platform or custody operations absent approval."
+  ]
+}

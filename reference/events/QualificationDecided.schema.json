@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QualificationDecided",
+  "description": "Approved programme award or status revision recorded.",
+  "type": "object",
+  "properties": {
+    "qualification_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "program_enrollment_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "awarded",
+        "suspended",
+        "revoked",
+        "superseded"
+      ]
+    }
+  },
+  "required": [
+    "qualification_id",
+    "program_enrollment_id",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per programme enrollment and award lineage.",
+  "x-deduplication": "qualification_id.",
+  "x-privacy": "Only scoped award consumers."
+}

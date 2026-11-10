@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GateOverrideDecision",
+  "description": "Audited explicit prerequisite approval or waiver scoped to one enrollment release and placement.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "enrollment_release_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact learner context.",
+      "x-entity-reference": "EnrollmentRelease",
+      "x-reference-scope": "Must resolve to an authorized EnrollmentRelease in the owning institution."
+    },
+    "content_placement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact gate target.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Exact placement must belong to the version pinned to the EnrollmentRelease."
+    },
+    "rule_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Applicable exact rule.",
+      "x-entity-reference": "LearningRuleVersion",
+      "x-reference-scope": "Must resolve to an authorized LearningRuleVersion in the owning institution."
+    },
+    "approval_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Approval node key or whole allowed gate code."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive start."
+    },
+    "effective_to": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exclusive end."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "ended"
+      ],
+      "default": "active",
+      "description": "Override lifecycle."
+    },
+    "approved_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized grantor.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Internal reason classification."
+    },
+    "safe_message": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional learner-safe projection."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Optimistic token."
+    }
+  },
+  "required": [
+    "id",
+    "enrollment_release_id",
+    "content_placement_id",
+    "rule_version_id",
+    "approval_key",
+    "effective_from",
+    "state",
+    "approved_by",
+    "reason_code",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "enrollment_release_id",
+      "content_placement_id",
+      "approval_key",
+      "effective_from"
+    ]
+  ],
+  "x-invariants": [
+    "Only declared approved prerequisite clauses can be waived.",
+    "Safety, authorization and mandatory hard dates take precedence."
+  ]
+}

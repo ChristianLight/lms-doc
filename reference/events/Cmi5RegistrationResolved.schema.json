@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cmi5RegistrationResolved",
+  "description": "An authorized cmi5 registration was pinned to a precise placement and attempt.",
+  "type": "object",
+  "properties": {
+    "registration_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "placement_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "attempt_number": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "registration_id",
+    "placement_id",
+    "attempt_number"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Ordered by exact enrollment placement and registration attempt ordinal.",
+  "x-deduplication": "Registration identity and immutable assignment.",
+  "x-privacy": "Restricted learner evidence. Do not emit actor profile or runtime credentials."
+}

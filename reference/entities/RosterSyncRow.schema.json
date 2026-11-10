@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RosterSyncRow",
+  "description": "Validated source row and resulting LMS decision.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "roster_sync_run_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Batch owner.",
+      "x-entity-reference": "RosterSyncRun",
+      "x-reference-scope": "Must resolve to an authorized RosterSyncRun in the owning institution."
+    },
+    "row_number": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000,
+      "description": "Physical or logical source order."
+    },
+    "external_grant_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Stable external enrollment identity."
+    },
+    "source_person_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "Source identity, never email fallback."
+    },
+    "person_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Verified local person.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Must resolve to an authorized Person in the owning institution."
+    },
+    "offering_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Resolved offering.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "upsert",
+        "end"
+      ],
+      "description": "Explicit source change."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "applied",
+        "unresolved",
+        "rejected"
+      ],
+      "description": "Row disposition."
+    },
+    "reason_code": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Machine reason."
+    }
+  },
+  "required": [
+    "id",
+    "roster_sync_run_id",
+    "row_number",
+    "external_grant_key",
+    "source_person_key",
+    "operation",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "roster_sync_run_id",
+      "row_number"
+    ]
+  ],
+  "x-invariants": [
+    "No implicit account match."
+  ]
+}

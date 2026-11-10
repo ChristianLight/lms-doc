@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Assessment",
+  "description": "Stable identity and publication head for an assessment.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique Assessment identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning assessment.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Institution owning assessment."
+    },
+    "course_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Course owning native assessment definition.",
+      "x-entity-reference": "Course",
+      "x-reference-scope": "Course owning native assessment definition."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Authoring and candidate title."
+    },
+    "created_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Scoped assessment author.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Scoped assessment author."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation instant."
+    },
+    "published_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Current published revision of this Assessment.",
+      "x-entity-reference": "AssessmentVersion",
+      "x-reference-scope": "Current published revision of this Assessment."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "course_id",
+    "title",
+    "created_by",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "An offering-specific delivery holds release dates and membership, not this definition."
+  ]
+}

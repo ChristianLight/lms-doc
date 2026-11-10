@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BackupSet",
+  "description": "Protected manifest of a verified restorable database, object and event horizon.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "environment_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Approved environment identifier."
+    },
+    "base_set_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Base backup ID for dependent change coverage."
+    },
+    "application_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Exact deployed application build."
+    },
+    "schema_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Exact database migration version."
+    },
+    "data_horizon": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Verified point-in-time record coverage."
+    },
+    "object_horizon": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Compatible retained object-version horizon."
+    },
+    "inventory_digest": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical digest of object inventory and base manifest."
+    },
+    "audit_anchor_ref": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Restricted trusted audit anchor at this horizon."
+    },
+    "event_checkpoint_ref": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Durable event and consumer checkpoint inventory."
+    },
+    "encryption_key_version_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+      "description": "Opaque custodian version reference."
+    },
+    "manifest_digest": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical signed manifest digest."
+    },
+    "manifest_signature_ref": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Restricted signature and signer evidence."
+    },
+    "retire_after": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled rotation threshold subject to dependent sets and holds."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "captured",
+        "verified",
+        "invalid",
+        "retired"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "environment_key",
+    "application_version",
+    "schema_version",
+    "data_horizon",
+    "object_horizon",
+    "inventory_digest",
+    "audit_anchor_ref",
+    "event_checkpoint_ref",
+    "encryption_key_version_ref",
+    "manifest_digest",
+    "manifest_signature_ref",
+    "retire_after",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "environment_key",
+      "manifest_digest"
+    ]
+  ],
+  "x-invariants": [
+    "No set becomes verified without valid signature, compatible database and object horizon, available key and verified coverage chain.",
+    "Do not retire a still required base or held manifest. An exercise records restore success separately."
+  ]
+}

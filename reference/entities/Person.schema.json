@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Person",
+  "description": "Institution-local educational identity, independent of credentials.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Current approved name used in LMS views."
+    },
+    "legal_name_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Protected reference to legal-name evidence. Present only where institutional records require it."
+    },
+    "learner_number": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional institution-issued academic identifier. Unique among all historical non-null values."
+    },
+    "preferred_locale": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 35,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "User-selected interface locale."
+    },
+    "preferred_timezone": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^(UTC|[A-Za-z_+-]+(?:/[A-Za-z0-9_+-]+)+)$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "User-selected presentation timezone."
+    },
+    "age_status": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "minor",
+        "adult"
+      ],
+      "default": "unknown",
+      "description": "Restricted policy result. It carries no birth date."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "restricted",
+        "pseudonymized"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "display_name",
+    "age_status",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "learner_number"
+    ]
+  ],
+  "x-invariants": [
+    "No automatic cross-institution deduplication. A name or email never proves identity.",
+    "Pseudonymization preserves the surrogate identity and protected official records to the extent policy requires.",
+    "Restricted state blocks interactive academic access except purpose-specific records workflows."
+  ]
+}

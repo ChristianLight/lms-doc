@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EnrollmentApplication",
+  "description": "Application, invitation acceptance or waitlist status before participation.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering applied for.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Intended learner.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Must resolve to an authorized Person in the owning institution."
+    },
+    "requested_section_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional same-offering destination.",
+      "x-entity-reference": "Section",
+      "x-reference-scope": "Must resolve to an authorized Section in the owning institution."
+    },
+    "admission_policy_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Policy snapshot governing submitted request.",
+      "x-entity-reference": "AdmissionPolicyVersion",
+      "x-reference-scope": "Must resolve to an authorized AdmissionPolicyVersion in the owning institution."
+    },
+    "route": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "self",
+        "invitation",
+        "cohort",
+        "roster",
+        "rule",
+        "transfer"
+      ],
+      "description": "Authorized application route."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "waitlisted",
+        "admitted",
+        "declined",
+        "cancelled",
+        "expired"
+      ],
+      "default": "requested",
+      "description": "Application lifecycle."
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "default": 0,
+      "description": "Approved waitlist priority, smaller sorts first."
+    },
+    "eligibility_snapshot": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rule": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "fail",
+              "pending",
+              "waived"
+            ]
+          },
+          "basis_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "rule",
+          "result",
+          "basis_id"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 150,
+      "minItems": 0,
+      "description": "Applied checks and privileged references."
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative queue time."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Compare-and-swap token."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "person_id",
+    "admission_policy_version_id",
+    "route",
+    "state",
+    "priority",
+    "eligibility_snapshot",
+    "submitted_at",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "One open application per person and offering by default.",
+    "Use source grants for distinct independent authority."
+  ]
+}

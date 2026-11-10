@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContentNode",
+  "description": "Stable independently editable learning resource identity.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Responsible institution.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Must resolve to an authorized Institution in the owning institution."
+    },
+    "owner_unit_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning curriculum unit.",
+      "x-entity-reference": "OrganizationUnit",
+      "x-reference-scope": "Must resolve to an authorized OrganizationUnit in the owning institution."
+    },
+    "type_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$",
+      "description": "Registered stable content type."
+    },
+    "created_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Author or migration principal.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation time."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "owner_unit_id",
+    "type_key",
+    "created_by",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "A detached copy creates a new identity."
+  ]
+}

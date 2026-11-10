@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageResource",
+  "description": "Manifest resource shared by zero or more launchable occurrences.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "package_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Verified package scope.",
+      "x-entity-reference": "PackageVersion",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "external_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Manifest resource identifier."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "sco",
+        "asset"
+      ],
+      "description": "Whether resource uses the SCORM runtime."
+    },
+    "media_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Manifest resource type or approved content media class."
+    },
+    "base_path": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 2048,
+      "description": "Canonical composed package-relative base."
+    },
+    "entry_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048,
+      "description": "Approved launch entry without query or fragment."
+    },
+    "entry_query": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 1024,
+      "description": "Preserved validated source query."
+    },
+    "entry_fragment": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 256,
+      "description": "Preserved safe original fragment."
+    }
+  },
+  "required": [
+    "id",
+    "package_version_id",
+    "external_key",
+    "kind",
+    "media_type",
+    "base_path"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "package_version_id",
+      "external_key"
+    ]
+  ],
+  "x-invariants": [
+    "Any launchable occurrence must resolve a validated entry inside this version.",
+    "Resource sharing does not share learner attempt state."
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TransferUploadPart",
+  "description": "Immutable byte-range receipt used to assemble a private transfer artifact.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "artifact_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Uploading aggregate.",
+      "x-entity-reference": "TransferArtifact",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "byte_offset": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Zero-based byte offset."
+    },
+    "byte_length": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 67108864,
+      "description": "Actual part bytes, capped at 64 MiB by default."
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Lowercase SHA-256 hexadecimal digest of the exact named bytes."
+    },
+    "part_locator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "Private staged blob key."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    }
+  },
+  "required": [
+    "id",
+    "artifact_id",
+    "byte_offset",
+    "byte_length",
+    "sha256",
+    "part_locator",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "artifact_id",
+      "byte_offset"
+    ]
+  ],
+  "x-invariants": [
+    "A replay at one offset must match both bytes and size.",
+    "No overlapping offsets are allowed when assembled."
+  ]
+}

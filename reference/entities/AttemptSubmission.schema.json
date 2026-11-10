@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttemptSubmission",
+  "description": "Single final sealed response manifest and receipt.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AttemptSubmission identifier."
+    },
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Target authorized attempt.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Target authorized attempt."
+    },
+    "receipt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Opaque globally unique finalization receipt."
+    },
+    "manifest": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "attempt_item_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "interaction_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "response_revision_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "value",
+              "blank",
+              "pending_asset",
+              "invalid_captured"
+            ]
+          }
+        },
+        "required": [
+          "attempt_item_id",
+          "interaction_key",
+          "disposition"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 16000,
+      "description": "Ordered accepted revision references and explicit blank states."
+    },
+    "manifest_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Canonical sealed evidence hash."
+    },
+    "actor_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Authorized candidate finalizer. Null for the automatic expiry worker.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized candidate or staff finalizer, null for time worker."
+    },
+    "reason": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Candidate submission or automatic expiry disposition."
+    },
+    "effective_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Candidate accepted time or scheduled automatic deadline."
+    },
+    "processed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time durable sealing transaction completed."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_id",
+    "receipt_id",
+    "manifest",
+    "manifest_digest",
+    "reason",
+    "effective_at",
+    "processed_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "attempt_id"
+    ],
+    [
+      "receipt_id"
+    ]
+  ],
+  "x-invariants": [
+    "One authoritative submission per attempt.",
+    "Manifest and referenced versions are immutable.",
+    "Processed time is not before effective time."
+  ]
+}

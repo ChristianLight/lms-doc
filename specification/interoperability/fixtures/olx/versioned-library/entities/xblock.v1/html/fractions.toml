@@ -1,0 +1,18 @@
+[entity]
+key = "xblock.v1:html:fractions"
+can_stand_alone = true
+created = 2026-02-01T08:00:00Z
+
+[entity.draft]
+version_num = 2
+
+[entity.published]
+version_num = 1
+
+[[version]]
+title = "Fractions draft"
+version_num = 2
+
+[[version]]
+title = "Fractions"
+version_num = 1

@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContentNodeVersion",
+  "description": "Sealed version of a typed content definition.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "content_node_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable definition owner.",
+      "x-entity-reference": "ContentNode",
+      "x-reference-scope": "Must resolve to an authorized ContentNode in the owning institution."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic content revision."
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "type_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+        },
+        "schema_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "default_locale": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 35,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "locale": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 35,
+                "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "body": {
+                "type": "object",
+                "maxProperties": 64
+              },
+              "review_state": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "approved",
+                  "stale"
+                ]
+              },
+              "source_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "required": [
+              "locale",
+              "title",
+              "body",
+              "review_state"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 60,
+          "minItems": 1
+        }
+      },
+      "required": [
+        "type_key",
+        "schema_version",
+        "default_locale",
+        "variants"
+      ],
+      "additionalProperties": false,
+      "description": "Canonical typed locale variants validated against matching registered schemas."
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Canonical version digest."
+    },
+    "created_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Sealing author or agent.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Must resolve to an authorized Principal in the owning institution."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Sealed instant."
+    }
+  },
+  "required": [
+    "id",
+    "content_node_id",
+    "revision",
+    "payload",
+    "digest",
+    "created_by",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "content_node_id",
+      "revision"
+    ],
+    [
+      "content_node_id",
+      "digest"
+    ]
+  ],
+  "x-invariants": [
+    "Only sealed versions can be placed.",
+    "Type, locale and asset references are resolved before publication."
+  ]
+}

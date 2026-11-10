@@ -1,5 +1,7 @@
 # Scope and architecture
 
+This overview introduces the product and its ownership boundaries. Use the [detailed specification](../specification/README.md) and [ownership rules](../specification/architecture/02-ownership-and-dependencies.md) for implementation contracts.
+
 ## Product boundary
 
 The LMS owns the teaching and learning record. It defines what can be taught, who may participate, what a learner saw and submitted, how the work was marked, and which result was published. It provides staff authoring and administration surfaces and a learner-facing course, assessment and review experience. It runs both as a standalone institution deployment and with optional identity, roster, collaboration, storage and reporting integrations.
@@ -8,11 +10,11 @@ An institutional implementation must serve a school with teacher-led classes, a 
 
 | Area | Scope |
 | --- | --- |
-| Curriculum | Course catalog, programs, learning outcomes, outline, lessons, activities, media, translations, reusable content libraries, approvals and publishable versions |
-| Teaching | Offerings, rosters, class sections, learning groups, cohorts, calendars, accommodations, announcements, attendance where required and staff dashboards |
+| Curriculum | Course catalog, learning objectives, outline, lessons, activities, media references, translations, reusable libraries, approvals and publishable versions |
+| Teaching | Offerings, rosters, class sections, learning groups, cohorts, calendars, scoped schedule adjustments, announcements, attendance and staff dashboards |
 | Learner experience | Enroll or accept a placement, navigate lessons, resume work, meet prerequisites, submit work, receive feedback, review progress and view released results |
-| Assessment | Item bank, flexible forms, mathematics, practice, assignments, timed exams, multiple attempts, automated and human marking, moderation, appeals and regrades |
-| Academic records | Gradebook, completion, published reports, report cards, credits and transcript or SIS exchange when enabled |
+| Assessment | Item bank, flexible forms, mathematics, practice, assignments, timed exams, assessment accommodations, attempts, automated and human marking, moderation, appeals and regrades |
+| Academic records | Gradebook, academic release, published reports, report cards, credits, programs, competencies, credentials and transcripts |
 | Interoperability | Course and library import, versioned content exports, SCORM player, roster and external tool connectors, portable results and historical migration |
 | Operations | Permission administration, audit, retention, backups, restore, accessible authoring and delivery, localization, reporting and operational observability |
 
@@ -35,7 +37,7 @@ A site can delegate authentication, storage, document sharing, video hosting, ch
 | Content node | A reusable module, topic, lesson or resource identity. A placement gives a node or activity its context within a course version |
 | Activity | An interactive or tracked learning task, such as a practice exercise, discussion prompt, assignment or package launch |
 | Assessment | A definition of the evidence to collect and how to evaluate it. An assessment delivery binds it to a particular offering and placement |
-| Attempt | One authorized assessment or package run with pinned inputs and its own lifecycle |
+| Attempt | One authorized native assessment sitting with pinned inputs and its own lifecycle. A package registration anchors the state of a packaged learning run |
 | Completion | Evidence that published requirements were met. A pass is a grading decision and may be a completion requirement |
 | Mark and grade | A mark is awarded evidence at item or criterion level. A grade is a result selected or calculated under an academic policy |
 | Report card | An issued snapshot of academic results for a learner and reporting period, with auditable amendments |
@@ -49,7 +51,8 @@ A role is an assignment within a scope and effective time range. A person can te
 | Platform operator | Deployment, upgrades, backups and recovery | Ordinary platform administration confers no academic review authority. Emergency access is time-bound and audited |
 | Institution administrator | Configure institution, units, identity mapping and delegated roles | Institution scope, with explicit permissions for grades, identity exports and audit |
 | Registrar or records officer | Terms, enrollment corrections, official results, credit and transcripts | Academic period, program or institution scope. Record corrections require provenance |
-| Curriculum author and reviewer | Draft, revise and review courses, libraries, media and item banks | Library, curriculum or unit scope. Separate publishing authority when policy requires it |
+| Curriculum author and reviewer | Draft, revise and review courses, libraries and media references | Library, curriculum or unit scope. Separate publishing authority when policy requires it |
+| Item author and reviewer | Draft and review bank items, scoring rules and assessment definitions | Assigned bank or assessment scope, with separate permissions for answer keys and publication |
 | Teacher or course lead | Manage delivery, announcements, progress and classroom grading | Assigned offering or section. Authoring rights require a separate grant |
 | Teaching assistant or learning coach | Support instruction and optionally grade assigned work | Explicit roster, grading and visibility scope. A generic assistant assignment grants no access to protected exam solutions or accommodations |
 | Examiner, marker and moderator | Authorize exams, mark assigned scripts, moderate and review appeals | Assessment and allocated scripts. Anonymity, independent marks and release authority are configurable |
@@ -66,15 +69,14 @@ Use clear internal interfaces and separate data ownership. A first deployment ca
 
 | Domain | Owns | Publishes or exposes |
 | --- | --- | --- |
-| Administration and identity | Institutions, units, periods, principals, role scopes and external identity mapping | Authorized actor context, policy and organizational references |
-| Curriculum | Catalog, programs, course versions, nodes, activities, libraries, media references and outcomes | Published course manifests, authoring and preview contracts |
-| Delivery | Offerings, sections, learning groups, cohorts, enrollments, schedules and progress | Access context, roster and activity completion evidence |
-| Assessment | Item bank, exam definitions, assessment deliveries, attempts, submissions, rubrics and marking | Finalized marks with evidence and grading provenance |
-| Academic records | Grade policies and results, moderation of official results, reports, credit and awards | Released results and authenticated records exports |
-| Interoperability | Archives, adapters, import staging, external object mapping and package runtime state | Capability reports, imports through owner APIs and validated package outcomes |
-| Operations | Audit, asynchronous work and provider connection state | Audit views, sync status and delivery receipts |
+| Platform | Institutions, units, academic periods, identities, scoped roles, audit, durable jobs, storage custody, provider connections and external resource mappings | Authorized actor context, scoped file retrieval, integration and operational receipts |
+| Curriculum | Course catalog, drafts and published versions, placements, resources, activities, learning rules, libraries and asset version references | Published course manifests, authoring, validation and preview contracts |
+| Participation | Offerings, sections, groups, cohorts, enrollments and release assignments, schedules, attendance, progress and completion | Access decisions, effective schedules, roster and learning evidence |
+| Assessment | Item bank, assessment definitions and deliveries, attempts, submissions, accommodations, rubrics and marking | Finalized marking evidence with provenance and authorized assessment feedback |
+| Records | Grade policy, results and release, academic programs, credits, competency decisions, reports, transcripts and credentials | Official released results, academic decisions and authenticated records exports |
+| Interoperability | Archives, format adapters, transfer staging, import object mapping, tool launch and package runtime state | Capability reports, imports through owner commands and validated package outcomes |
 
-A component calls the owning domain’s command or query contract. It may keep a read projection with an explicit freshness contract. Other components never edit its authoritative tables. A cross-domain result is either committed with its authoritative state when local or sent via a durable, idempotent handoff. Only the assessment owner decides whether a submission is finalized. Only the records owner determines which grade is official.
+A component calls the owning domain’s command or query contract. It may keep a read projection with an explicit freshness contract. Other components never edit its authoritative tables. A cross-domain result is either committed with its authoritative state when local or sent via a durable, idempotent handoff. Assessment finalizes native submissions. Interoperability commits package runtime state and submits validated evidence through owner contracts. Records determines which grade is official.
 
 ## Release levels
 

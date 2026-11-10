@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PeerReviewSubmitted",
+  "description": "Scoped peer reviewer submitted immutable feedback.",
+  "type": "object",
+  "properties": {
+    "assignment_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "review_revision_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "assignment_id",
+    "review_revision_id",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Per assignment and review revision.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "No reviewer identity or feedback content."
+}

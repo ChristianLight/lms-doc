@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PracticeCheck",
+  "description": "Non-submission formative check over acknowledged response revisions.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique PracticeCheck identifier."
+    },
+    "attempt_item_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Eligible practice occurrence.",
+      "x-entity-reference": "AttemptItem",
+      "x-reference-scope": "Eligible practice occurrence."
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic accepted check ordinal."
+    },
+    "response_heads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "interaction_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+          },
+          "response_revision_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "interaction_key",
+          "response_revision_id"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 32,
+      "description": "Exact acknowledged response set."
+    },
+    "input_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Pinned response and rule contract digest."
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "correct",
+        "partial",
+        "incorrect",
+        "unresolved"
+      ],
+      "description": "Candidate-safe outcome without exposing private keys."
+    },
+    "feedback_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "description": "Approved feedback code under practice visibility."
+    },
+    "checked_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative acceptance instant."
+    }
+  },
+  "required": [
+    "id",
+    "attempt_item_id",
+    "sequence",
+    "response_heads",
+    "input_digest",
+    "result",
+    "feedback_code",
+    "checked_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "attempt_item_id",
+      "sequence"
+    ]
+  ],
+  "x-invariants": [
+    "Never emits grade evidence or seals assessment.",
+    "Parsing and infrastructure failure do not consume a check."
+  ]
+}

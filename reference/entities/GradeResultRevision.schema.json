@@ -1,0 +1,311 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeResultRevision",
+  "description": "Immutable official candidate or computed grade output with exact lineage.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique GradeResultRevision identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering within the same institution.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering within the same institution."
+    },
+    "grade_result_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable target within same offering and enrollment.",
+      "x-entity-reference": "GradeResult",
+      "x-reference-scope": "Stable target within same offering and enrollment."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Enrollment in the named offering and institution.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Enrollment in the named offering and institution."
+    },
+    "assignment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact applicable policy assignment at this result cutoff.",
+      "x-entity-reference": "GradePolicyAssignment",
+      "x-reference-scope": "Exact applicable policy assignment at this result cutoff."
+    },
+    "scale_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact mapping and presentation scale.",
+      "x-entity-reference": "GradeScaleVersion",
+      "x-reference-scope": "Exact mapping and presentation scale."
+    },
+    "supersedes_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Prior result revision in same target.",
+      "x-entity-reference": "GradeResultRevision",
+      "x-reference-scope": "Prior result revision in same target."
+    },
+    "override_decision_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved effective decision, if any.",
+      "x-entity-reference": "GradeOverrideDecision",
+      "x-reference-scope": "Approved effective decision, if any."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic immutable revision number within its stable identity."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "graded",
+        "missing_zero",
+        "pending",
+        "excused",
+        "not_applicable",
+        "not_due",
+        "incomplete",
+        "withdrawn",
+        "transfer",
+        "failed_calculation"
+      ],
+      "description": "Academic result state for this revision."
+    },
+    "ratio": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "numerator": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19727})$"
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19727}$"
+            }
+          },
+          "required": [
+            "numerator",
+            "denominator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact computed effective ratio. Null for nonnumeric disposition."
+    },
+    "computed_ratio": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "numerator": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19727})$"
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19727}$"
+            }
+          },
+          "required": [
+            "numerator",
+            "denominator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Unmodified calculated ratio for an approved override, otherwise same as ratio."
+    },
+    "band_code": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact published scale band. Null for nonnumeric disposition."
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "fail",
+        "incomplete",
+        "withdrawn",
+        "exempt",
+        "pending",
+        "not_applicable"
+      ],
+      "description": "Separate academic outcome from measured numeric ratio."
+    },
+    "display_percent": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 24
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Rendered canonical percentage decimal for display."
+    },
+    "threshold_failed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Independent required gate did not pass."
+    },
+    "algorithm_version": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Reference calculation algorithm version."
+    },
+    "cutoff_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Academic as-of cutoff."
+    },
+    "source_vector": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "producer": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+          },
+          "partition": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "producer",
+          "partition",
+          "sequence",
+          "digest"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 4096,
+      "minItems": 0,
+      "description": "Ordered producer sequence bounds and fingerprints."
+    },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Canonical deterministic lineage and result fingerprint."
+    },
+    "calculation_kind": {
+      "type": "string",
+      "enum": [
+        "current_staff",
+        "final",
+        "correction"
+      ],
+      "description": "Purpose and eligibility rules applied."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "offering_id",
+    "grade_result_id",
+    "enrollment_id",
+    "assignment_id",
+    "scale_version_id",
+    "supersedes_id",
+    "override_decision_id",
+    "revision",
+    "created_at",
+    "status",
+    "ratio",
+    "computed_ratio",
+    "band_code",
+    "outcome",
+    "display_percent",
+    "threshold_failed",
+    "algorithm_version",
+    "cutoff_at",
+    "source_vector",
+    "fingerprint",
+    "calculation_kind"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "grade_result_id",
+      "revision"
+    ],
+    [
+      "grade_result_id",
+      "fingerprint"
+    ]
+  ],
+  "x-invariants": [
+    "Numeric score exists only for numeric status.",
+    "Result score is reduced rational with bounded integer size.",
+    "Exact pre-display threshold evaluated under pinned scale.",
+    "Row remains immutable after release or supersession."
+  ]
+}

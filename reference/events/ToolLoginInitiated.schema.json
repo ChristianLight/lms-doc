@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ToolLoginInitiated",
+  "description": "A scoped platform login initiation challenge was issued to the authenticated host.",
+  "type": "object",
+  "properties": {
+    "launch_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "deployment_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "launch_id",
+    "deployment_id"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Exact deployment challenge creation order.",
+  "x-deduplication": "Launch challenge identity.",
+  "x-privacy": "Do not include login hints, state, nonce, JWTs or learner profile."
+}

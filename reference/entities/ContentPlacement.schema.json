@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContentPlacement",
+  "description": "Exact placement in one frozen publication.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "course_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact published outline.",
+      "x-entity-reference": "CourseVersion",
+      "x-reference-scope": "Must resolve to an authorized CourseVersion in the owning institution."
+    },
+    "placement_key": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable course occurrence key."
+    },
+    "parent_placement_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Exact parent in this version or virtual root.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Parent must belong to same course version."
+    },
+    "sibling_scope_key": {
+      "type": "string",
+      "pattern": "^(root|parent/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$",
+      "description": "Server-derived root token or parent/ followed by the lowercase UUID from parent_placement_id. Used to enforce unique root and child positions without nullable key semantics."
+    },
+    "position": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 511,
+      "description": "Frozen contiguous sibling position."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "module",
+        "topic",
+        "lesson",
+        "rich_text",
+        "image",
+        "document",
+        "video",
+        "audio",
+        "external_link",
+        "internal_link",
+        "activity",
+        "imported_unresolved"
+      ],
+      "description": "Frozen display type."
+    },
+    "content_node_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Structural or resource payload.",
+      "x-entity-reference": "ContentNodeVersion",
+      "x-reference-scope": "Must resolve to an authorized ContentNodeVersion in the owning institution."
+    },
+    "activity_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Action payload.",
+      "x-entity-reference": "ActivityVersion",
+      "x-reference-scope": "Must resolve to an authorized ActivityVersion in the owning institution."
+    },
+    "rule_version_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Pinned learning rule.",
+      "x-entity-reference": "LearningRuleVersion",
+      "x-reference-scope": "Must resolve to an authorized LearningRuleVersion in the owning institution."
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Required in eligible branch."
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "visible",
+        "locked",
+        "hidden"
+      ],
+      "default": "visible",
+      "description": "Frozen visibility intent."
+    },
+    "alias": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional local title."
+    }
+  },
+  "required": [
+    "id",
+    "course_version_id",
+    "placement_key",
+    "sibling_scope_key",
+    "position",
+    "kind",
+    "required",
+    "visibility"
+  ],
+  "additionalProperties": false,
+  "x-owner": "curriculum",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "course_version_id",
+      "placement_key"
+    ],
+    [
+      "course_version_id",
+      "sibling_scope_key",
+      "position"
+    ]
+  ],
+  "x-invariants": [
+    "Version-owned parent, exclusive payload and acyclic tree.",
+    "Stable key is never a substitute for exact ID in academic evidence.",
+    "Compute sibling_scope_key on every insertion and reparent. A null parent_placement_id requires root. A present parent requires parent/ plus that exact parent UUID. Reject inconsistencies before commit."
+  ]
+}

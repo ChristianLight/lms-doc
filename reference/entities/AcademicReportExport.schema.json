@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AcademicReportExport",
+  "description": "Scoped report output artifact and use authorization.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique AcademicReportExport identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "snapshot_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact approved metric snapshot.",
+      "x-entity-reference": "MetricSnapshot",
+      "x-reference-scope": "Exact approved metric snapshot."
+    },
+    "artifact_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Protected CSV or structured report artifact if ready.",
+      "x-entity-reference": "AssetVersion",
+      "x-reference-scope": "Protected CSV or structured report artifact if ready."
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "csv",
+        "json",
+        "xlsx"
+      ],
+      "description": "Permitted output representation."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "ready",
+        "failed",
+        "revoked",
+        "expired"
+      ],
+      "default": "queued",
+      "description": "Export lifecycle."
+    },
+    "scope_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Caller and purpose scoped permissions fingerprint."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive artifact authorization expiry."
+    },
+    "output_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Actual export digest when ready."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "snapshot_id",
+    "artifact_id",
+    "format",
+    "state",
+    "scope_digest",
+    "expires_at",
+    "output_digest",
+    "actor_id",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Recheck authorization at download.",
+    "A regenerated file is not published under old digest."
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReleaseRolloutRow",
+  "description": "Idempotent rollout work and exact per-enrollment result.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "rollout_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Frozen rollout plan.",
+      "x-entity-reference": "ReleaseRollout",
+      "x-reference-scope": "Must resolve to an authorized ReleaseRollout in the owning institution."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Frozen audience learner.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Enrollment must belong to the same offering and institution."
+    },
+    "source_release_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Compare-and-swap source release.",
+      "x-entity-reference": "EnrollmentRelease",
+      "x-reference-scope": "Must resolve to an authorized EnrollmentRelease in the owning institution."
+    },
+    "target_release_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Committed target release.",
+      "x-entity-reference": "EnrollmentRelease",
+      "x-reference-scope": "Must resolve to an authorized EnrollmentRelease in the owning institution."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "deferred",
+        "applied",
+        "superseded",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Per-participant outcome."
+    },
+    "reason_code": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional status reason."
+    }
+  },
+  "required": [
+    "id",
+    "rollout_id",
+    "enrollment_id",
+    "source_release_id",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "rollout_id",
+      "enrollment_id"
+    ]
+  ],
+  "x-invariants": [
+    "Retry can create only one target assignment.",
+    "Superseded is terminal unless an independent rollout is approved."
+  ]
+}

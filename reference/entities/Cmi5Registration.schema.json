@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cmi5Registration",
+  "description": "cmi5 course assignment, learner and native evidence relationship.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized learner enrollment.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "activity_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact native packaged assignment.",
+      "x-entity-reference": "ActivityVersion",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "package_version_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved cmi5 package.",
+      "x-entity-reference": "PackageVersion",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "external_registration_uuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "cmi5 registration identity supplied to AU launches."
+    },
+    "attempt_number": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "description": "Native registration attempt ordinal."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "satisfied",
+        "abandoned",
+        "withdrawn"
+      ],
+      "description": "Native registration lifecycle derived under policy."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution that owns this registration and learning record profile.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Reference must resolve in the exact owning Institution."
+    },
+    "enrollment_release_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Effective assignment release pinned at registration.",
+      "x-entity-reference": "EnrollmentRelease",
+      "x-reference-scope": "Release belongs to this exact Enrollment."
+    },
+    "placement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact occurrence of the packaged activity in the assigned release.",
+      "x-entity-reference": "ContentPlacement",
+      "x-reference-scope": "Placement belongs to this exact release and resolves to the pinned ActivityVersion."
+    },
+    "course_structure_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of immutable approved cmi5 course structure."
+    },
+    "satisfaction_policy_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Immutable MoveOn and evidence projection policy revision."
+    }
+  },
+  "required": [
+    "id",
+    "enrollment_id",
+    "activity_version_id",
+    "package_version_id",
+    "external_registration_uuid",
+    "attempt_number",
+    "state",
+    "revision",
+    "created_at",
+    "institution_id",
+    "enrollment_release_id",
+    "placement_id",
+    "course_structure_digest",
+    "satisfaction_policy_revision"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "external_registration_uuid"
+    ],
+    [
+      "enrollment_id",
+      "placement_id",
+      "activity_version_id",
+      "attempt_number"
+    ]
+  ],
+  "x-invariants": [
+    "AU evidence is bound to this registration and exact course revision.",
+    "Satisfied evidence derives from declared MoveOn and valid AU outcomes.",
+    "One enrollment may launch the same ActivityVersion in different placements without sharing registration, AU evidence, or attempt ordinals."
+  ]
+}

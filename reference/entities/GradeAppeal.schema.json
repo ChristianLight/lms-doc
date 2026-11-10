@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GradeAppeal",
+  "description": "Records review request for a released grade, separate from item marking appeal.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique GradeAppeal identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Offering within the same institution.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Offering within the same institution."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Enrollment in the named offering and institution.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Enrollment in the named offering and institution."
+    },
+    "release_entry_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Appealed visible release entry for this learner.",
+      "x-entity-reference": "GradeReleaseEntry",
+      "x-reference-scope": "Appealed visible release entry for this learner."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "received",
+        "assigned",
+        "evidence_requested",
+        "upheld",
+        "changed",
+        "withdrawn"
+      ],
+      "default": "received",
+      "description": "Review lifecycle."
+    },
+    "request_text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "description": "Learner or delegate statement."
+    },
+    "supporting_asset_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 10,
+      "minItems": 0,
+      "uniqueItems": true,
+      "description": "Protected and validated supporting material for this exact appeal.",
+      "x-entity-reference": "AssetVersion",
+      "x-reference-scope": "Protected and validated supporting material for this exact appeal."
+    },
+    "received_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trusted receipt timestamp."
+    },
+    "deadline_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Appeal eligibility cutoff pinned at receipt."
+    },
+    "assigned_to": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Authorized reviewer in offering.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized reviewer in offering."
+    },
+    "public_outcome": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 3000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Approved outcome text if released."
+    },
+    "internal_reason": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Restricted reviewer rationale."
+    },
+    "correction_release_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional replacement release resolving the appeal.",
+      "x-entity-reference": "GradeRelease",
+      "x-reference-scope": "Optional replacement release resolving the appeal."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "offering_id",
+    "enrollment_id",
+    "release_entry_id",
+    "state",
+    "request_text",
+    "supporting_asset_ids",
+    "received_at",
+    "deadline_at",
+    "assigned_to",
+    "public_outcome",
+    "internal_reason",
+    "correction_release_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "Review does not mutate evidence, grade or release directly.",
+    "Duplicate open appeal for same release and scope requires merge or explicit distinct claim."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AcademicDisclosureDecided",
+  "description": "Authorized purpose-bound document disclosure decision exists.",
+  "type": "object",
+  "properties": {
+    "disclosure_request_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "denied",
+        "revoked"
+      ]
+    }
+  },
+  "required": [
+    "disclosure_request_id",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per disclosure request lifecycle.",
+  "x-deduplication": "request ID plus decision transition.",
+  "x-privacy": "No recipient details."
+}

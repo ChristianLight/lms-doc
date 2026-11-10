@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LearningRecordDeliveryQueued",
+  "description": "An immutable statement was recorded in the LRS delivery outbox.",
+  "type": "object",
+  "properties": {
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "statement_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "profile_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "delivery_id",
+    "statement_id",
+    "profile_id"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Scoped source event sequence.",
+  "x-deduplication": "Destination and statement UUID.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

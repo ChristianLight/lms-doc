@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageRuntimeMutation",
+  "description": "Per-sequence digest and disposition needed to compare retransmitted or overlapping runtime prefixes.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable interoperability record identity."
+    },
+    "launch_session_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact writer session and epoch.",
+      "x-entity-reference": "PackageLaunchSession",
+      "x-reference-scope": "Reference must resolve in the exact owning Institution."
+    },
+    "commit_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Durable accepted transaction for this sequence.",
+      "x-entity-reference": "PackageCommit",
+      "x-reference-scope": "Commit and mutation have the same launch session and occurrence attempt."
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exact contiguous sequence within this launch session."
+    },
+    "element_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Validated canonical element address."
+    },
+    "value_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of canonical lexical value and exact element address. Use keyed digest for protected small vocabularies."
+    },
+    "disposition": {
+      "type": "string",
+      "enum": [
+        "attempt_state",
+        "session_state",
+        "shared_store"
+      ],
+      "description": "Durable state scope actually changed."
+    }
+  },
+  "required": [
+    "id",
+    "launch_session_id",
+    "commit_id",
+    "sequence",
+    "element_key",
+    "value_digest",
+    "disposition"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "launch_session_id",
+      "sequence"
+    ]
+  ],
+  "x-invariants": [
+    "Only accepted sequences receive a row. A reused sequence is accepted as a replay only if its exact element and value digest match. No raw learner response appears in replay metadata."
+  ]
+}

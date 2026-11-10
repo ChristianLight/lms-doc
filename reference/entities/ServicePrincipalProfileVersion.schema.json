@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ServicePrincipalProfileVersion",
+  "description": "Narrow, versioned mandate for non-interactive worker or connector work.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Registered service actor. Human principals are forbidden.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "owner_principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Accountable currently authorized human owner.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic mandate revision."
+    },
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "scope_type": {
+            "type": "string",
+            "enum": [
+              "Institution",
+              "OrganizationUnit",
+              "AcademicPeriod",
+              "Program",
+              "Course",
+              "CourseOffering",
+              "Section",
+              "LearningGroup",
+              "Cohort",
+              "Library",
+              "Person",
+              "IntegrationConnection",
+              "AssessmentDelivery",
+              "ExternalToolDeployment",
+              "RosterFeed"
+            ]
+          },
+          "scope_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "scope_type",
+          "scope_id"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 32,
+      "description": "Explicit permitted service scopes."
+    },
+    "command_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+      },
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "description": "Declared supported commands."
+    },
+    "allowed_job_kinds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "exam_marking",
+          "release_dispatch",
+          "asset_scan",
+          "privacy_disposition",
+          "sync",
+          "notification",
+          "bulk_report",
+          "regrade",
+          "course_import",
+          "recovery_verification"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "description": "Exact job types eligible for this service actor."
+    },
+    "credential_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+      "description": "Restricted deployment or provider credential identifier. Raw credential material remains in custody."
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive activation time."
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive mandate expiration."
+    },
+    "approval_ref": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Independent security approval for scope, worker classes and credentials."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "principal_id",
+    "owner_principal_id",
+    "revision",
+    "scopes",
+    "command_keys",
+    "allowed_job_kinds",
+    "credential_ref",
+    "valid_from",
+    "valid_until",
+    "approval_ref"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "principal_id",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "No overlapping mandate windows for one Principal unless explicitly versioned under immediate supersession.",
+    "A durable job mandate can complete a previously accepted effect but grants no academic authority outside that job."
+  ]
+}

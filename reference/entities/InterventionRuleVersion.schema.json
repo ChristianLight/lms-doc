@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InterventionRuleVersion",
+  "description": "Published human-reviewed support trigger and routing rule.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique InterventionRuleVersion identifier."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning institution. All scoped references resolve inside it.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Owning institution. All scoped references resolve inside it."
+    },
+    "rule_key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Stable rule family."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Monotonic immutable revision number within its stable identity."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative recorded creation instant."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "description": "Authorized reason label."
+    },
+    "trigger_kind": {
+      "type": "string",
+      "enum": [
+        "confirmed_overdue",
+        "eligible_inactivity",
+        "below_released_threshold"
+      ],
+      "description": "Exact safe signal type."
+    },
+    "lookback_days": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 180,
+      "default": 14,
+      "description": "Bounded observation window."
+    },
+    "minimum_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100,
+      "default": 2,
+      "description": "Minimum observed eligible signal count."
+    },
+    "threshold": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "numerator": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19727})$"
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,19727}$"
+            }
+          },
+          "required": [
+            "numerator",
+            "denominator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Applicable released ratio threshold, if any."
+    },
+    "grace_days": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 90,
+      "default": 7,
+      "description": "Eligibility grace after active enrollment."
+    },
+    "cooldown_days": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 180,
+      "default": 14,
+      "description": "Minimum delay before equivalent new case."
+    },
+    "routing_role": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "description": "Authorized assigned role that handles review."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "superseded",
+        "retired"
+      ],
+      "default": "draft",
+      "description": "Rule publication lifecycle."
+    },
+    "actor_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor within institution at decision time.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized actor within institution at decision time."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "rule_key",
+    "revision",
+    "created_at",
+    "title",
+    "trigger_kind",
+    "lookback_days",
+    "minimum_count",
+    "threshold",
+    "grace_days",
+    "cooldown_days",
+    "routing_role",
+    "state",
+    "actor_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "records",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "rule_key",
+      "revision"
+    ]
+  ],
+  "x-invariants": [
+    "Incomplete signal feed never creates a risk verdict.",
+    "Human approval before learner notification default."
+  ]
+}

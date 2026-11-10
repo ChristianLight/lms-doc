@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AcademicDocumentIssued",
+  "description": "Immutable official report or transcript revision was issued.",
+  "type": "object",
+  "properties": {
+    "document_revision_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "document_kind": {
+      "type": "string",
+      "enum": [
+        "report_card",
+        "transcript"
+      ]
+    },
+    "snapshot_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "artifact_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "document_revision_id",
+    "document_kind",
+    "snapshot_digest",
+    "artifact_digest"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "records",
+  "x-ordering": "Per document series revision.",
+  "x-deduplication": "document_revision_id.",
+  "x-privacy": "Artifact requires fresh scoped authorization."
+}

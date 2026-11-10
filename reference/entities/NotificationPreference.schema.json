@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NotificationPreference",
+  "description": "An allowed optional channel selection for a person and purpose.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Person choosing delivery preference.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "learning_reminder",
+        "announcement",
+        "progress_summary",
+        "security",
+        "privacy_case",
+        "exam_receipt"
+      ],
+      "description": "Notification purpose class."
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "in_app",
+        "email",
+        "sms",
+        "collaboration"
+      ],
+      "description": "Delivery channel."
+    },
+    "enabled": {
+      "type": "boolean",
+      "description": "Whether optional delivery is permitted."
+    },
+    "quiet_start_minute": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1439,
+      "default": 1260,
+      "description": "Local quiet hours start minute since midnight."
+    },
+    "quiet_end_minute": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1439,
+      "default": 420,
+      "description": "Local quiet hours end minute since midnight."
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^(UTC|[A-Za-z_+-]+(?:/[A-Za-z0-9_+-]+)+)$",
+      "description": "Pinned presentation timezone used for quiet hours."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "person_id",
+    "purpose",
+    "channel",
+    "enabled",
+    "quiet_start_minute",
+    "quiet_end_minute",
+    "timezone"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "person_id",
+      "purpose",
+      "channel"
+    ]
+  ],
+  "x-invariants": [
+    "User preference cannot suppress required in-app receipts or authorized security notices. Optional external channels are off absent preference.",
+    "Quiet hours use the recipient zone. If endpoints equal, no quiet window."
+  ]
+}

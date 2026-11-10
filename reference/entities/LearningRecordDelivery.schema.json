@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LearningRecordDelivery",
+  "description": "Outbox receipt for an immutable learning statement sent to an approved record store.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning these data and their access policy.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "profile_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Approved xAPI or cmi5 output profile.",
+      "x-entity-reference": "ExchangeProfile",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "statement_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable xAPI statement ID allocated once."
+    },
+    "source_event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable source evidence event ID."
+    },
+    "destination_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Approved learning record store route key."
+    },
+    "payload_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of canonical outbound statement bytes."
+    },
+    "attempt_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Number of delivery attempts."
+    },
+    "next_attempt_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Next permitted retry time."
+    },
+    "delivered_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Verified remote acceptance time."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "sending",
+        "delivered",
+        "rejected",
+        "dead_letter"
+      ],
+      "description": "Authoritative lifecycle state advanced only through owner commands."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "profile_id",
+    "statement_id",
+    "source_event_id",
+    "destination_key",
+    "payload_digest",
+    "attempt_count",
+    "state",
+    "revision",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "destination_key",
+      "statement_id"
+    ],
+    [
+      "institution_id",
+      "destination_key",
+      "source_event_id",
+      "profile_id"
+    ]
+  ],
+  "x-invariants": [
+    "Replays must use the same statement ID and content digest.",
+    "LRS delivery never substitutes for native grade or completion authority."
+  ]
+}

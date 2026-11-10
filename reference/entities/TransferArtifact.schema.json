@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TransferArtifact",
+  "description": "Immutable archived input or output bytes and classified handling evidence.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning these data and their access policy.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "uploader_principal_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized actor or service identity for the recorded operation.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "source_namespace": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Pre-registered import provenance or outbound destination namespace."
+    },
+    "original_filename": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Sanitized basename for operator display only."
+    },
+    "byte_length": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4398046511104,
+      "description": "Actual length counted during stream verification."
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Lowercase SHA-256 hexadecimal digest of the exact named bytes."
+    },
+    "media_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Detected container media type."
+    },
+    "storage_object_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Platform-owned private bytes with owner resource, object version, scan status, digest and retention hold.",
+      "x-entity-reference": "StorageObject",
+      "x-reference-scope": "The StorageObject belongs to this Institution and exact TransferArtifact generation, with package, evidence or export purpose."
+    },
+    "storage_scope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Institution-local storage trust and retention partition."
+    },
+    "detected_format": {
+      "type": "string",
+      "enum": [
+        "native_curriculum",
+        "olx_course",
+        "olx_legacy_library",
+        "olx_versioned_library",
+        "scorm_12",
+        "scorm_2004_2",
+        "scorm_2004_3",
+        "scorm_2004_4",
+        "scorm_2004_unverified",
+        "qti_21",
+        "qti_22",
+        "qti_301",
+        "common_cartridge",
+        "oneroster_12",
+        "cmi5_quartz",
+        "historic_records"
+      ],
+      "description": "Detected input shape independently of installation support."
+    },
+    "signature_evidence": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Safe evidence for matching manifest signature and version."
+    },
+    "scan_engine": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Scanner and signature version for the latest observation."
+    },
+    "rights": {
+      "type": "string",
+      "enum": [
+        "institution_owned",
+        "licensed",
+        "restricted",
+        "unknown"
+      ],
+      "description": "Verified distribution rights status."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "uploading",
+        "quarantined",
+        "accepted",
+        "rejected",
+        "expired"
+      ],
+      "description": "Authoritative lifecycle state advanced only through owner commands."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    },
+    "retain_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Minimum planned availability deadline before hold checks."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "uploader_principal_id",
+    "source_namespace",
+    "original_filename",
+    "byte_length",
+    "sha256",
+    "media_type",
+    "storage_object_id",
+    "storage_scope",
+    "rights",
+    "state",
+    "created_at",
+    "retain_until"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "storage_scope",
+      "sha256"
+    ]
+  ],
+  "x-invariants": [
+    "The verified digest is immutable after quarantine.",
+    "Raw archive reads need explicit artifact authority and permission to every included data class.",
+    "Detect and retain profile evidence before import approval.",
+    "Release eligibility requires an accepted StorageObject version with matching hash and exact byte length. Quarantine may read it only through the storage owner. Storage deduplication never shares domain authorization."
+  ]
+}

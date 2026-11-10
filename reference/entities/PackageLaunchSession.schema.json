@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageLaunchSession",
+  "description": "Scoped learner launch lease for a single package activity occurrence.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "registration_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning attempt.",
+      "x-entity-reference": "PackageRegistration",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "occurrence_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Launchable occurrence in the registered organization.",
+      "x-entity-reference": "PackageActivity",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "epoch": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Fencing epoch pinned to registration writer lease."
+    },
+    "origin": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Approved content origin with no application cookie scope."
+    },
+    "bootstrap_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Hash of short-lived bootstrap nonce, never raw token."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server-assigned UTC time of creation."
+    },
+    "lease_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Server deadline for writing under this epoch."
+    },
+    "activated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "One-time bootstrap exchange time."
+    },
+    "closed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Authoritative close or lease expiry time."
+    },
+    "credited_time_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Exact fixed-unit millisecond projection only when duration has no unresolved calendar components."
+    },
+    "accepted_through_sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Contiguous confirmed client mutation sequence."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "bootstrap",
+        "active",
+        "finished",
+        "interrupted",
+        "revoked"
+      ],
+      "description": "Authoritative lifecycle state advanced only through owner commands."
+    },
+    "activity_attempt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact occurrence attempt, including distinct browse and review working states.",
+      "x-entity-reference": "PackageActivityAttempt",
+      "x-reference-scope": "Matches this registration and occurrence."
+    },
+    "sco_state_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authoritative RTE state owned by this exact occurrence attempt.",
+      "x-entity-reference": "PackageScoState",
+      "x-reference-scope": "State belongs to the exact selected activity attempt."
+    },
+    "pending_navigation_request": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "description": "Last valid 2004 session-scoped navigation request. Consumed only when its successful terminal transition permits it."
+    },
+    "credited_duration": {
+      "type": "object",
+      "properties": {
+        "years": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "months": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "fixed_milliseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "years",
+        "months",
+        "fixed_milliseconds"
+      ],
+      "additionalProperties": false,
+      "description": "Lossless duration sum. Preserve calendar components separately from fixed elapsed units."
+    },
+    "reported_duration_lexeme": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Last valid edition-formatted duration, preserved exactly for traceability."
+    }
+  },
+  "required": [
+    "id",
+    "registration_id",
+    "occurrence_id",
+    "epoch",
+    "origin",
+    "bootstrap_digest",
+    "created_at",
+    "lease_expires_at",
+    "accepted_through_sequence",
+    "state",
+    "activity_attempt_id",
+    "sco_state_id"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "registration_id",
+      "epoch"
+    ]
+  ],
+  "x-invariants": [
+    "The grant is limited to one occurrence, learner attempt and epoch.",
+    "Time is credited at most once per closed session.",
+    "Only hashed bootstrap provenance is stored.",
+    "SCO-written adl.nav.request never becomes a cross-launch CMI element. A new launch starts with the edition default request and cannot replay an old suspended or consumed request."
+  ]
+}

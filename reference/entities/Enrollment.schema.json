@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Enrollment",
+  "description": "Durable participation of one institutional person in one offering.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable opaque identity."
+    },
+    "offering_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning course delivery.",
+      "x-entity-reference": "CourseOffering",
+      "x-reference-scope": "Must resolve to an authorized CourseOffering in the owning institution."
+    },
+    "person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Learner institutional identity.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Must resolve to an authorized Person in the owning institution."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "withdrawn",
+        "closed"
+      ],
+      "default": "active",
+      "description": "Participation state."
+    },
+    "admitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "First authoritative acceptance."
+    },
+    "state_effective_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Current participation boundary."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "default": 1,
+      "description": "Optimistic revision."
+    }
+  },
+  "required": [
+    "id",
+    "offering_id",
+    "person_id",
+    "state",
+    "admitted_at",
+    "state_effective_at",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-owner": "participation",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "offering_id",
+      "person_id"
+    ]
+  ],
+  "x-invariants": [
+    "Retakes use another offering.",
+    "Suspension and withdrawal preserve previous attempts."
+  ]
+}

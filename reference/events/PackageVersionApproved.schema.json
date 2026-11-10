@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageVersionApproved",
+  "description": "Approved runtime and rights evidence was recorded for exact immutable package bytes.",
+  "type": "object",
+  "properties": {
+    "package_version_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "manifest_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "edition": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    }
+  },
+  "required": [
+    "package_version_id",
+    "manifest_digest",
+    "edition"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "interoperability",
+  "x-ordering": "Package review order.",
+  "x-deduplication": "Package, manifest digest and approval revision.",
+  "x-privacy": "Restricted to institution operational consumers. Do not include learner answers, raw suspend data or credentials."
+}

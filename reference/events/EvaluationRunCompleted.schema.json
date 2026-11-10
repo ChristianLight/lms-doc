@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvaluationRunCompleted",
+  "description": "A leased run recorded a validated disposition.",
+  "type": "object",
+  "properties": {
+    "evaluation_run_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "attempt_item_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "leased",
+        "retry_wait",
+        "scored",
+        "manual_review",
+        "failed"
+      ]
+    }
+  },
+  "required": [
+    "evaluation_run_id",
+    "attempt_item_id",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Per run revision and execution count.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "No private diagnostics, score or input."
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssetVersionStateChanged",
+  "description": "Quarantine, approval or withdrawal state changed.",
+  "type": "object",
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "asset_version_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "quarantined",
+        "approved",
+        "rejected",
+        "withdrawn"
+      ]
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+    }
+  },
+  "required": [
+    "asset_id",
+    "asset_version_id",
+    "state",
+    "reason_code"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "curriculum",
+  "x-ordering": "Causal by asset version.",
+  "x-deduplication": "Asset version plus decision state.",
+  "x-privacy": "No filenames, download tokens or locators."
+}

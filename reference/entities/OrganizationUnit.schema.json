@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OrganizationUnit",
+  "description": "An administrative subdivision such as campus, department or faculty.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Server-assigned opaque identity. Never reused."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution owning this record",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Exact institution root"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of initial durable creation. Server assigned."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "description": "Starts at 1. Increment exactly once per authoritative mutation."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant of the latest authoritative mutation. Server assigned."
+    },
+    "parent_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Parent unit within the same institution. Null identifies a root unit.",
+      "x-entity-reference": "OrganizationUnit",
+      "x-reference-scope": "Same institution and applicable scope"
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Stable institution-unique administrative key."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Display name."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "campus",
+        "faculty",
+        "department",
+        "school",
+        "division",
+        "service"
+      ],
+      "description": "Kind used for navigation and management."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ],
+      "description": "Current lifecycle state. Mutate only through declared transitions."
+    }
+  },
+  "required": [
+    "id",
+    "institution_id",
+    "created_at",
+    "version",
+    "updated_at",
+    "code",
+    "name",
+    "kind",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-owner": "platform",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "code"
+    ]
+  ],
+  "x-invariants": [
+    "Maximum 16 unit ancestors. Refuse cycles under an institution hierarchy write lock.",
+    "Move recomputes the affected paths atomically and bumps authorization epoch. Historical grant events carry the evaluated old path."
+  ]
+}

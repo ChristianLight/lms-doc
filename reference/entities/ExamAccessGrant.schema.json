@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExamAccessGrant",
+  "description": "Single-use institutional admission approval scoped to a candidate delivery.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable globally unique ExamAccessGrant identifier."
+    },
+    "delivery_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Only the authorized delivery can consume this grant.",
+      "x-entity-reference": "AssessmentDelivery",
+      "x-reference-scope": "Only the authorized delivery can consume this grant."
+    },
+    "enrollment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Candidate enrollment scoped to the same offering.",
+      "x-entity-reference": "Enrollment",
+      "x-reference-scope": "Candidate enrollment scoped to the same offering."
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "institutional_identity",
+        "supervisor",
+        "external_verified",
+        "short_passcode"
+      ],
+      "description": "Approved institutional verification method."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "available",
+        "consumed",
+        "revoked",
+        "expired"
+      ],
+      "description": "Available, consumed or revoked authority. Expired is derived when an available grant reaches valid_until."
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Inclusive start of grant validity."
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exclusive validity end."
+    },
+    "approved_by": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Authorized examiner or verifier.",
+      "x-entity-reference": "Principal",
+      "x-reference-scope": "Authorized examiner or verifier."
+    },
+    "consumed_by_attempt_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Durable attempt consuming this grant.",
+      "x-entity-reference": "Attempt",
+      "x-reference-scope": "Durable attempt consuming this grant."
+    }
+  },
+  "required": [
+    "id",
+    "delivery_id",
+    "enrollment_id",
+    "method",
+    "state",
+    "valid_from",
+    "valid_until",
+    "approved_by"
+  ],
+  "additionalProperties": false,
+  "x-owner": "assessment",
+  "x-unique-keys": [
+    [
+      "id"
+    ]
+  ],
+  "x-invariants": [
+    "One use per grant.",
+    "Grant is consumed only after valid attempt creation.",
+    "Never hold identity documents in grant record."
+  ]
+}

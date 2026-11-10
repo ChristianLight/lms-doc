@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssessmentAppealDecided",
+  "description": "Authorized appeal review reached a decision.",
+  "type": "object",
+  "properties": {
+    "appeal_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "attempt_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "appeal_id",
+    "attempt_id"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "assessment",
+  "x-ordering": "Per AssessmentAppeal decision.",
+  "x-deduplication": "Deduplicate by event_id and verify monotonic revision in the named owner scope.",
+  "x-privacy": "No rationale or outcome in event."
+}

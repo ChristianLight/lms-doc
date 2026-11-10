@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CourseDraftChanged",
+  "description": "Draft state or canonical input revision changed.",
+  "type": "object",
+  "properties": {
+    "course_draft_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "course_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "in_review",
+        "changes_requested",
+        "approved",
+        "published",
+        "abandoned"
+      ]
+    }
+  },
+  "required": [
+    "course_draft_id",
+    "course_id",
+    "revision",
+    "digest",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "curriculum",
+  "x-ordering": "Monotonic by draft.",
+  "x-deduplication": "Draft ID plus revision and state.",
+  "x-privacy": "Restricted authoring metadata only."
+}

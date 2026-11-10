@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackageObjectiveState",
+  "description": "Tracked local or shared objective state with independent knownness flags.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Immutable identity allocated once by the interoperability owner."
+    },
+    "registration_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Registration required for attempt-lifetime state, absent for a verified cross-attempt learner scope.",
+      "x-entity-reference": "PackageRegistration",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "activity_attempt_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Owning local activity attempt when not shared.",
+      "x-entity-reference": "PackageActivityAttempt",
+      "x-reference-scope": "Reference must resolve inside the owning Institution or the directly owned aggregate."
+    },
+    "objective_scope": {
+      "type": "string",
+      "enum": [
+        "local",
+        "shared"
+      ],
+      "description": "Whether objective uses local or explicitly mapped shared scope."
+    },
+    "external_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Exact objective identifier in its configured scope."
+    },
+    "satisfaction_known": {
+      "type": "boolean",
+      "description": "True when satisfaction flag is initialized."
+    },
+    "satisfied": {
+      "type": "boolean",
+      "description": "Satisfaction value used only when known."
+    },
+    "measure_known": {
+      "type": "boolean",
+      "description": "True when normalized measure is initialized."
+    },
+    "normalized_measure": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 24,
+      "description": "Edition-specific bounded normalized measure lexeme."
+    },
+    "completion_known": {
+      "type": "boolean",
+      "description": "Whether edition-supported mapped completion is initialized."
+    },
+    "completed": {
+      "type": "boolean",
+      "description": "Completion value used only when known."
+    },
+    "progress_known": {
+      "type": "boolean",
+      "description": "Whether edition-supported mapped progress is initialized."
+    },
+    "progress_measure": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]{0,11})(?:\\.[0-9]{1,6})?$",
+      "description": "Known normalized progress in [0,1]."
+    },
+    "raw_score": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Known edition-supported objective raw score lexical value."
+    },
+    "minimum_score": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Known edition-supported objective minimum lexical value."
+    },
+    "maximum_score": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Known edition-supported objective maximum lexical value."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic aggregate revision used for compare-and-swap."
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Institution isolation root.",
+      "x-entity-reference": "Institution",
+      "x-reference-scope": "Reference must resolve in the exact owning Institution."
+    },
+    "learner_person_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Exact authorized learner whose state may be shared.",
+      "x-entity-reference": "Person",
+      "x-reference-scope": "Reference must resolve in the exact owning Institution."
+    },
+    "organization_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Manifest organization when sharing is limited to its tree.",
+      "x-entity-reference": "PackageOrganization",
+      "x-reference-scope": "Reference must resolve in the exact owning Institution."
+    },
+    "persistence_scope": {
+      "type": "string",
+      "enum": [
+        "attempt",
+        "tree_across_attempts",
+        "approved_system"
+      ],
+      "description": "Resolved persistence scope from edition manifest and explicit tenant trust profile."
+    },
+    "resolved_scope_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Unambiguous identity for local attempt, tree attempt, tree-across-attempts or approved learner-wide scope."
+    }
+  },
+  "required": [
+    "id",
+    "objective_scope",
+    "external_key",
+    "satisfaction_known",
+    "satisfied",
+    "measure_known",
+    "completion_known",
+    "completed",
+    "progress_known",
+    "revision",
+    "institution_id",
+    "learner_person_id",
+    "persistence_scope",
+    "resolved_scope_key"
+  ],
+  "additionalProperties": false,
+  "x-owner": "interoperability",
+  "x-unique-keys": [
+    [
+      "id"
+    ],
+    [
+      "institution_id",
+      "learner_person_id",
+      "resolved_scope_key",
+      "external_key"
+    ]
+  ],
+  "x-invariants": [
+    "Enforce one scoped objective per registration and objective key with local attempt included where applicable.",
+    "A missing measure is distinct from zero."
+  ]
+}

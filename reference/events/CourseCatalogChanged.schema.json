@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CourseCatalogChanged",
+  "description": "Catalog metadata or lifecycle changed.",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "institution_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "course_id",
+    "institution_id",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "x-version": 1,
+  "x-producer": "curriculum",
+  "x-ordering": "Monotonic by course.",
+  "x-deduplication": "Course ID plus revision.",
+  "x-privacy": "No learner data or description."
+}
